@@ -1,44 +1,5 @@
-@font-face {
-    font-family: "Pretendard";
-    src: url("/PretendardVariable.ttf") format("truetype");
-    font-style: normal;
-    font-weight: 45 930;
-    font-display: swap;
-}
-
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-}
-
-html,
-body,
-#root {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
-
-html,
-body {
-    color: #fff;
-    background-color: #000;
-}
-
-body,
-button,
-input,
-textarea {
-    font-family: "Pretendard", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-::selection {
-    color: #000;
-    background-color: #fff;
-}
-
-.hidden {
-    display: none;
-}
+@import './styles/tokens.css';
+@import './styles/globals.css';
+@import './styles/app.css';
+@import './styles/pages.css';
+@import './styles/responsive.css';

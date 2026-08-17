@@ -25,3 +25,6 @@ dist-ssr
 
 bun.lock
 skills-lock.json
+
+# Local browser profiles used only for visual QA
+.impeccable/chrome-*
