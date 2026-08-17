@@ -73,7 +73,7 @@ export function RoomsPage({ home = false }: { home?: boolean }) {
       <div className="explorer-grid">
         <section className="room-board" aria-label="모집방 목록">
           <div className="room-toolbar">
-            <SearchInput value={query} onChange={(event) => setQuery(event.target.value)} placeholder="게임, 운동 또는 역할 검색" />
+            <SearchInput value={query} onChange={(event) => setQuery(event.target.value)} placeholder="게임 또는 포지션 검색" />
             <div className="filter-tabs" role="tablist" aria-label="모집 필터">
               {([['all', '전체'], ['recruiting', '모집 중'], ['joined', '참여 중']] as const).map(([value, label]) => <button key={value} role="tab" aria-selected={filter === value} onClick={() => setFilter(value)}>{label}</button>)}
             </div>

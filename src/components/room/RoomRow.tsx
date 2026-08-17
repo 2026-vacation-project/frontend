@@ -40,8 +40,8 @@ export function RoomRow({ room, hostName = '방장', groupName, currentUserId, o
       </div>
 
       <div className="room-row__need">
-        <span className="room-row__label">필요 역할</span>
-        {room.target_role ? <RoleBadge name={room.target_role} color="#ef6a42" /> : <span className="muted">역할 무관</span>}
+        <span className="room-row__label">필요 포지션</span>
+        {room.target_role ? <RoleBadge name={room.target_role} color="#ef6a42" /> : <span className="muted">포지션 무관</span>}
       </div>
 
       <div className="room-row__capacity">
