@@ -1,10 +1,13 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter, Route, Routes } from 'react-router';
+import './index.css';
+
+import { default as IndexPage } from './App';
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
+    <BrowserRouter>
+        <Routes>
+            <Route index element={<IndexPage />} />
+        </Routes>
+    </BrowserRouter>,
 )
