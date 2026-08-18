@@ -1,166 +1,542 @@
 {
-  "schemaVersion": 2,
-  "generatedAt": "2026-08-17T21:11:42.179Z",
-  "title": "Design System: 팀모아",
-  "extensions": {
-    "colorMeta": {
-      "primary": { "role": "primary", "displayName": "Assembly Green", "canonical": "#1d6f50", "tonalRamp": ["hsl(157 59% 15%)", "hsl(157 59% 25%)", "hsl(157 59% 35%)", "hsl(157 59% 45%)", "hsl(157 59% 55%)", "hsl(157 59% 65%)", "hsl(157 59% 80%)", "hsl(157 59% 95%)"] },
-      "primary-hover": { "role": "primary", "displayName": "Canopy Green", "canonical": "#155c41", "tonalRamp": ["hsl(157 63% 15%)", "hsl(157 63% 25%)", "hsl(157 63% 35%)", "hsl(157 63% 45%)", "hsl(157 63% 55%)", "hsl(157 63% 65%)", "hsl(157 63% 80%)", "hsl(157 63% 95%)"] },
-      "primary-active": { "role": "primary", "displayName": "Forest Press", "canonical": "#104b35", "tonalRamp": ["hsl(158 65% 15%)", "hsl(158 65% 25%)", "hsl(158 65% 35%)", "hsl(158 65% 45%)", "hsl(158 65% 55%)", "hsl(158 65% 65%)", "hsl(158 65% 80%)", "hsl(158 65% 95%)"] },
-      "primary-soft": { "role": "primary", "displayName": "Clubhouse Mint", "canonical": "#e4f1e9", "tonalRamp": ["hsl(143 32% 15%)", "hsl(143 32% 25%)", "hsl(143 32% 35%)", "hsl(143 32% 45%)", "hsl(143 32% 55%)", "hsl(143 32% 65%)", "hsl(143 32% 80%)", "hsl(143 32% 95%)"] },
-      "background": { "role": "neutral", "displayName": "Warm Roster Paper", "canonical": "#f6f7f3", "tonalRamp": ["hsl(75 20% 15%)", "hsl(75 20% 25%)", "hsl(75 20% 35%)", "hsl(75 20% 45%)", "hsl(75 20% 55%)", "hsl(75 20% 65%)", "hsl(75 20% 80%)", "hsl(75 20% 95%)"] },
-      "surface": { "role": "neutral", "displayName": "Clean Sheet", "canonical": "#ffffff", "tonalRamp": ["hsl(0 0% 15%)", "hsl(0 0% 25%)", "hsl(0 0% 35%)", "hsl(0 0% 45%)", "hsl(0 0% 55%)", "hsl(0 0% 65%)", "hsl(0 0% 80%)", "hsl(0 0% 95%)"] },
-      "surface-secondary": { "role": "neutral", "displayName": "Chalk Wash", "canonical": "#edf0eb", "tonalRamp": ["hsl(96 14% 15%)", "hsl(96 14% 25%)", "hsl(96 14% 35%)", "hsl(96 14% 45%)", "hsl(96 14% 55%)", "hsl(96 14% 65%)", "hsl(96 14% 80%)", "hsl(96 14% 95%)"] },
-      "surface-strong": { "role": "neutral", "displayName": "Chalkboard Ink", "canonical": "#202824", "tonalRamp": ["hsl(150 11% 15%)", "hsl(150 11% 25%)", "hsl(150 11% 35%)", "hsl(150 11% 45%)", "hsl(150 11% 55%)", "hsl(150 11% 65%)", "hsl(150 11% 80%)", "hsl(150 11% 95%)"] },
-      "text-primary": { "role": "neutral", "displayName": "Ledger Ink", "canonical": "#17201c", "tonalRamp": ["hsl(153 16% 15%)", "hsl(153 16% 25%)", "hsl(153 16% 35%)", "hsl(153 16% 45%)", "hsl(153 16% 55%)", "hsl(153 16% 65%)", "hsl(153 16% 80%)", "hsl(153 16% 95%)"] },
-      "text-secondary": { "role": "neutral", "displayName": "Soft Ink", "canonical": "#4e5b54", "tonalRamp": ["hsl(148 8% 15%)", "hsl(148 8% 25%)", "hsl(148 8% 35%)", "hsl(148 8% 45%)", "hsl(148 8% 55%)", "hsl(148 8% 65%)", "hsl(148 8% 80%)", "hsl(148 8% 95%)"] },
-      "text-muted": { "role": "neutral", "displayName": "Pencil Note", "canonical": "#5f6d66", "tonalRamp": ["hsl(150 7% 15%)", "hsl(150 7% 25%)", "hsl(150 7% 35%)", "hsl(150 7% 45%)", "hsl(150 7% 55%)", "hsl(150 7% 65%)", "hsl(150 7% 80%)", "hsl(150 7% 95%)"] },
-      "border": { "role": "neutral", "displayName": "Registration Line", "canonical": "#cfd7d1", "tonalRamp": ["hsl(135 9% 15%)", "hsl(135 9% 25%)", "hsl(135 9% 35%)", "hsl(135 9% 45%)", "hsl(135 9% 55%)", "hsl(135 9% 65%)", "hsl(135 9% 80%)", "hsl(135 9% 95%)"] },
-      "divider": { "role": "neutral", "displayName": "Hairline Rule", "canonical": "#e1e6e2", "tonalRamp": ["hsl(132 9% 15%)", "hsl(132 9% 25%)", "hsl(132 9% 35%)", "hsl(132 9% 45%)", "hsl(132 9% 55%)", "hsl(132 9% 65%)", "hsl(132 9% 80%)", "hsl(132 9% 95%)"] },
-      "success": { "role": "tertiary", "displayName": "Open Slot Green", "canonical": "#197349", "tonalRamp": ["hsl(152 64% 15%)", "hsl(152 64% 25%)", "hsl(152 64% 35%)", "hsl(152 64% 45%)", "hsl(152 64% 55%)", "hsl(152 64% 65%)", "hsl(152 64% 80%)", "hsl(152 64% 95%)"] },
-      "warning": { "role": "tertiary", "displayName": "Deadline Amber", "canonical": "#b45309", "tonalRamp": ["hsl(26 90% 15%)", "hsl(26 90% 25%)", "hsl(26 90% 35%)", "hsl(26 90% 45%)", "hsl(26 90% 55%)", "hsl(26 90% 65%)", "hsl(26 90% 80%)", "hsl(26 90% 95%)"] },
-      "warning-soft": { "role": "tertiary", "displayName": "Amber Wash", "canonical": "#fff1d6", "tonalRamp": ["hsl(40 100% 15%)", "hsl(40 100% 25%)", "hsl(40 100% 35%)", "hsl(40 100% 45%)", "hsl(40 100% 55%)", "hsl(40 100% 65%)", "hsl(40 100% 80%)", "hsl(40 100% 95%)"] },
-      "error": { "role": "tertiary", "displayName": "Correction Red", "canonical": "#b83b32", "tonalRamp": ["hsl(4 57% 15%)", "hsl(4 57% 25%)", "hsl(4 57% 35%)", "hsl(4 57% 45%)", "hsl(4 57% 55%)", "hsl(4 57% 65%)", "hsl(4 57% 80%)", "hsl(4 57% 95%)"] },
-      "error-soft": { "role": "tertiary", "displayName": "Correction Wash", "canonical": "#fae9e7", "tonalRamp": ["hsl(6 66% 15%)", "hsl(6 66% 25%)", "hsl(6 66% 35%)", "hsl(6 66% 45%)", "hsl(6 66% 55%)", "hsl(6 66% 65%)", "hsl(6 66% 80%)", "hsl(6 66% 95%)"] },
-      "info": { "role": "tertiary", "displayName": "Roster Blue", "canonical": "#356575", "tonalRamp": ["hsl(195 38% 15%)", "hsl(195 38% 25%)", "hsl(195 38% 35%)", "hsl(195 38% 45%)", "hsl(195 38% 55%)", "hsl(195 38% 65%)", "hsl(195 38% 80%)", "hsl(195 38% 95%)"] },
-      "info-soft": { "role": "tertiary", "displayName": "Roster Blue Wash", "canonical": "#e7f1f3", "tonalRamp": ["hsl(190 33% 15%)", "hsl(190 33% 25%)", "hsl(190 33% 35%)", "hsl(190 33% 45%)", "hsl(190 33% 55%)", "hsl(190 33% 65%)", "hsl(190 33% 80%)", "hsl(190 33% 95%)"] },
-      "signal": { "role": "secondary", "displayName": "Role Orange", "canonical": "#ed6a3d", "tonalRamp": ["hsl(15 83% 15%)", "hsl(15 83% 25%)", "hsl(15 83% 35%)", "hsl(15 83% 45%)", "hsl(15 83% 55%)", "hsl(15 83% 65%)", "hsl(15 83% 80%)", "hsl(15 83% 95%)"] },
-      "role-orange": { "role": "secondary", "displayName": "Implemented Role Orange", "canonical": "#ef6a42", "tonalRamp": ["hsl(14 84% 15%)", "hsl(14 84% 25%)", "hsl(14 84% 35%)", "hsl(14 84% 45%)", "hsl(14 84% 55%)", "hsl(14 84% 65%)", "hsl(14 84% 80%)", "hsl(14 84% 95%)"] },
-      "signal-soft": { "role": "secondary", "displayName": "Orange Wash", "canonical": "#fff0e9", "tonalRamp": ["hsl(19 100% 15%)", "hsl(19 100% 25%)", "hsl(19 100% 35%)", "hsl(19 100% 45%)", "hsl(19 100% 55%)", "hsl(19 100% 65%)", "hsl(19 100% 80%)", "hsl(19 100% 95%)"] },
-      "focus": { "role": "primary", "displayName": "Focus Green", "canonical": "#19725a", "tonalRamp": ["hsl(164 64% 15%)", "hsl(164 64% 25%)", "hsl(164 64% 35%)", "hsl(164 64% 45%)", "hsl(164 64% 55%)", "hsl(164 64% 65%)", "hsl(164 64% 80%)", "hsl(164 64% 95%)"] }
+    "schemaVersion": 2,
+    "generatedAt": "2026-08-17T21:11:42.179Z",
+    "title": "Design System: 팀모아",
+    "extensions": {
+        "colorMeta": {
+            "primary": {
+                "role": "primary",
+                "displayName": "Assembly Green",
+                "canonical": "#1d6f50",
+                "tonalRamp": [
+                    "hsl(157 59% 15%)",
+                    "hsl(157 59% 25%)",
+                    "hsl(157 59% 35%)",
+                    "hsl(157 59% 45%)",
+                    "hsl(157 59% 55%)",
+                    "hsl(157 59% 65%)",
+                    "hsl(157 59% 80%)",
+                    "hsl(157 59% 95%)"
+                ]
+            },
+            "primary-hover": {
+                "role": "primary",
+                "displayName": "Canopy Green",
+                "canonical": "#155c41",
+                "tonalRamp": [
+                    "hsl(157 63% 15%)",
+                    "hsl(157 63% 25%)",
+                    "hsl(157 63% 35%)",
+                    "hsl(157 63% 45%)",
+                    "hsl(157 63% 55%)",
+                    "hsl(157 63% 65%)",
+                    "hsl(157 63% 80%)",
+                    "hsl(157 63% 95%)"
+                ]
+            },
+            "primary-active": {
+                "role": "primary",
+                "displayName": "Forest Press",
+                "canonical": "#104b35",
+                "tonalRamp": [
+                    "hsl(158 65% 15%)",
+                    "hsl(158 65% 25%)",
+                    "hsl(158 65% 35%)",
+                    "hsl(158 65% 45%)",
+                    "hsl(158 65% 55%)",
+                    "hsl(158 65% 65%)",
+                    "hsl(158 65% 80%)",
+                    "hsl(158 65% 95%)"
+                ]
+            },
+            "primary-soft": {
+                "role": "primary",
+                "displayName": "Clubhouse Mint",
+                "canonical": "#e4f1e9",
+                "tonalRamp": [
+                    "hsl(143 32% 15%)",
+                    "hsl(143 32% 25%)",
+                    "hsl(143 32% 35%)",
+                    "hsl(143 32% 45%)",
+                    "hsl(143 32% 55%)",
+                    "hsl(143 32% 65%)",
+                    "hsl(143 32% 80%)",
+                    "hsl(143 32% 95%)"
+                ]
+            },
+            "background": {
+                "role": "neutral",
+                "displayName": "Warm Roster Paper",
+                "canonical": "#f6f7f3",
+                "tonalRamp": [
+                    "hsl(75 20% 15%)",
+                    "hsl(75 20% 25%)",
+                    "hsl(75 20% 35%)",
+                    "hsl(75 20% 45%)",
+                    "hsl(75 20% 55%)",
+                    "hsl(75 20% 65%)",
+                    "hsl(75 20% 80%)",
+                    "hsl(75 20% 95%)"
+                ]
+            },
+            "surface": {
+                "role": "neutral",
+                "displayName": "Clean Sheet",
+                "canonical": "#ffffff",
+                "tonalRamp": [
+                    "hsl(0 0% 15%)",
+                    "hsl(0 0% 25%)",
+                    "hsl(0 0% 35%)",
+                    "hsl(0 0% 45%)",
+                    "hsl(0 0% 55%)",
+                    "hsl(0 0% 65%)",
+                    "hsl(0 0% 80%)",
+                    "hsl(0 0% 95%)"
+                ]
+            },
+            "surface-secondary": {
+                "role": "neutral",
+                "displayName": "Chalk Wash",
+                "canonical": "#edf0eb",
+                "tonalRamp": [
+                    "hsl(96 14% 15%)",
+                    "hsl(96 14% 25%)",
+                    "hsl(96 14% 35%)",
+                    "hsl(96 14% 45%)",
+                    "hsl(96 14% 55%)",
+                    "hsl(96 14% 65%)",
+                    "hsl(96 14% 80%)",
+                    "hsl(96 14% 95%)"
+                ]
+            },
+            "surface-strong": {
+                "role": "neutral",
+                "displayName": "Chalkboard Ink",
+                "canonical": "#202824",
+                "tonalRamp": [
+                    "hsl(150 11% 15%)",
+                    "hsl(150 11% 25%)",
+                    "hsl(150 11% 35%)",
+                    "hsl(150 11% 45%)",
+                    "hsl(150 11% 55%)",
+                    "hsl(150 11% 65%)",
+                    "hsl(150 11% 80%)",
+                    "hsl(150 11% 95%)"
+                ]
+            },
+            "text-primary": {
+                "role": "neutral",
+                "displayName": "Ledger Ink",
+                "canonical": "#17201c",
+                "tonalRamp": [
+                    "hsl(153 16% 15%)",
+                    "hsl(153 16% 25%)",
+                    "hsl(153 16% 35%)",
+                    "hsl(153 16% 45%)",
+                    "hsl(153 16% 55%)",
+                    "hsl(153 16% 65%)",
+                    "hsl(153 16% 80%)",
+                    "hsl(153 16% 95%)"
+                ]
+            },
+            "text-secondary": {
+                "role": "neutral",
+                "displayName": "Soft Ink",
+                "canonical": "#4e5b54",
+                "tonalRamp": [
+                    "hsl(148 8% 15%)",
+                    "hsl(148 8% 25%)",
+                    "hsl(148 8% 35%)",
+                    "hsl(148 8% 45%)",
+                    "hsl(148 8% 55%)",
+                    "hsl(148 8% 65%)",
+                    "hsl(148 8% 80%)",
+                    "hsl(148 8% 95%)"
+                ]
+            },
+            "text-muted": {
+                "role": "neutral",
+                "displayName": "Pencil Note",
+                "canonical": "#5f6d66",
+                "tonalRamp": [
+                    "hsl(150 7% 15%)",
+                    "hsl(150 7% 25%)",
+                    "hsl(150 7% 35%)",
+                    "hsl(150 7% 45%)",
+                    "hsl(150 7% 55%)",
+                    "hsl(150 7% 65%)",
+                    "hsl(150 7% 80%)",
+                    "hsl(150 7% 95%)"
+                ]
+            },
+            "border": {
+                "role": "neutral",
+                "displayName": "Registration Line",
+                "canonical": "#cfd7d1",
+                "tonalRamp": [
+                    "hsl(135 9% 15%)",
+                    "hsl(135 9% 25%)",
+                    "hsl(135 9% 35%)",
+                    "hsl(135 9% 45%)",
+                    "hsl(135 9% 55%)",
+                    "hsl(135 9% 65%)",
+                    "hsl(135 9% 80%)",
+                    "hsl(135 9% 95%)"
+                ]
+            },
+            "divider": {
+                "role": "neutral",
+                "displayName": "Hairline Rule",
+                "canonical": "#e1e6e2",
+                "tonalRamp": [
+                    "hsl(132 9% 15%)",
+                    "hsl(132 9% 25%)",
+                    "hsl(132 9% 35%)",
+                    "hsl(132 9% 45%)",
+                    "hsl(132 9% 55%)",
+                    "hsl(132 9% 65%)",
+                    "hsl(132 9% 80%)",
+                    "hsl(132 9% 95%)"
+                ]
+            },
+            "success": {
+                "role": "tertiary",
+                "displayName": "Open Slot Green",
+                "canonical": "#197349",
+                "tonalRamp": [
+                    "hsl(152 64% 15%)",
+                    "hsl(152 64% 25%)",
+                    "hsl(152 64% 35%)",
+                    "hsl(152 64% 45%)",
+                    "hsl(152 64% 55%)",
+                    "hsl(152 64% 65%)",
+                    "hsl(152 64% 80%)",
+                    "hsl(152 64% 95%)"
+                ]
+            },
+            "warning": {
+                "role": "tertiary",
+                "displayName": "Deadline Amber",
+                "canonical": "#b45309",
+                "tonalRamp": [
+                    "hsl(26 90% 15%)",
+                    "hsl(26 90% 25%)",
+                    "hsl(26 90% 35%)",
+                    "hsl(26 90% 45%)",
+                    "hsl(26 90% 55%)",
+                    "hsl(26 90% 65%)",
+                    "hsl(26 90% 80%)",
+                    "hsl(26 90% 95%)"
+                ]
+            },
+            "warning-soft": {
+                "role": "tertiary",
+                "displayName": "Amber Wash",
+                "canonical": "#fff1d6",
+                "tonalRamp": [
+                    "hsl(40 100% 15%)",
+                    "hsl(40 100% 25%)",
+                    "hsl(40 100% 35%)",
+                    "hsl(40 100% 45%)",
+                    "hsl(40 100% 55%)",
+                    "hsl(40 100% 65%)",
+                    "hsl(40 100% 80%)",
+                    "hsl(40 100% 95%)"
+                ]
+            },
+            "error": {
+                "role": "tertiary",
+                "displayName": "Correction Red",
+                "canonical": "#b83b32",
+                "tonalRamp": [
+                    "hsl(4 57% 15%)",
+                    "hsl(4 57% 25%)",
+                    "hsl(4 57% 35%)",
+                    "hsl(4 57% 45%)",
+                    "hsl(4 57% 55%)",
+                    "hsl(4 57% 65%)",
+                    "hsl(4 57% 80%)",
+                    "hsl(4 57% 95%)"
+                ]
+            },
+            "error-soft": {
+                "role": "tertiary",
+                "displayName": "Correction Wash",
+                "canonical": "#fae9e7",
+                "tonalRamp": [
+                    "hsl(6 66% 15%)",
+                    "hsl(6 66% 25%)",
+                    "hsl(6 66% 35%)",
+                    "hsl(6 66% 45%)",
+                    "hsl(6 66% 55%)",
+                    "hsl(6 66% 65%)",
+                    "hsl(6 66% 80%)",
+                    "hsl(6 66% 95%)"
+                ]
+            },
+            "info": {
+                "role": "tertiary",
+                "displayName": "Roster Blue",
+                "canonical": "#356575",
+                "tonalRamp": [
+                    "hsl(195 38% 15%)",
+                    "hsl(195 38% 25%)",
+                    "hsl(195 38% 35%)",
+                    "hsl(195 38% 45%)",
+                    "hsl(195 38% 55%)",
+                    "hsl(195 38% 65%)",
+                    "hsl(195 38% 80%)",
+                    "hsl(195 38% 95%)"
+                ]
+            },
+            "info-soft": {
+                "role": "tertiary",
+                "displayName": "Roster Blue Wash",
+                "canonical": "#e7f1f3",
+                "tonalRamp": [
+                    "hsl(190 33% 15%)",
+                    "hsl(190 33% 25%)",
+                    "hsl(190 33% 35%)",
+                    "hsl(190 33% 45%)",
+                    "hsl(190 33% 55%)",
+                    "hsl(190 33% 65%)",
+                    "hsl(190 33% 80%)",
+                    "hsl(190 33% 95%)"
+                ]
+            },
+            "signal": {
+                "role": "secondary",
+                "displayName": "Role Orange",
+                "canonical": "#ed6a3d",
+                "tonalRamp": [
+                    "hsl(15 83% 15%)",
+                    "hsl(15 83% 25%)",
+                    "hsl(15 83% 35%)",
+                    "hsl(15 83% 45%)",
+                    "hsl(15 83% 55%)",
+                    "hsl(15 83% 65%)",
+                    "hsl(15 83% 80%)",
+                    "hsl(15 83% 95%)"
+                ]
+            },
+            "role-orange": {
+                "role": "secondary",
+                "displayName": "Implemented Role Orange",
+                "canonical": "#ef6a42",
+                "tonalRamp": [
+                    "hsl(14 84% 15%)",
+                    "hsl(14 84% 25%)",
+                    "hsl(14 84% 35%)",
+                    "hsl(14 84% 45%)",
+                    "hsl(14 84% 55%)",
+                    "hsl(14 84% 65%)",
+                    "hsl(14 84% 80%)",
+                    "hsl(14 84% 95%)"
+                ]
+            },
+            "signal-soft": {
+                "role": "secondary",
+                "displayName": "Orange Wash",
+                "canonical": "#fff0e9",
+                "tonalRamp": [
+                    "hsl(19 100% 15%)",
+                    "hsl(19 100% 25%)",
+                    "hsl(19 100% 35%)",
+                    "hsl(19 100% 45%)",
+                    "hsl(19 100% 55%)",
+                    "hsl(19 100% 65%)",
+                    "hsl(19 100% 80%)",
+                    "hsl(19 100% 95%)"
+                ]
+            },
+            "focus": {
+                "role": "primary",
+                "displayName": "Focus Green",
+                "canonical": "#19725a",
+                "tonalRamp": [
+                    "hsl(164 64% 15%)",
+                    "hsl(164 64% 25%)",
+                    "hsl(164 64% 35%)",
+                    "hsl(164 64% 45%)",
+                    "hsl(164 64% 55%)",
+                    "hsl(164 64% 65%)",
+                    "hsl(164 64% 80%)",
+                    "hsl(164 64% 95%)"
+                ]
+            }
+        },
+        "typographyMeta": {
+            "display": { "displayName": "Display", "purpose": "공개 홈의 핵심 약속에만 사용한다." },
+            "headline": { "displayName": "Headline", "purpose": "페이지 제목과 큰 행동 문구에 사용한다." },
+            "title": { "displayName": "Title", "purpose": "섹션과 중요 패널 제목에 사용한다." },
+            "body-large": { "displayName": "Body Large", "purpose": "소개와 강조 설명에 사용한다." },
+            "body": { "displayName": "Body", "purpose": "기본 인터페이스 문장과 목록 내용에 사용한다." },
+            "label": { "displayName": "Label", "purpose": "필드, 상태, 버튼의 짧은 문구에 사용한다." },
+            "caption": { "displayName": "Caption", "purpose": "시간, API 범위, 보조 메타데이터에 사용한다." }
+        },
+        "shadows": [
+            {
+                "name": "floating",
+                "value": "0 0.625rem 1.5rem rgba(19, 35, 27, 0.12)",
+                "purpose": "프로필 메뉴, 토스트, 모바일 모집 CTA처럼 실제로 떠 있는 조작."
+            },
+            {
+                "name": "overlay",
+                "value": "0 1rem 3rem rgba(19, 35, 27, 0.18)",
+                "purpose": "모달을 배경 계층에서 분리."
+            },
+            {
+                "name": "showcase-board",
+                "value": "0 1.25rem 3.5rem rgba(22, 36, 29, 0.18)",
+                "purpose": "공개 홈의 기울어진 라인업 보드 전용."
+            }
+        ],
+        "motion": [
+            { "name": "state-standard", "value": "160ms ease", "purpose": "버튼, 입력, 메뉴의 hover와 focus 전환." },
+            {
+                "name": "slot-fill",
+                "value": "220ms cubic-bezier(.2,.9,.3,1)",
+                "purpose": "참가 직후 빈 슬롯이 채워지는 피드백."
+            },
+            {
+                "name": "toast-in",
+                "value": "220ms cubic-bezier(.2,.85,.3,1)",
+                "purpose": "토스트가 아래에서 나타나는 피드백."
+            },
+            {
+                "name": "status-pulse",
+                "value": "1.8s ease-out infinite",
+                "purpose": "모집 중 상태점의 낮은 강도 펄스."
+            },
+            { "name": "loading-shimmer", "value": "1.4s linear infinite", "purpose": "명부형 로딩 행." },
+            {
+                "name": "reduced-motion",
+                "value": "0.01ms",
+                "purpose": "prefers-reduced-motion에서 모든 애니메이션과 전환을 사실상 제거."
+            }
+        ],
+        "breakpoints": [
+            { "name": "narrow", "value": "430px" },
+            { "name": "mobile", "value": "760px" },
+            { "name": "tablet", "value": "980px" }
+        ]
     },
-    "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "공개 홈의 핵심 약속에만 사용한다." },
-      "headline": { "displayName": "Headline", "purpose": "페이지 제목과 큰 행동 문구에 사용한다." },
-      "title": { "displayName": "Title", "purpose": "섹션과 중요 패널 제목에 사용한다." },
-      "body-large": { "displayName": "Body Large", "purpose": "소개와 강조 설명에 사용한다." },
-      "body": { "displayName": "Body", "purpose": "기본 인터페이스 문장과 목록 내용에 사용한다." },
-      "label": { "displayName": "Label", "purpose": "필드, 상태, 버튼의 짧은 문구에 사용한다." },
-      "caption": { "displayName": "Caption", "purpose": "시간, API 범위, 보조 메타데이터에 사용한다." }
-    },
-    "shadows": [
-      { "name": "floating", "value": "0 0.625rem 1.5rem rgba(19, 35, 27, 0.12)", "purpose": "프로필 메뉴, 토스트, 모바일 모집 CTA처럼 실제로 떠 있는 조작." },
-      { "name": "overlay", "value": "0 1rem 3rem rgba(19, 35, 27, 0.18)", "purpose": "모달을 배경 계층에서 분리." },
-      { "name": "showcase-board", "value": "0 1.25rem 3.5rem rgba(22, 36, 29, 0.18)", "purpose": "공개 홈의 기울어진 라인업 보드 전용." }
+    "components": [
+        {
+            "name": "Primary Button",
+            "kind": "button",
+            "refersTo": "button-primary",
+            "description": "참가, 모집 개설, 저장처럼 화면의 주 행동에 사용한다.",
+            "html": "<button class=\"ds-button-primary\">모집하기</button>",
+            "css": ".ds-button-primary { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: .62rem 1rem; border: 1px solid transparent; border-radius: var(--radius-sm); color: #fff; background: var(--color-primary); font: 720 .8125rem/1 'Pretendard', system-ui, sans-serif; transition: background 160ms ease, transform 160ms ease; } .ds-button-primary:hover { background: var(--color-primary-hover); transform: translateY(-1px); } .ds-button-primary:active { background: var(--color-primary-active); transform: none; } .ds-button-primary:focus-visible { outline: 3px solid color-mix(in srgb, var(--color-focus) 55%, white); outline-offset: 3px; }"
+        },
+        {
+            "name": "Secondary Button",
+            "kind": "button",
+            "refersTo": "button-secondary",
+            "description": "주 행동과 나란히 놓이는 선택, 수정, 둘러보기 행동에 사용한다.",
+            "html": "<button class=\"ds-button-secondary\">자세히 보기</button>",
+            "css": ".ds-button-secondary { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: .62rem 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); color: var(--color-text-primary); background: var(--color-surface); font: 720 .8125rem/1 'Pretendard', system-ui, sans-serif; transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease; } .ds-button-secondary:hover { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-soft); transform: translateY(-1px); } .ds-button-secondary:active { transform: none; } .ds-button-secondary:focus-visible { outline: 3px solid color-mix(in srgb, var(--color-focus) 55%, white); outline-offset: 3px; }"
+        },
+        {
+            "name": "Search Field",
+            "kind": "input",
+            "refersTo": "search-field",
+            "description": "게임과 포지션을 한 입력에서 찾는 3rem 높이의 결합형 검색 필드다.",
+            "html": "<label class=\"ds-search\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/><path d=\"m16 16 4 4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\"/></svg><input type=\"search\" placeholder=\"게임 또는 포지션 검색\"></label>",
+            "css": ".ds-search { height: 3rem; display: flex; align-items: center; gap: .7rem; padding: 0 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); color: var(--color-text-muted); background: var(--color-surface); transition: border-color 160ms ease, box-shadow 160ms ease; } .ds-search:focus-within { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(29,111,80,.1); } .ds-search svg { width: 1.2rem; flex: 0 0 auto; } .ds-search input { min-width: 0; flex: 1; border: 0; outline: 0; color: var(--color-text-primary); background: transparent; font: 400 .9375rem/1.55 'Pretendard', system-ui, sans-serif; }"
+        },
+        {
+            "name": "Primary Navigation",
+            "kind": "nav",
+            "refersTo": "filter-tab-active",
+            "description": "활성 위치를 초록 텍스트와 2px 하단선으로 표시하는 평평한 내비게이션이다.",
+            "html": "<nav class=\"ds-nav\" aria-label=\"주요 메뉴\"><a class=\"ds-nav-active\" href=\"#\">모집방 찾기</a><a href=\"#\">그룹</a><a href=\"#\">알림</a></nav>",
+            "css": ".ds-nav { display: flex; align-items: stretch; gap: 1.5rem; height: 4.5rem; border-bottom: 1px solid var(--color-divider); background: color-mix(in srgb, var(--color-background) 96%, transparent); } .ds-nav a { position: relative; display: grid; place-items: center; color: var(--color-text-secondary); font: 650 .9375rem/1 'Pretendard', system-ui, sans-serif; text-decoration: none; } .ds-nav a:hover { color: var(--color-text-primary); } .ds-nav a:focus-visible { outline: 3px solid color-mix(in srgb, var(--color-focus) 55%, white); outline-offset: 3px; } .ds-nav .ds-nav-active { color: var(--color-text-primary); } .ds-nav .ds-nav-active::after { content: ''; position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: var(--color-primary); }"
+        },
+        {
+            "name": "Recruitment Filters",
+            "kind": "chip",
+            "refersTo": "filter-tab-active",
+            "description": "알약 칩 대신 텍스트와 하단선으로 모집 범위를 전환한다.",
+            "html": "<div class=\"ds-filters\" role=\"tablist\" aria-label=\"모집 필터\"><button role=\"tab\" aria-selected=\"true\">전체</button><button role=\"tab\">모집 중</button><button role=\"tab\">참여 중</button></div>",
+            "css": ".ds-filters { display: flex; align-items: center; border-bottom: 1px solid var(--color-border); } .ds-filters button { min-height: 46px; padding: 0 1rem; border: 0; border-bottom: 2px solid transparent; color: var(--color-text-secondary); background: transparent; font: 680 .8125rem/1 'Pretendard', system-ui, sans-serif; } .ds-filters button:hover { color: var(--color-text-primary); } .ds-filters button[aria-selected='true'] { border-bottom-color: var(--color-primary); color: var(--color-primary); } .ds-filters button:focus-visible { outline: 3px solid color-mix(in srgb, var(--color-focus) 55%, white); outline-offset: -3px; }"
+        },
+        {
+            "name": "Recruitment Row",
+            "kind": "custom",
+            "refersTo": "recruitment-row",
+            "description": "게임, 포지션, 현재 인원, 상태, 행동을 한 줄에서 비교하는 시스템의 서명 명부 행이다.",
+            "html": "<article class=\"ds-room-row\"><div class=\"ds-room-activity\"><span class=\"ds-activity-symbol\">오</span><div><small>오버워치 2</small><strong>힐러 포지션을 찾고 있어요</strong><span>민수 · 6분 전</span></div></div><div class=\"ds-room-role\"><small>필요 포지션</small><span><i></i>힐러</span></div><div class=\"ds-room-capacity\"><strong>3 <small>/ 5명</small></strong><div><i class=\"ds-filled\"></i><i class=\"ds-filled\"></i><i class=\"ds-filled\"></i><i></i><i></i></div></div><div class=\"ds-room-action\"><span><i></i>모집 중</span><button>참가하기</button></div></article>",
+            "css": ".ds-room-row { min-height: 7.4rem; display: grid; grid-template-columns: minmax(17rem,1.8fr) minmax(8rem,.75fr) minmax(7rem,.65fr) minmax(7rem,auto); align-items: center; gap: 1.5rem; padding: 1.1rem 0; border-bottom: 1px solid var(--color-divider); color: var(--color-text-primary); background: var(--color-background); font-family: 'Pretendard', system-ui, sans-serif; } .ds-room-row:hover { background: linear-gradient(90deg,transparent,rgba(29,111,80,.035) 12%,rgba(29,111,80,.035) 88%,transparent); } .ds-room-activity { display: flex; align-items: center; gap: 1rem; min-width: 0; } .ds-activity-symbol { width: 3rem; height: 3rem; flex: 0 0 auto; display: grid; place-items: center; border-radius: var(--radius-md); color: #fff; background: var(--color-surface-strong); font-weight: 820; } .ds-room-activity div, .ds-room-role, .ds-room-capacity, .ds-room-action { display: grid; gap: .4rem; } .ds-room-activity small, .ds-room-role small, .ds-room-activity span, .ds-room-capacity small { color: var(--color-text-muted); font-size: .75rem; font-weight: 400; } .ds-room-activity strong { overflow: hidden; font-size: 1rem; text-overflow: ellipsis; white-space: nowrap; } .ds-room-role span { display: inline-flex; align-items: center; gap: .4rem; color: var(--color-text-secondary); font-size: .8125rem; font-weight: 680; } .ds-room-role i { width: .55rem; height: .55rem; border-radius: 50%; background: #ef6a42; } .ds-room-capacity strong { font-size: 1.2rem; } .ds-room-capacity div { display: flex; gap: .2rem; } .ds-room-capacity i { width: .65rem; height: .32rem; border-radius: 1px; background: var(--color-border); } .ds-room-capacity i.ds-filled { background: var(--color-primary); } .ds-room-action { justify-items: end; gap: .75rem; } .ds-room-action > span { display: inline-flex; align-items: center; gap: .4rem; color: var(--color-success); font-size: .8125rem; font-weight: 700; } .ds-room-action > span i { width: .45rem; height: .45rem; border-radius: 50%; background: currentColor; } .ds-room-action button { min-width: 6.8rem; min-height: 44px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); color: var(--color-text-primary); background: var(--color-surface); font-weight: 720; } .ds-room-action button:hover { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-soft); } .ds-room-action button:focus-visible { outline: 3px solid color-mix(in srgb, var(--color-focus) 55%, white); outline-offset: 3px; }"
+        },
+        {
+            "name": "Participant Slot Rail",
+            "kind": "custom",
+            "refersTo": "recruitment-row",
+            "description": "현재 인원을 숫자와 함께 보여주고 참가 직후 채워지는 짧은 슬롯 레일이다.",
+            "html": "<div class=\"ds-slot-demo\"><strong>3 <small>/ 5명</small></strong><div class=\"ds-slot-rail\" aria-label=\"5자리 중 3자리 참여\"><span class=\"ds-filled\"></span><span class=\"ds-filled\"></span><span class=\"ds-filled\"></span><span></span><span></span></div></div>",
+            "css": ".ds-slot-demo { display: grid; gap: .45rem; color: var(--color-text-primary); font-family: 'Pretendard', system-ui, sans-serif; font-variant-numeric: tabular-nums; } .ds-slot-demo strong { font-size: 1.2rem; } .ds-slot-demo small { color: var(--color-text-muted); font-size: .8125rem; font-weight: 400; } .ds-slot-rail { display: flex; gap: .2rem; } .ds-slot-rail span { width: .65rem; height: .32rem; border-radius: 1px; background: var(--color-border); } .ds-slot-rail span.ds-filled { background: var(--color-primary); animation: ds-slot-fill 220ms cubic-bezier(.2,.9,.3,1); } @keyframes ds-slot-fill { from { transform: translateX(-6px); opacity: .35; } }"
+        },
+        {
+            "name": "Group Selector Row",
+            "kind": "custom",
+            "refersTo": "group-selector-row",
+            "description": "모집 탐색 범위를 정하는 그룹을 작은 이니셜 표식과 명부 행으로 선택한다.",
+            "html": "<button class=\"ds-group-row\" aria-pressed=\"true\"><span class=\"ds-group-mark\">금</span><span><strong>금요일 게임 모임</strong><small>멤버 8명</small></span><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m9 6 6 6-6 6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button>",
+            "css": ".ds-group-row { width: 100%; min-height: 4.75rem; display: flex; align-items: center; gap: .75rem; padding: .5rem 0; border: 0; border-bottom: 1px solid var(--color-divider); color: var(--color-text-primary); background: transparent; text-align: left; font-family: 'Pretendard', system-ui, sans-serif; } .ds-group-row:hover { color: var(--color-primary); } .ds-group-row:focus-visible { outline: 3px solid color-mix(in srgb, var(--color-focus) 55%, white); outline-offset: 3px; } .ds-group-mark { width: 2.35rem; height: 2.35rem; flex: 0 0 auto; display: grid; place-items: center; border-radius: var(--radius-sm); color: #fff; background: var(--color-primary); font-weight: 800; } .ds-group-row > span:nth-child(2) { min-width: 0; display: grid; flex: 1; } .ds-group-row strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ds-group-row small { color: var(--color-text-muted); } .ds-group-row svg { width: 1rem; }"
+        },
+        {
+            "name": "Warning Notice",
+            "kind": "card",
+            "refersTo": "notice-warning",
+            "description": "지원되지 않은 API 범위와 권한 전 상태를 숨기지 않고 설명한다.",
+            "html": "<div class=\"ds-notice-warning\" role=\"status\"><strong>현재 API 범위</strong><p>전역 모집 API는 아직 제공되지 않습니다.</p></div>",
+            "css": ".ds-notice-warning { padding: .85rem 1rem; border: 1px solid #ebca91; border-radius: var(--radius-sm); color: #70410b; background: var(--color-warning-soft); font-family: 'Pretendard', system-ui, sans-serif; } .ds-notice-warning strong { display: block; margin-bottom: .2rem; font-size: .8125rem; } .ds-notice-warning p { margin: 0; font-size: .8125rem; line-height: 1.55; } .ds-notice-warning:focus-within { outline: 3px solid color-mix(in srgb, var(--color-focus) 55%, white); outline-offset: 3px; }"
+        }
     ],
-    "motion": [
-      { "name": "state-standard", "value": "160ms ease", "purpose": "버튼, 입력, 메뉴의 hover와 focus 전환." },
-      { "name": "slot-fill", "value": "220ms cubic-bezier(.2,.9,.3,1)", "purpose": "참가 직후 빈 슬롯이 채워지는 피드백." },
-      { "name": "toast-in", "value": "220ms cubic-bezier(.2,.85,.3,1)", "purpose": "토스트가 아래에서 나타나는 피드백." },
-      { "name": "status-pulse", "value": "1.8s ease-out infinite", "purpose": "모집 중 상태점의 낮은 강도 펄스." },
-      { "name": "loading-shimmer", "value": "1.4s linear infinite", "purpose": "명부형 로딩 행." },
-      { "name": "reduced-motion", "value": "0.01ms", "purpose": "prefers-reduced-motion에서 모든 애니메이션과 전환을 사실상 제거." }
-    ],
-    "breakpoints": [
-      { "name": "narrow", "value": "430px" },
-      { "name": "mobile", "value": "760px" },
-      { "name": "tablet", "value": "980px" }
-    ]
-  },
-  "components": [
-    {
-      "name": "Primary Button",
-      "kind": "button",
-      "refersTo": "button-primary",
-      "description": "참가, 모집 개설, 저장처럼 화면의 주 행동에 사용한다.",
-      "html": "<button class=\"ds-button-primary\">모집하기</button>",
-      "css": ".ds-button-primary { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: .62rem 1rem; border: 1px solid transparent; border-radius: var(--radius-sm); color: #fff; background: var(--color-primary); font: 720 .8125rem/1 'Pretendard', system-ui, sans-serif; transition: background 160ms ease, transform 160ms ease; } .ds-button-primary:hover { background: var(--color-primary-hover); transform: translateY(-1px); } .ds-button-primary:active { background: var(--color-primary-active); transform: none; } .ds-button-primary:focus-visible { outline: 3px solid color-mix(in srgb, var(--color-focus) 55%, white); outline-offset: 3px; }"
-    },
-    {
-      "name": "Secondary Button",
-      "kind": "button",
-      "refersTo": "button-secondary",
-      "description": "주 행동과 나란히 놓이는 선택, 수정, 둘러보기 행동에 사용한다.",
-      "html": "<button class=\"ds-button-secondary\">자세히 보기</button>",
-      "css": ".ds-button-secondary { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: .62rem 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); color: var(--color-text-primary); background: var(--color-surface); font: 720 .8125rem/1 'Pretendard', system-ui, sans-serif; transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease; } .ds-button-secondary:hover { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-soft); transform: translateY(-1px); } .ds-button-secondary:active { transform: none; } .ds-button-secondary:focus-visible { outline: 3px solid color-mix(in srgb, var(--color-focus) 55%, white); outline-offset: 3px; }"
-    },
-    {
-      "name": "Search Field",
-      "kind": "input",
-      "refersTo": "search-field",
-      "description": "게임과 포지션을 한 입력에서 찾는 3rem 높이의 결합형 검색 필드다.",
-      "html": "<label class=\"ds-search\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/><path d=\"m16 16 4 4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\"/></svg><input type=\"search\" placeholder=\"게임 또는 포지션 검색\"></label>",
-      "css": ".ds-search { height: 3rem; display: flex; align-items: center; gap: .7rem; padding: 0 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); color: var(--color-text-muted); background: var(--color-surface); transition: border-color 160ms ease, box-shadow 160ms ease; } .ds-search:focus-within { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(29,111,80,.1); } .ds-search svg { width: 1.2rem; flex: 0 0 auto; } .ds-search input { min-width: 0; flex: 1; border: 0; outline: 0; color: var(--color-text-primary); background: transparent; font: 400 .9375rem/1.55 'Pretendard', system-ui, sans-serif; }"
-    },
-    {
-      "name": "Primary Navigation",
-      "kind": "nav",
-      "refersTo": "filter-tab-active",
-      "description": "활성 위치를 초록 텍스트와 2px 하단선으로 표시하는 평평한 내비게이션이다.",
-      "html": "<nav class=\"ds-nav\" aria-label=\"주요 메뉴\"><a class=\"ds-nav-active\" href=\"#\">모집방 찾기</a><a href=\"#\">그룹</a><a href=\"#\">알림</a></nav>",
-      "css": ".ds-nav { display: flex; align-items: stretch; gap: 1.5rem; height: 4.5rem; border-bottom: 1px solid var(--color-divider); background: color-mix(in srgb, var(--color-background) 96%, transparent); } .ds-nav a { position: relative; display: grid; place-items: center; color: var(--color-text-secondary); font: 650 .9375rem/1 'Pretendard', system-ui, sans-serif; text-decoration: none; } .ds-nav a:hover { color: var(--color-text-primary); } .ds-nav a:focus-visible { outline: 3px solid color-mix(in srgb, var(--color-focus) 55%, white); outline-offset: 3px; } .ds-nav .ds-nav-active { color: var(--color-text-primary); } .ds-nav .ds-nav-active::after { content: ''; position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: var(--color-primary); }"
-    },
-    {
-      "name": "Recruitment Filters",
-      "kind": "chip",
-      "refersTo": "filter-tab-active",
-      "description": "알약 칩 대신 텍스트와 하단선으로 모집 범위를 전환한다.",
-      "html": "<div class=\"ds-filters\" role=\"tablist\" aria-label=\"모집 필터\"><button role=\"tab\" aria-selected=\"true\">전체</button><button role=\"tab\">모집 중</button><button role=\"tab\">참여 중</button></div>",
-      "css": ".ds-filters { display: flex; align-items: center; border-bottom: 1px solid var(--color-border); } .ds-filters button { min-height: 46px; padding: 0 1rem; border: 0; border-bottom: 2px solid transparent; color: var(--color-text-secondary); background: transparent; font: 680 .8125rem/1 'Pretendard', system-ui, sans-serif; } .ds-filters button:hover { color: var(--color-text-primary); } .ds-filters button[aria-selected='true'] { border-bottom-color: var(--color-primary); color: var(--color-primary); } .ds-filters button:focus-visible { outline: 3px solid color-mix(in srgb, var(--color-focus) 55%, white); outline-offset: -3px; }"
-    },
-    {
-      "name": "Recruitment Row",
-      "kind": "custom",
-      "refersTo": "recruitment-row",
-      "description": "게임, 포지션, 현재 인원, 상태, 행동을 한 줄에서 비교하는 시스템의 서명 명부 행이다.",
-      "html": "<article class=\"ds-room-row\"><div class=\"ds-room-activity\"><span class=\"ds-activity-symbol\">오</span><div><small>오버워치 2</small><strong>힐러 포지션을 찾고 있어요</strong><span>민수 · 6분 전</span></div></div><div class=\"ds-room-role\"><small>필요 포지션</small><span><i></i>힐러</span></div><div class=\"ds-room-capacity\"><strong>3 <small>/ 5명</small></strong><div><i class=\"ds-filled\"></i><i class=\"ds-filled\"></i><i class=\"ds-filled\"></i><i></i><i></i></div></div><div class=\"ds-room-action\"><span><i></i>모집 중</span><button>참가하기</button></div></article>",
-      "css": ".ds-room-row { min-height: 7.4rem; display: grid; grid-template-columns: minmax(17rem,1.8fr) minmax(8rem,.75fr) minmax(7rem,.65fr) minmax(7rem,auto); align-items: center; gap: 1.5rem; padding: 1.1rem 0; border-bottom: 1px solid var(--color-divider); color: var(--color-text-primary); background: var(--color-background); font-family: 'Pretendard', system-ui, sans-serif; } .ds-room-row:hover { background: linear-gradient(90deg,transparent,rgba(29,111,80,.035) 12%,rgba(29,111,80,.035) 88%,transparent); } .ds-room-activity { display: flex; align-items: center; gap: 1rem; min-width: 0; } .ds-activity-symbol { width: 3rem; height: 3rem; flex: 0 0 auto; display: grid; place-items: center; border-radius: var(--radius-md); color: #fff; background: var(--color-surface-strong); font-weight: 820; } .ds-room-activity div, .ds-room-role, .ds-room-capacity, .ds-room-action { display: grid; gap: .4rem; } .ds-room-activity small, .ds-room-role small, .ds-room-activity span, .ds-room-capacity small { color: var(--color-text-muted); font-size: .75rem; font-weight: 400; } .ds-room-activity strong { overflow: hidden; font-size: 1rem; text-overflow: ellipsis; white-space: nowrap; } .ds-room-role span { display: inline-flex; align-items: center; gap: .4rem; color: var(--color-text-secondary); font-size: .8125rem; font-weight: 680; } .ds-room-role i { width: .55rem; height: .55rem; border-radius: 50%; background: #ef6a42; } .ds-room-capacity strong { font-size: 1.2rem; } .ds-room-capacity div { display: flex; gap: .2rem; } .ds-room-capacity i { width: .65rem; height: .32rem; border-radius: 1px; background: var(--color-border); } .ds-room-capacity i.ds-filled { background: var(--color-primary); } .ds-room-action { justify-items: end; gap: .75rem; } .ds-room-action > span { display: inline-flex; align-items: center; gap: .4rem; color: var(--color-success); font-size: .8125rem; font-weight: 700; } .ds-room-action > span i { width: .45rem; height: .45rem; border-radius: 50%; background: currentColor; } .ds-room-action button { min-width: 6.8rem; min-height: 44px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); color: var(--color-text-primary); background: var(--color-surface); font-weight: 720; } .ds-room-action button:hover { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-soft); } .ds-room-action button:focus-visible { outline: 3px solid color-mix(in srgb, var(--color-focus) 55%, white); outline-offset: 3px; }"
-    },
-    {
-      "name": "Participant Slot Rail",
-      "kind": "custom",
-      "refersTo": "recruitment-row",
-      "description": "현재 인원을 숫자와 함께 보여주고 참가 직후 채워지는 짧은 슬롯 레일이다.",
-      "html": "<div class=\"ds-slot-demo\"><strong>3 <small>/ 5명</small></strong><div class=\"ds-slot-rail\" aria-label=\"5자리 중 3자리 참여\"><span class=\"ds-filled\"></span><span class=\"ds-filled\"></span><span class=\"ds-filled\"></span><span></span><span></span></div></div>",
-      "css": ".ds-slot-demo { display: grid; gap: .45rem; color: var(--color-text-primary); font-family: 'Pretendard', system-ui, sans-serif; font-variant-numeric: tabular-nums; } .ds-slot-demo strong { font-size: 1.2rem; } .ds-slot-demo small { color: var(--color-text-muted); font-size: .8125rem; font-weight: 400; } .ds-slot-rail { display: flex; gap: .2rem; } .ds-slot-rail span { width: .65rem; height: .32rem; border-radius: 1px; background: var(--color-border); } .ds-slot-rail span.ds-filled { background: var(--color-primary); animation: ds-slot-fill 220ms cubic-bezier(.2,.9,.3,1); } @keyframes ds-slot-fill { from { transform: translateX(-6px); opacity: .35; } }"
-    },
-    {
-      "name": "Group Selector Row",
-      "kind": "custom",
-      "refersTo": "group-selector-row",
-      "description": "모집 탐색 범위를 정하는 그룹을 작은 이니셜 표식과 명부 행으로 선택한다.",
-      "html": "<button class=\"ds-group-row\" aria-pressed=\"true\"><span class=\"ds-group-mark\">금</span><span><strong>금요일 게임 모임</strong><small>멤버 8명</small></span><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m9 6 6 6-6 6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button>",
-      "css": ".ds-group-row { width: 100%; min-height: 4.75rem; display: flex; align-items: center; gap: .75rem; padding: .5rem 0; border: 0; border-bottom: 1px solid var(--color-divider); color: var(--color-text-primary); background: transparent; text-align: left; font-family: 'Pretendard', system-ui, sans-serif; } .ds-group-row:hover { color: var(--color-primary); } .ds-group-row:focus-visible { outline: 3px solid color-mix(in srgb, var(--color-focus) 55%, white); outline-offset: 3px; } .ds-group-mark { width: 2.35rem; height: 2.35rem; flex: 0 0 auto; display: grid; place-items: center; border-radius: var(--radius-sm); color: #fff; background: var(--color-primary); font-weight: 800; } .ds-group-row > span:nth-child(2) { min-width: 0; display: grid; flex: 1; } .ds-group-row strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ds-group-row small { color: var(--color-text-muted); } .ds-group-row svg { width: 1rem; }"
-    },
-    {
-      "name": "Warning Notice",
-      "kind": "card",
-      "refersTo": "notice-warning",
-      "description": "지원되지 않은 API 범위와 권한 전 상태를 숨기지 않고 설명한다.",
-      "html": "<div class=\"ds-notice-warning\" role=\"status\"><strong>현재 API 범위</strong><p>전역 모집 API는 아직 제공되지 않습니다.</p></div>",
-      "css": ".ds-notice-warning { padding: .85rem 1rem; border: 1px solid #ebca91; border-radius: var(--radius-sm); color: #70410b; background: var(--color-warning-soft); font-family: 'Pretendard', system-ui, sans-serif; } .ds-notice-warning strong { display: block; margin-bottom: .2rem; font-size: .8125rem; } .ds-notice-warning p { margin: 0; font-size: .8125rem; line-height: 1.55; } .ds-notice-warning:focus-within { outline: 3px solid color-mix(in srgb, var(--color-focus) 55%, white); outline-offset: 3px; }"
+    "narrative": {
+        "northStar": "게임 파티 라인업 명부",
+        "overview": "팀모아는 게임 파티 모집을 라인업 명부처럼 한 줄씩 읽고 바로 행동하는 운영 화면이다. 따뜻한 종이색 바탕, 깊은 잉크색 글자, 가는 구분선이 정보의 골격을 만들고, 모집 행과 참가 슬롯이 게임·포지션·현재 인원·다음 행동을 같은 시야에 둔다.\n\n표현은 친근하지만 장식적이지 않고 게임 전용 범위는 분명하게 드러낸다. 깊은 초록은 선택과 참가 행동에만 집중시키고 주황은 포지션과 마감 신호를 보조한다. 과도한 eSports 연출, 카드형 통계 대시보드, 보라·파랑 SaaS 그라데이션, 의미 없는 글래스와 장식용 배지는 이 세계의 반대편이다.",
+        "keyCharacteristics": [
+            "따뜻한 오프화이트 바탕과 깊은 녹흑색 잉크가 만드는 명부 같은 인상",
+            "카드 그리드 대신 가는 선으로 구획한 곧은 모집 행과 그룹 행",
+            "한 가족의 Pretendard 가변 글꼴로 만드는 단정한 한국어 위계",
+            "짙은 초록 행동·선택과 주황 역할·마감 신호의 제한된 색 문법",
+            "그룹 선택 → 게임 검색 → 인원·포지션 비교 → 참가 또는 모집 개설로 이어지는 짧은 흐름"
+        ],
+        "rules": [
+            {
+                "name": "The Two Signal Rule",
+                "body": "짙은 초록은 행동과 선택, 주황은 역할과 마감에만 쓴다. 임시 보라색 파비콘은 UI 강조색으로 확장하지 않는다.",
+                "section": "colors"
+            },
+            {
+                "name": "The One Family Rule",
+                "body": "모든 화면은 Pretendard 한 가족 안에서 크기와 가변 굵기로 위계를 만든다.",
+                "section": "typography"
+            },
+            {
+                "name": "The Flat Roster Rule",
+                "body": "행과 일반 콘텐츠는 그림자 없이 선과 간격으로 구분하고, 그림자는 실제로 떠 있는 계층에만 쓴다.",
+                "section": "elevation"
+            }
+        ],
+        "dos": [
+            "Do 모집을 게임·포지션·현재 인원·상태·행동이 한눈에 비교되는 곧은 행으로 보여준다.",
+            "Do 참가 인원을 숫자와 슬롯 레일 두 방식으로 함께 표현한다.",
+            "Do 검색과 필터를 모집 목록 바로 위에 두고, 그룹 선택을 실제 데이터 조회의 선행 조건으로 명확히 보인다.",
+            "Do 초록 행동, 주황 역할·마감, 텍스트가 병기된 상태 신호의 역할을 지킨다.",
+            "Do Swagger에 없는 기능은 설명 공지, 빈 상태, 또는 비활성 조작으로 정직하게 표시한다.",
+            "Do 모든 주요 조작에 최소 44px 터치 영역과 분명한 키보드 포커스를 유지한다."
+        ],
+        "donts": [
+            "Don't 모집 목록을 둥근 카드 그리드나 통계 타일 대시보드로 바꾼다.",
+            "Don't 보라·파랑 SaaS 그라데이션, 장식용 글래스, 과도한 배지·그림자·모션을 추가한다.",
+            "Don't 초록을 넓은 장식 면에 남발하거나 주황을 일반 내비게이션 강조색으로 사용한다.",
+            "Don't 색만으로 모집 상태, 오류, 역할, 선택 여부를 전달한다.",
+            "Don't 지원되지 않는 전역 모집·초대·알림 데이터를 실제처럼 만들거나 공개 홈 예시를 실데이터처럼 보이게 한다.",
+            "Don't 760px 이하에서 하단 내비게이션과 모집 CTA가 본문 행동을 가리게 한다."
+        ]
     }
-  ],
-  "narrative": {
-    "northStar": "게임 파티 라인업 명부",
-    "overview": "팀모아는 게임 파티 모집을 라인업 명부처럼 한 줄씩 읽고 바로 행동하는 운영 화면이다. 따뜻한 종이색 바탕, 깊은 잉크색 글자, 가는 구분선이 정보의 골격을 만들고, 모집 행과 참가 슬롯이 게임·포지션·현재 인원·다음 행동을 같은 시야에 둔다.\n\n표현은 친근하지만 장식적이지 않고 게임 전용 범위는 분명하게 드러낸다. 깊은 초록은 선택과 참가 행동에만 집중시키고 주황은 포지션과 마감 신호를 보조한다. 과도한 eSports 연출, 카드형 통계 대시보드, 보라·파랑 SaaS 그라데이션, 의미 없는 글래스와 장식용 배지는 이 세계의 반대편이다.",
-    "keyCharacteristics": [
-      "따뜻한 오프화이트 바탕과 깊은 녹흑색 잉크가 만드는 명부 같은 인상",
-      "카드 그리드 대신 가는 선으로 구획한 곧은 모집 행과 그룹 행",
-      "한 가족의 Pretendard 가변 글꼴로 만드는 단정한 한국어 위계",
-      "짙은 초록 행동·선택과 주황 역할·마감 신호의 제한된 색 문법",
-      "그룹 선택 → 게임 검색 → 인원·포지션 비교 → 참가 또는 모집 개설로 이어지는 짧은 흐름"
-    ],
-    "rules": [
-      { "name": "The Two Signal Rule", "body": "짙은 초록은 행동과 선택, 주황은 역할과 마감에만 쓴다. 임시 보라색 파비콘은 UI 강조색으로 확장하지 않는다.", "section": "colors" },
-      { "name": "The One Family Rule", "body": "모든 화면은 Pretendard 한 가족 안에서 크기와 가변 굵기로 위계를 만든다.", "section": "typography" },
-      { "name": "The Flat Roster Rule", "body": "행과 일반 콘텐츠는 그림자 없이 선과 간격으로 구분하고, 그림자는 실제로 떠 있는 계층에만 쓴다.", "section": "elevation" }
-    ],
-    "dos": [
-      "Do 모집을 게임·포지션·현재 인원·상태·행동이 한눈에 비교되는 곧은 행으로 보여준다.",
-      "Do 참가 인원을 숫자와 슬롯 레일 두 방식으로 함께 표현한다.",
-      "Do 검색과 필터를 모집 목록 바로 위에 두고, 그룹 선택을 실제 데이터 조회의 선행 조건으로 명확히 보인다.",
-      "Do 초록 행동, 주황 역할·마감, 텍스트가 병기된 상태 신호의 역할을 지킨다.",
-      "Do Swagger에 없는 기능은 설명 공지, 빈 상태, 또는 비활성 조작으로 정직하게 표시한다.",
-      "Do 모든 주요 조작에 최소 44px 터치 영역과 분명한 키보드 포커스를 유지한다."
-    ],
-    "donts": [
-      "Don't 모집 목록을 둥근 카드 그리드나 통계 타일 대시보드로 바꾼다.",
-      "Don't 보라·파랑 SaaS 그라데이션, 장식용 글래스, 과도한 배지·그림자·모션을 추가한다.",
-      "Don't 초록을 넓은 장식 면에 남발하거나 주황을 일반 내비게이션 강조색으로 사용한다.",
-      "Don't 색만으로 모집 상태, 오류, 역할, 선택 여부를 전달한다.",
-      "Don't 지원되지 않는 전역 모집·초대·알림 데이터를 실제처럼 만들거나 공개 홈 예시를 실데이터처럼 보이게 한다.",
-      "Don't 760px 이하에서 하단 내비게이션과 모집 CTA가 본문 행동을 가리게 한다."
-    ]
-  }
 }
