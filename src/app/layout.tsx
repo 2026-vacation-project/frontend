@@ -1,6 +1,6 @@
 import { animated, useReducedMotion, useTransition } from '@react-spring/web';
 import { Link, NavLink, useLocation, useOutlet } from 'react-router';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { css } from '../appStyles';
 import { useApp } from '../context/useApp';
 import { Avatar, Toast } from '../components/ui';
@@ -16,6 +16,8 @@ export function AppLayout() {
     const { currentUser, logout, toast, clearToast } = useApp();
     const location = useLocation();
     const outlet = useOutlet();
+    const profileMenuRef = useRef<HTMLDivElement>(null);
+    const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 
     useReducedMotion();
 
@@ -30,10 +32,41 @@ export function AppLayout() {
             config: { tension: 280, friction: 30 },
         },
     );
+    const profileMenuTransitions = useTransition(profileMenuOpen, {
+        from: { opacity: 0, transform: 'translateY(-8px) scale(0.96)' },
+        enter: { opacity: 1, transform: 'translateY(0px) scale(1)' },
+        leave: { opacity: 0, transform: 'translateY(-5px) scale(0.97)' },
+        config: { tension: 340, friction: 26 },
+    });
+    const toastTransitions = useTransition(toast ? [toast] : [], {
+        keys: (item) => item.id,
+        from: { opacity: 0, transform: 'translateY(18px) scale(0.97)' },
+        enter: { opacity: 1, transform: 'translateY(0px) scale(1)' },
+        leave: { opacity: 0, transform: 'translateY(12px) scale(0.98)' },
+        config: { tension: 320, friction: 26 },
+    });
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'instant' });
     }, [location.pathname]);
+
+    useEffect(() => {
+        if (!profileMenuOpen) return;
+
+        const closeOnOutsideClick = (event: PointerEvent) => {
+            if (!profileMenuRef.current?.contains(event.target as Node)) setProfileMenuOpen(false);
+        };
+        const closeOnEscape = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') setProfileMenuOpen(false);
+        };
+
+        document.addEventListener('pointerdown', closeOnOutsideClick);
+        document.addEventListener('keydown', closeOnEscape);
+        return () => {
+            document.removeEventListener('pointerdown', closeOnOutsideClick);
+            document.removeEventListener('keydown', closeOnEscape);
+        };
+    }, [profileMenuOpen]);
 
     return (
         <div className={css('app-shell', currentUser ? 'is-authenticated' : 'is-public')}>
@@ -59,23 +92,39 @@ export function AppLayout() {
                                     <Icon name="plus" className={css('button__icon')} />
                                     <span>모집하기</span>
                                 </Link>
-                                <details className={css('profile-menu')}>
-                                    <summary aria-label="프로필 메뉴">
+                                <div className={css('profile-menu')} ref={profileMenuRef}>
+                                    <button
+                                        className={css('profile-menu__trigger', profileMenuOpen && 'is-open')}
+                                        type="button"
+                                        aria-label="프로필 메뉴"
+                                        aria-expanded={profileMenuOpen}
+                                        aria-controls="profile-menu-panel"
+                                        onClick={() => setProfileMenuOpen((open) => !open)}
+                                    >
                                         <Avatar name={currentUser.name} src={currentUser.profile_image} />
                                         <span>{currentUser.name}</span>
                                         <Icon name="chevron" />
-                                    </summary>
-                                    <div className={css('profile-menu__panel')}>
-                                        <Link to="/profile">
-                                            <Icon name="user" />내 프로필
-                                        </Link>
-                                        <Link to="/settings">
-                                            <Icon name="settings" />
-                                            설정
-                                        </Link>
-                                        <button onClick={logout}>로그아웃</button>
-                                    </div>
-                                </details>
+                                    </button>
+                                    {profileMenuTransitions((styles, open) =>
+                                        open ? (
+                                            <animated.div
+                                                className={css('profile-menu__panel')}
+                                                id="profile-menu-panel"
+                                                style={styles}
+                                                onClick={() => setProfileMenuOpen(false)}
+                                            >
+                                                <Link to="/profile">
+                                                    <Icon name="user" />내 프로필
+                                                </Link>
+                                                <Link to="/settings">
+                                                    <Icon name="settings" />
+                                                    설정
+                                                </Link>
+                                                <button onClick={logout}>로그아웃</button>
+                                            </animated.div>
+                                        ) : null,
+                                    )}
+                                </div>
                             </>
                         ) : (
                             <Link className={css('button button--primary')} to="/login">
@@ -115,7 +164,16 @@ export function AppLayout() {
                     <span>모집하기</span>
                 </Link>
             )}
-            {toast && <Toast message={toast.message} tone={toast.tone} onClose={clearToast} />}
+            {toastTransitions((styles, item) => (
+                <Toast
+                    message={item.message}
+                    tone={item.tone}
+                    animation={styles}
+                    onClose={() => {
+                        if (toast?.id === item.id) clearToast();
+                    }}
+                />
+            ))}
         </div>
     );
 }

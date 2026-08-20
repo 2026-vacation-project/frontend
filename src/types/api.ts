@@ -21,12 +21,22 @@ export interface TokenResponse {
     user: UserResponse;
 }
 
+export interface GameSearchResult {
+    id: number;
+    name: string;
+    slug?: string | null;
+    cover_url?: string | null;
+    first_release_date?: string | null;
+    rating?: number | null;
+    platforms: string[];
+}
+
 export interface GroupCreate {
     name: string;
 }
 
 export interface GroupResponse {
-    id: number;
+    id: string;
     name: string;
     created_at?: string | null;
     members?: UserResponse[];
@@ -38,8 +48,8 @@ export interface RoleCreate {
 }
 
 export interface RoleResponse {
-    id: number;
-    group_id: number;
+    id: string;
+    group_id: string;
     name: string;
     color: string;
 }
@@ -60,8 +70,8 @@ export interface RoomUpdate {
 }
 
 export interface RoomResponse {
-    id: number;
-    group_id: number;
+    id: string;
+    group_id: string;
     host_id: string;
     game_name: string;
     target_count: number;

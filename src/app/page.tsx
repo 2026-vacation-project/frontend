@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { css } from '../appStyles';
+import { GameArtwork } from '../components/game/GameArtwork';
 import { RoomRow } from '../components/room/RoomRow';
 import { Button } from '../components/ui';
 import { Icon } from '../components/ui/Icon';
@@ -17,8 +18,8 @@ const exampleHost = {
 };
 const exampleRooms: RoomResponse[] = [
     {
-        id: 9101,
-        group_id: 0,
+        id: '9101',
+        group_id: '0',
         host_id: exampleHost.id,
         game_name: '오버워치 2',
         target_count: 5,
@@ -33,8 +34,8 @@ const exampleRooms: RoomResponse[] = [
         ],
     },
     {
-        id: 9102,
-        group_id: 0,
+        id: '9102',
+        group_id: '0',
         host_id: exampleHost.id,
         game_name: '발로란트',
         target_count: 5,
@@ -50,8 +51,8 @@ const exampleRooms: RoomResponse[] = [
         ],
     },
     {
-        id: 9103,
-        group_id: 0,
+        id: '9103',
+        group_id: '0',
         host_id: exampleHost.id,
         game_name: '리그 오브 레전드',
         target_count: 5,
@@ -66,6 +67,11 @@ const exampleRooms: RoomResponse[] = [
         })),
     },
 ];
+const exampleGameLogos: Record<string, string> = {
+    '오버워치 2': 'https://upload.wikimedia.org/wikipedia/commons/c/c7/Overwatch_2_logo.svg',
+    발로란트: 'https://upload.wikimedia.org/wikipedia/commons/f/fc/Valorant_logo_-_pink_color_version.svg',
+    '리그 오브 레전드': 'https://upload.wikimedia.org/wikipedia/commons/d/d8/League_of_Legends_2019_vector.svg',
+};
 
 export default function HomePage() {
     const { currentUser } = useApp();
@@ -96,7 +102,15 @@ export default function HomePage() {
                         <strong>함께할 자리</strong>
                     </div>
                     <div className={css('board-line')}>
-                        <span>오버워치 2</span>
+                        <span className={css('board-game')}>
+                            <GameArtwork
+                                name="오버워치 2"
+                                src={exampleGameLogos['오버워치 2']}
+                                size="sm"
+                                fit="contain"
+                            />
+                            오버워치 2
+                        </span>
                         <div>
                             {Array.from({ length: 5 }, (_, i) => (
                                 <i key={i} className={css(i < 3 && 'filled')} />
@@ -105,7 +119,10 @@ export default function HomePage() {
                         <b>3/5</b>
                     </div>
                     <div className={css('board-line')}>
-                        <span>발로란트</span>
+                        <span className={css('board-game')}>
+                            <GameArtwork name="발로란트" src={exampleGameLogos.발로란트} size="sm" fit="contain" />
+                            발로란트
+                        </span>
                         <div>
                             {Array.from({ length: 5 }, (_, i) => (
                                 <i key={i} className={css(i < 4 && 'filled', i < 4 && 'accent')} />
@@ -134,7 +151,14 @@ export default function HomePage() {
                 </header>
                 <div className={css('room-list room-list--preview')}>
                     {exampleRooms.map((room) => (
-                        <RoomRow key={room.id} room={room} hostName={room.participants?.[0]?.name} example />
+                        <RoomRow
+                            key={room.id}
+                            room={room}
+                            hostName={room.participants?.[0]?.name}
+                            gameCoverUrl={exampleGameLogos[room.game_name]}
+                            gameArtworkFit="contain"
+                            example
+                        />
                     ))}
                 </div>
             </section>

@@ -25,6 +25,7 @@ function readErrorMessage(payload: unknown, status: number) {
         409: '이미 처리되었거나 현재 상태와 충돌해요.',
         422: '입력한 내용을 확인해 주세요.',
         500: '잠시 문제가 생겼어요. 조금 뒤에 다시 시도해 주세요.',
+        503: '서비스를 잠시 이용할 수 없어요. 조금 뒤에 다시 시도해 주세요.',
     };
     if (friendly[status]) return friendly[status];
 

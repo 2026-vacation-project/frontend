@@ -88,8 +88,17 @@
     min-height: 5.5rem;
     border-top: 1px solid #315070;
 }
-.board-line > span {
+.board-game {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
     font-weight: 720;
+}
+.board-game .game-artwork {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-color: #496885;
+    background: #163b60;
 }
 .board-line > div {
     display: flex;

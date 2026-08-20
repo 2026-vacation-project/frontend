@@ -52,22 +52,16 @@
 .provider-list .button {
     min-height: 3.25rem;
 }
-.provider-mark {
-    width: 1.75rem;
-    height: 1.75rem;
-    display: inline-grid;
-    place-items: center;
-    border-radius: var(--radius-sm);
-    color: var(--color-on-strong);
-    font-size: var(--text-small);
-    font-weight: 850;
+.provider-list .button > span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
 }
-.provider-mark--google {
-    background: var(--color-brand-dark-blue);
-}
-.provider-mark--discord {
-    color: var(--color-on-primary);
-    background: var(--color-primary);
+.provider-logo {
+    width: 1.5rem;
+    height: 1.5rem;
+    flex: 0 0 auto;
 }
 .selected-provider {
     display: flex;

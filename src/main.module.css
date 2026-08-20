@@ -22,6 +22,8 @@ body {
     min-width: 320px;
     min-height: 100vh;
     overflow-x: clip;
+    -webkit-user-select: none;
+    user-select: none;
     color: var(--color-text-primary);
     background: var(--color-background);
     font-family:
@@ -42,6 +44,12 @@ select,
 textarea {
     font: inherit;
     color: inherit;
+}
+input,
+textarea,
+[contenteditable='true'] {
+    -webkit-user-select: text;
+    user-select: text;
 }
 button,
 summary,

@@ -4,6 +4,7 @@
 @import './components/ui/styles.module.css';
 @import './components/room/styles.module.css';
 @import './components/group/styles.module.css';
+@import './components/game/styles.module.css';
 @import './app/page.module.css';
 @import './app/rooms/page.module.css';
 @import './app/rooms/create/page.module.css';

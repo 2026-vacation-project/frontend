@@ -21,9 +21,9 @@ function readStoredUser(): UserResponse | null {
 export function AppProvider({ children }: { children: React.ReactNode }) {
     const [currentUser, setCurrentUser] = useState<UserResponse | null>(readStoredUser);
     const [groups, setGroups] = useState<GroupResponse[]>([]);
-    const [activeGroupId, setActiveGroupId] = useState<number | null>(() => {
-        const stored = Number(sessionStorage.getItem(groupKey));
-        return Number.isFinite(stored) && stored > 0 ? stored : null;
+    const [activeGroupId, setActiveGroupId] = useState<string | null>(() => {
+        const stored = sessionStorage.getItem(groupKey)?.trim();
+        return stored || null;
     });
     const [loadingGroups, setLoadingGroups] = useState(true);
     const [toast, setToast] = useState<ToastState | null>(null);
@@ -91,7 +91,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         showToast('로그아웃했어요.', 'info');
     }
 
-    const selectGroup = useCallback((groupId: number) => {
+    const selectGroup = useCallback((groupId: string) => {
         setActiveGroupId(groupId);
     }, []);
 

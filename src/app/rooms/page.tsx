@@ -18,7 +18,7 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
     const [error, setError] = useState<string | null>(null);
     const [query, setQuery] = useState('');
     const [filter, setFilter] = useState<Filter>('all');
-    const [joiningId, setJoiningId] = useState<number | null>(null);
+    const [joiningId, setJoiningId] = useState<string | null>(null);
 
     const loadRooms = useCallback(async () => {
         if (!activeGroupId) {

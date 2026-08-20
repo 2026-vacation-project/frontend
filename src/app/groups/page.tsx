@@ -14,7 +14,7 @@ export default function GroupsPage({ create = false }: { create?: boolean }) {
         useApp();
     const [name, setName] = useState('');
     const [submitting, setSubmitting] = useState(false);
-    const [joiningId, setJoiningId] = useState<number | null>(null);
+    const [joiningId, setJoiningId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     async function submit(event: React.FormEvent) {
@@ -32,7 +32,7 @@ export default function GroupsPage({ create = false }: { create?: boolean }) {
         }
     }
 
-    async function join(groupId: number) {
+    async function join(groupId: string) {
         if (!currentUser) return;
         setJoiningId(groupId);
         try {

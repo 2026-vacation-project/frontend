@@ -1,5 +1,5 @@
 import { useEffect, useId } from 'react';
-import { animated, useSpring, useTransition } from '@react-spring/web';
+import { animated, type SpringValues, useSpring, useTransition } from '@react-spring/web';
 import { createPortal } from 'react-dom';
 import { css } from '../../appStyles';
 import { Icon, type IconName } from './Icon';
@@ -219,25 +219,21 @@ export function Modal({
 export function Toast({
     message,
     tone,
+    animation,
     onClose,
 }: {
     message: string;
     tone: 'success' | 'error' | 'info';
+    animation: SpringValues<{ opacity: number; transform: string }>;
     onClose: () => void;
 }) {
-    const styles = useSpring({
-        from: { opacity: 0, transform: 'translateY(12px) scale(0.98)' },
-        to: { opacity: 1, transform: 'translateY(0px) scale(1)' },
-        config: { tension: 320, friction: 26 },
-    });
-
     useEffect(() => {
         const timer = window.setTimeout(onClose, 3600);
         return () => window.clearTimeout(timer);
     }, [onClose]);
 
     return (
-        <animated.div className={css('toast', `toast--${tone}`)} style={styles} role="status">
+        <animated.div className={css('toast', `toast--${tone}`)} style={animation} role="status">
             <Icon name={tone === 'success' ? 'check' : tone === 'error' ? 'close' : 'bell'} />
             <span>{message}</span>
             <IconButton icon="close" label="알림 닫기" onClick={onClose} />

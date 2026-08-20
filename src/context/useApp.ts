@@ -11,12 +11,12 @@ export interface AppContextValue {
     currentUser: UserResponse | null;
     groups: GroupResponse[];
     activeGroup: GroupResponse | null;
-    activeGroupId: number | null;
+    activeGroupId: string | null;
     loadingGroups: boolean;
     toast: ToastState | null;
     login: (provider: OAuthProvider, code: string) => Promise<UserResponse>;
     logout: () => void;
-    selectGroup: (groupId: number) => void;
+    selectGroup: (groupId: string) => void;
     refreshGroups: () => Promise<void>;
     createGroup: (name: string) => Promise<GroupResponse>;
     refreshCurrentUser: () => Promise<void>;

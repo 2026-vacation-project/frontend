@@ -3,7 +3,7 @@
     .desktop-nav {
         gap: var(--space-3);
     }
-    .profile-menu summary > span {
+    .profile-menu__trigger > span {
         display: none;
     }
     .home-hero {

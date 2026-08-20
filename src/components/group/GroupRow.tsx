@@ -10,7 +10,7 @@ export function GroupRow({
 }: {
     group: GroupResponse;
     active?: boolean;
-    onSelect?: (groupId: number) => void;
+    onSelect?: (groupId: string) => void;
 }) {
     return (
         <article className={css('group-row', active && 'is-active')}>

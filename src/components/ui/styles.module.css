@@ -365,6 +365,7 @@
 }
 .toast .icon-button {
     color: var(--color-on-strong);
+    transition-duration: 160ms;
 }
 .toast--error {
     background: var(--color-error-strong);

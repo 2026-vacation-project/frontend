@@ -15,7 +15,7 @@ type GroupTab = 'rooms' | 'members' | 'roles' | 'settings';
 
 export default function GroupDetailPage() {
     const { groupId } = useParams();
-    const id = Number(groupId);
+    const id = groupId ?? '';
     const location = useLocation();
     const navigate = useNavigate();
     const { currentUser, selectGroup, refreshGroups, showToast } = useApp();
@@ -92,7 +92,7 @@ export default function GroupDetailPage() {
         }
     }
 
-    async function assignRole(roleId: number, userId: string) {
+    async function assignRole(roleId: string, userId: string) {
         if (!roleId) return;
         try {
             await rolesApi.assign(id, roleId, userId);
@@ -244,7 +244,7 @@ export default function GroupDetailPage() {
                                         </div>
                                         <select
                                             defaultValue=""
-                                            onChange={(event) => void assignRole(Number(event.target.value), member.id)}
+                                            onChange={(event) => void assignRole(event.target.value, member.id)}
                                             aria-label={`${member.name}에게 역할 부여`}
                                         >
                                             <option value="" disabled>

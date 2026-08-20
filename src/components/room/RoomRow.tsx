@@ -2,6 +2,8 @@ import { Link } from 'react-router';
 import { css } from '../../appStyles';
 import type { RoomResponse } from '../../types/api';
 import { relativeTime, roomProgress } from '../../utils/format';
+import { getCachedGameCover } from '../../utils/gameCovers';
+import { GameArtwork } from '../game/GameArtwork';
 import { Avatar, Button, RoleBadge, StatusLabel } from '../ui';
 
 interface RoomRowProps {
@@ -12,21 +14,37 @@ interface RoomRowProps {
     onJoin?: (room: RoomResponse) => void;
     joining?: boolean;
     example?: boolean;
+    gameCoverUrl?: string | null;
+    gameArtworkFit?: 'cover' | 'contain';
 }
 
-export function RoomRow({ room, hostName = '방장', groupName, currentUserId, onJoin, joining, example }: RoomRowProps) {
+export function RoomRow({
+    room,
+    hostName = '방장',
+    groupName,
+    currentUserId,
+    onJoin,
+    joining,
+    example,
+    gameCoverUrl,
+    gameArtworkFit = 'cover',
+}: RoomRowProps) {
     const participants = room.participants ?? [];
     const progress = roomProgress(room);
     const isParticipant = participants.some((member) => member.id === currentUserId);
     const disabled = room.status !== 'RECRUITING' || isParticipant || !currentUserId;
     const filledSlots = Math.min(room.target_count, participants.length);
+    const coverUrl = gameCoverUrl ?? getCachedGameCover(room.game_name);
 
     return (
         <article className={css('room-row')}>
             <div className={css('room-row__activity')}>
-                <span className={css('activity-symbol')} aria-hidden="true">
-                    {room.game_name.slice(0, 1)}
-                </span>
+                <GameArtwork
+                    name={room.game_name}
+                    src={coverUrl}
+                    fit={gameArtworkFit}
+                    className={css('activity-symbol')}
+                />
                 <div>
                     <div className={css('room-row__eyeline')}>
                         <strong>{room.game_name}</strong>

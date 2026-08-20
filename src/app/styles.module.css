@@ -79,22 +79,21 @@
 .profile-menu {
     position: relative;
 }
-.profile-menu summary {
+.profile-menu__trigger {
     display: flex;
     align-items: center;
     gap: 0.55rem;
     min-height: 44px;
-    list-style: none;
+    padding: 0;
+    border: 0;
+    background: transparent;
     font-weight: 650;
 }
-.profile-menu summary::-webkit-details-marker {
-    display: none;
-}
-.profile-menu summary > svg {
+.profile-menu__trigger > svg {
     width: 1rem;
     transition: transform 160ms ease;
 }
-.profile-menu[open] summary > svg {
+.profile-menu__trigger.is-open > svg {
     transform: rotate(90deg);
 }
 .profile-menu__panel {
@@ -107,6 +106,8 @@
     border-radius: var(--radius-md);
     background: var(--color-surface);
     box-shadow: var(--shadow-floating);
+    transform-origin: top right;
+    will-change: opacity, transform;
 }
 .profile-menu__panel a,
 .profile-menu__panel button {

@@ -2,17 +2,19 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { css } from '../../../appStyles';
 import { roomsApi } from '../../../api/rooms';
+import { GameArtwork } from '../../../components/game/GameArtwork';
 import { Avatar, Button, EmptyState, LoadingRows, RoleBadge, StatusLabel } from '../../../components/ui';
 import { useApp } from '../../../context/useApp';
 import { AuthGate } from '../../layout';
 import type { RoomResponse } from '../../../types/api';
 import { getErrorMessage, relativeTime } from '../../../utils/format';
+import { getCachedGameCover } from '../../../utils/gameCovers';
 
 export default function RoomDetailPage() {
     const { roomId } = useParams();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    const groupId = Number(searchParams.get('group'));
+    const groupId = searchParams.get('group') ?? '';
     const { currentUser, groups, showToast } = useApp();
     const [room, setRoom] = useState<RoomResponse | null>(null);
     const [loading, setLoading] = useState(true);
@@ -27,7 +29,7 @@ export default function RoomDetailPage() {
         }
         setLoading(true);
         try {
-            setRoom(await roomsApi.get(groupId, Number(roomId)));
+            setRoom(await roomsApi.get(groupId, roomId));
             setError(null);
         } catch (loadError) {
             setError(getErrorMessage(loadError));
@@ -109,7 +111,7 @@ export default function RoomDetailPage() {
                 <header className={css('room-detail__header')}>
                     <div>
                         <div className={css('detail-activity')}>
-                            <span>{room.game_name.slice(0, 1)}</span>
+                            <GameArtwork name={room.game_name} src={getCachedGameCover(room.game_name)} />
                             <div>
                                 <strong>{room.game_name}</strong>
                                 <small>

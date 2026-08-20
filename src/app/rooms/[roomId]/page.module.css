@@ -31,15 +31,10 @@
     align-items: center;
     gap: var(--space-3);
 }
-.detail-activity > span {
+.detail-activity > .game-artwork {
     width: 3rem;
     height: 3rem;
-    display: grid;
-    place-items: center;
     border-radius: var(--radius-md);
-    color: var(--color-on-strong);
-    background: var(--color-surface-strong);
-    font-weight: 800;
 }
 .detail-activity > div {
     display: grid;

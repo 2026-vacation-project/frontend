@@ -5,7 +5,7 @@ export const groupsApi = {
     list() {
         return apiRequest<GroupResponse[]>('/api/v1/groups');
     },
-    get(groupId: number) {
+    get(groupId: string) {
         return apiRequest<GroupResponse>(`/api/v1/groups/${groupId}`);
     },
     create(body: GroupCreate) {
@@ -14,15 +14,15 @@ export const groupsApi = {
             body: JSON.stringify(body),
         });
     },
-    remove(groupId: number) {
+    remove(groupId: string) {
         return apiRequest<unknown>(`/api/v1/groups/${groupId}`, { method: 'DELETE' });
     },
-    join(groupId: number, userId: string) {
+    join(groupId: string, userId: string) {
         return apiRequest<unknown>(`/api/v1/groups/${groupId}/join${query({ user_id: userId })}`, {
             method: 'POST',
         });
     },
-    leave(groupId: number, userId: string) {
+    leave(groupId: string, userId: string) {
         return apiRequest<unknown>(`/api/v1/groups/${groupId}/leave${query({ user_id: userId })}`, {
             method: 'POST',
         });
