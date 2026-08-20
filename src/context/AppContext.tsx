@@ -26,7 +26,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         return Number.isFinite(stored) && stored > 0 ? stored : null;
     });
     const [loadingGroups, setLoadingGroups] = useState(true);
-    const [backendError, setBackendError] = useState<string | null>(null);
     const [toast, setToast] = useState<ToastState | null>(null);
 
     const showToast = useCallback((message: string, tone: ToastState['tone'] = 'info') => {
@@ -52,7 +51,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         try {
             const nextGroups = await groupsApi.list();
             setGroups(nextGroups);
-            setBackendError(null);
             setActiveGroupId((current) => {
                 if (current && nextGroups.some((group) => group.id === current)) return current;
                 const joined = nextGroups.find((group) =>
@@ -61,11 +59,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 return joined?.id ?? nextGroups[0]?.id ?? null;
             });
         } catch (error) {
-            setBackendError(getErrorMessage(error));
+            showToast(getErrorMessage(error), 'error');
         } finally {
             setLoadingGroups(false);
         }
-    }, [currentUser]);
+    }, [currentUser, showToast]);
 
     useEffect(() => {
         const timer = window.setTimeout(() => void refreshGroups(), 0);
@@ -120,7 +118,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         activeGroup,
         activeGroupId,
         loadingGroups,
-        backendError,
         toast,
         login,
         logout,

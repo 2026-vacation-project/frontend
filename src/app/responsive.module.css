@@ -3,7 +3,6 @@
     .desktop-nav {
         gap: var(--space-3);
     }
-    .topbar__actions .api-indicator,
     .profile-menu summary > span {
         display: none;
     }
@@ -105,9 +104,6 @@
     }
     .mobile-recruit svg {
         width: 1.1rem;
-    }
-    .connection-banner {
-        font-size: 0.7rem;
     }
     .page-header,
     .explorer-heading,

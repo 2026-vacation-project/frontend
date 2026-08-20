@@ -92,8 +92,8 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
                             </Field>
                             {!groups.length && (
                                 <InlineNotice tone="warning" title="그룹이 필요해요">
-                                    현재 API는 그룹 안에서만 모집방을 만들 수 있습니다.{' '}
-                                    <Link to="/groups/create">그룹 만들기</Link>
+                                    모집을 시작하려면 먼저 친구들과 함께할{' '}
+                                    <Link to="/groups/create">그룹을 만들어 주세요.</Link>
                                 </InlineNotice>
                             )}
                         </div>
@@ -108,9 +108,6 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
                                     maxLength={60}
                                 />
                             </Field>
-                            <InlineNotice title="현재 서버 필드 안내">
-                                Swagger에는 별도의 방 이름과 추가 조건 필드가 없어 게임 이름과 역할만 저장합니다.
-                            </InlineNotice>
                         </div>
                         <div className={css('form-section form-section--split')}>
                             <Field label="목표 인원">

@@ -46,6 +46,3 @@
     font-size: var(--text-small);
     font-weight: 750;
 }
-.groups-directory > .notice {
-    margin-top: var(--space-6);
-}

@@ -139,9 +139,6 @@ export default function GroupsPage({ create = false }: { create?: boolean }) {
                                 </div>
                             );
                         })}
-                        <InlineNotice title="현재 API 범위">
-                            그룹 목록은 전체 그룹을 반환합니다. 초대와 그룹 수정 API는 아직 제공되지 않습니다.
-                        </InlineNotice>
                     </div>
                 )}
             </div>

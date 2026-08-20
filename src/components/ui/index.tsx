@@ -1,4 +1,5 @@
 import { useEffect, useId } from 'react';
+import { animated, useSpring, useTransition } from '@react-spring/web';
 import { createPortal } from 'react-dom';
 import { css } from '../../appStyles';
 import { Icon, type IconName } from './Icon';
@@ -109,8 +110,14 @@ export function EmptyState({
     description: string;
     action?: React.ReactNode;
 }) {
+    const styles = useSpring({
+        from: { opacity: 0, transform: 'translateY(10px)' },
+        to: { opacity: 1, transform: 'translateY(0px)' },
+        config: { tension: 260, friction: 26 },
+    });
+
     return (
-        <div className={css('empty-state')}>
+        <animated.div className={css('empty-state')} style={styles}>
             <div className={css('empty-state__mark')} aria-hidden="true">
                 <span />
                 <span />
@@ -119,7 +126,7 @@ export function EmptyState({
             <h2>{title}</h2>
             <p>{description}</p>
             {action}
-        </div>
+        </animated.div>
     );
 }
 
@@ -165,6 +172,13 @@ export function Modal({
     onClose: () => void;
     children: React.ReactNode;
 }) {
+    const transitions = useTransition(open, {
+        from: { opacity: 0, transform: 'translateY(14px) scale(0.98)' },
+        enter: { opacity: 1, transform: 'translateY(0px) scale(1)' },
+        leave: { opacity: 0, transform: 'translateY(8px) scale(0.98)' },
+        config: { tension: 300, friction: 28 },
+    });
+
     useEffect(() => {
         if (!open) return;
         const onKeyDown = (event: KeyboardEvent) => {
@@ -174,20 +188,30 @@ export function Modal({
         return () => document.removeEventListener('keydown', onKeyDown);
     }, [open, onClose]);
 
-    if (!open) return null;
     return createPortal(
-        <div
-            className={css('modal-backdrop')}
-            onMouseDown={(event) => event.target === event.currentTarget && onClose()}
-        >
-            <section className={css('modal')} role="dialog" aria-modal="true" aria-labelledby="modal-title">
-                <header>
-                    <h2 id="modal-title">{title}</h2>
-                    <IconButton icon="close" label="닫기" onClick={onClose} />
-                </header>
-                {children}
-            </section>
-        </div>,
+        transitions((styles, visible) =>
+            visible ? (
+                <animated.div
+                    className={css('modal-backdrop')}
+                    style={{ opacity: styles.opacity }}
+                    onMouseDown={(event) => event.target === event.currentTarget && onClose()}
+                >
+                    <animated.section
+                        className={css('modal')}
+                        style={{ transform: styles.transform }}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="modal-title"
+                    >
+                        <header>
+                            <h2 id="modal-title">{title}</h2>
+                            <IconButton icon="close" label="닫기" onClick={onClose} />
+                        </header>
+                        {children}
+                    </animated.section>
+                </animated.div>
+            ) : null,
+        ),
         document.body,
     );
 }
@@ -201,16 +225,22 @@ export function Toast({
     tone: 'success' | 'error' | 'info';
     onClose: () => void;
 }) {
+    const styles = useSpring({
+        from: { opacity: 0, transform: 'translateY(12px) scale(0.98)' },
+        to: { opacity: 1, transform: 'translateY(0px) scale(1)' },
+        config: { tension: 320, friction: 26 },
+    });
+
     useEffect(() => {
         const timer = window.setTimeout(onClose, 3600);
         return () => window.clearTimeout(timer);
     }, [onClose]);
 
     return (
-        <div className={css('toast', `toast--${tone}`)} role="status">
+        <animated.div className={css('toast', `toast--${tone}`)} style={styles} role="status">
             <Icon name={tone === 'success' ? 'check' : tone === 'error' ? 'close' : 'bell'} />
             <span>{message}</span>
             <IconButton icon="close" label="알림 닫기" onClick={onClose} />
-        </div>
+        </animated.div>
     );
 }

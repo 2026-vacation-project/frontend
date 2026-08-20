@@ -24,7 +24,7 @@ function readErrorMessage(payload: unknown, status: number) {
         404: '요청한 정보를 찾을 수 없어요.',
         409: '이미 처리되었거나 현재 상태와 충돌해요.',
         422: '입력한 내용을 확인해 주세요.',
-        500: '서버에 문제가 생겼어요. 잠시 후 다시 시도해 주세요.',
+        500: '잠시 문제가 생겼어요. 조금 뒤에 다시 시도해 주세요.',
     };
     if (friendly[status]) return friendly[status];
 
@@ -60,7 +60,7 @@ export async function apiRequest<T>(path: string, init: RequestInit = {}): Promi
             headers,
         });
     } catch (error) {
-        throw new ApiError('백엔드에 연결할 수 없어요. 개발 서버가 실행 중인지 확인해 주세요.', 0, error);
+        throw new ApiError('서비스에 연결하지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.', 0, error);
     }
 
     const contentType = response.headers.get('content-type') ?? '';

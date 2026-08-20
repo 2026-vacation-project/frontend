@@ -126,7 +126,7 @@ export default function HomePage() {
                 <header className={css('section-heading')}>
                     <div>
                         <h2>지금 이런 팀을 찾고 있어요</h2>
-                        <p>실제 화면 구성을 보여주는 예시 데이터입니다.</p>
+                        <p>팀모아에서 모집을 찾는 모습을 미리 둘러보세요.</p>
                     </div>
                     <Link className={css('text-link')} to="/login">
                         로그인하고 시작하기 <Icon name="arrow" />

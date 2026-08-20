@@ -5,6 +5,10 @@
 .main-content {
     min-height: calc(100vh - var(--topbar-height));
 }
+.route-view {
+    min-height: inherit;
+    will-change: opacity, transform;
+}
 .topbar {
     position: sticky;
     top: 0;
@@ -72,20 +76,6 @@
     align-items: center;
     gap: var(--space-3);
 }
-.api-indicator {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    color: var(--color-error);
-    font-size: var(--text-caption);
-    font-weight: 700;
-}
-.api-indicator span {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: currentColor;
-}
 .profile-menu {
     position: relative;
 }
@@ -137,20 +127,6 @@
 }
 .profile-menu__panel svg {
     width: 1.1rem;
-}
-.connection-banner {
-    display: flex;
-    justify-content: center;
-    gap: var(--space-3);
-    padding: 0.45rem 1rem;
-    color: var(--color-error-strong);
-    background: var(--color-error-soft);
-    font-size: var(--text-small);
-}
-.connection-banner a {
-    font-weight: 750;
-    text-decoration: underline;
-    text-underline-offset: 3px;
 }
 .page-header {
     display: flex;

@@ -78,9 +78,6 @@
 .member-table__row small {
     color: var(--color-text-muted);
 }
-.tab-content > .notice {
-    margin-top: var(--space-6);
-}
 .role-layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 19rem;

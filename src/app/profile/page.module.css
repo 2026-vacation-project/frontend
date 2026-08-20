@@ -13,10 +13,6 @@
 .profile-identity p {
     color: var(--color-text-secondary);
 }
-.profile-identity span {
-    color: var(--color-text-muted);
-    font-size: var(--text-caption);
-}
 .profile-preferences {
     display: grid;
     gap: var(--space-3);

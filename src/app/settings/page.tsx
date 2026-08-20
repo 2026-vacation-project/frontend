@@ -1,13 +1,18 @@
 import { useState } from 'react';
 import { css } from '../../appStyles';
-import { usersApi } from '../../api/users';
-import { Button, InlineNotice } from '../../components/ui';
+import { Button } from '../../components/ui';
 import { useApp } from '../../context/useApp';
 import { AuthGate, PageHeader } from '../layout';
-import { getErrorMessage } from '../../utils/format';
+
+const notificationKinds = [
+    ['관심 게임 모집', '좋아하는 게임의 새 모집을 알려드려요.'],
+    ['그룹 모집', '함께하는 그룹에 새 모집이 열리면 알려드려요.'],
+    ['모집 완료', '참여한 모집의 인원이 모두 모이면 알려드려요.'],
+    ['그룹과 역할', '그룹이나 역할에 변화가 생기면 알려드려요.'],
+] as const;
 
 export default function SettingsPage() {
-    const { currentUser, refreshCurrentUser, showToast } = useApp();
+    const { showToast } = useApp();
     const [permission, setPermission] = useState<NotificationPermission>(() =>
         'Notification' in window ? Notification.permission : 'denied',
     );
@@ -28,26 +33,15 @@ export default function SettingsPage() {
         );
     }
 
-    async function clearToken() {
-        if (!currentUser) return;
-        try {
-            await usersApi.updateFcmToken(currentUser.id, '');
-            await refreshCurrentUser();
-            showToast('저장된 알림 토큰을 해제했어요.', 'success');
-        } catch (error) {
-            showToast(getErrorMessage(error), 'error');
-        }
-    }
-
     return (
         <AuthGate>
             <div className={css('settings-page page-container')}>
-                <PageHeader title="설정" description="알림 연결과 계정 상태를 확인하세요." />
+                <PageHeader title="설정" description="팀모아에서 받고 싶은 소식을 편하게 관리하세요." />
                 <section className={css('settings-section')}>
                     <div className={css('settings-section__heading')}>
                         <div>
-                            <h2>웹 푸시 알림</h2>
-                            <p>기능을 켜려는 순간에만 브라우저 권한을 요청합니다.</p>
+                            <h2>브라우저 알림</h2>
+                            <p>새로운 모집과 그룹 소식을 바로 받아보세요.</p>
                         </div>
                         <span className={css('permission', `permission--${permission}`)}>
                             {permission === 'granted' ? '허용됨' : permission === 'denied' ? '차단됨' : '확인 전'}
@@ -56,7 +50,11 @@ export default function SettingsPage() {
                     <div className={css('settings-row')}>
                         <div>
                             <strong>브라우저 알림 권한</strong>
-                            <p>새 모집과 모집 완료 알림을 받을 수 있도록 허용합니다.</p>
+                            <p>
+                                {permission === 'denied'
+                                    ? '브라우저 설정에서 팀모아 알림을 허용해 주세요.'
+                                    : '필요할 때만 알림을 보내고 언제든 브라우저에서 끌 수 있어요.'}
+                            </p>
                         </div>
                         <Button
                             tone="secondary"
@@ -64,43 +62,19 @@ export default function SettingsPage() {
                             loading={requesting}
                             disabled={permission === 'granted'}
                         >
-                            {permission === 'granted' ? '권한 허용됨' : '권한 요청'}
+                            {permission === 'granted' ? '알림 켜짐' : '알림 켜기'}
                         </Button>
                     </div>
-                    <div className={css('settings-row')}>
-                        <div>
-                            <strong>FCM 토큰</strong>
-                            <p>
-                                {currentUser?.fcm_token
-                                    ? '백엔드에 토큰이 저장되어 있습니다.'
-                                    : '등록된 토큰이 없습니다.'}
-                            </p>
-                        </div>
-                        {currentUser?.fcm_token ? (
-                            <Button tone="danger" onClick={() => void clearToken()}>
-                                토큰 해제
-                            </Button>
-                        ) : (
-                            <Button tone="secondary" disabled>
-                                Firebase 설정 필요
-                            </Button>
-                        )}
-                    </div>
-                    <InlineNotice tone="warning" title="Firebase 설정이 필요해요">
-                        FCM 토큰 발급에 필요한 Firebase 프로젝트 정보가 제공되지 않아 임의 토큰을 만들지 않습니다.
-                    </InlineNotice>
                 </section>
                 <section className={css('settings-section')}>
-                    <h2>알림 종류</h2>
-                    {['관심 게임 모집', '그룹 모집', '모집 완료', '그룹 초대', '역할 변경'].map((label) => (
+                    <h2>받을 수 있는 알림</h2>
+                    {notificationKinds.map(([label, description]) => (
                         <div className={css('settings-row')} key={label}>
                             <div>
                                 <strong>{label}</strong>
-                                <p>알림 설정 API가 추가되면 개별 설정을 저장할 수 있어요.</p>
+                                <p>{description}</p>
                             </div>
-                            <button className={css('switch')} role="switch" aria-checked="false" disabled>
-                                <span />
-                            </button>
+                            <span className={css('permission permission--default')}>자동</span>
                         </div>
                     ))}
                 </section>

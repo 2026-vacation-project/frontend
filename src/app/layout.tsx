@@ -1,4 +1,5 @@
-import { Link, NavLink, Outlet, useLocation } from 'react-router';
+import { animated, useReducedMotion, useTransition } from '@react-spring/web';
+import { Link, NavLink, useLocation, useOutlet } from 'react-router';
 import { useEffect } from 'react';
 import { css } from '../appStyles';
 import { useApp } from '../context/useApp';
@@ -12,8 +13,23 @@ const navItems = [
 ];
 
 export function AppLayout() {
-    const { currentUser, logout, toast, clearToast, backendError } = useApp();
+    const { currentUser, logout, toast, clearToast } = useApp();
     const location = useLocation();
+    const outlet = useOutlet();
+
+    useReducedMotion();
+
+    const routeTransitions = useTransition(
+        { key: location.pathname, outlet },
+        {
+            keys: (route) => route.key,
+            from: { opacity: 0, transform: 'translateY(10px)' },
+            enter: { opacity: 1, transform: 'translateY(0px)' },
+            leave: { opacity: 0, transform: 'translateY(-6px)' },
+            exitBeforeEnter: true,
+            config: { tension: 280, friction: 30 },
+        },
+    );
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'instant' });
@@ -37,12 +53,6 @@ export function AppLayout() {
                     </nav>
 
                     <div className={css('topbar__actions')}>
-                        {backendError && (
-                            <span className={css('api-indicator')} title={backendError}>
-                                <span />
-                                서버 연결 확인
-                            </span>
-                        )}
                         {currentUser ? (
                             <>
                                 <Link className={css('button button--primary topbar__recruit')} to="/rooms/create">
@@ -76,17 +86,12 @@ export function AppLayout() {
                 </div>
             </header>
 
-            {backendError && (
-                <div className={css('connection-banner')}>
-                    <span>{backendError}</span>
-                    <a href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer">
-                        Swagger 확인
-                    </a>
-                </div>
-            )}
-
             <main className={css('main-content')} id="main-content">
-                <Outlet />
+                {routeTransitions((styles, route) => (
+                    <animated.div className={css('route-view')} style={styles}>
+                        {route.outlet}
+                    </animated.div>
+                ))}
             </main>
 
             {currentUser && (

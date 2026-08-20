@@ -356,7 +356,6 @@
     color: var(--color-on-strong);
     background: var(--color-surface-strong);
     box-shadow: var(--shadow-floating);
-    animation: toast-in 220ms cubic-bezier(0.2, 0.85, 0.3, 1);
 }
 .toast > svg {
     width: 1.2rem;
@@ -372,10 +371,4 @@
 }
 .toast--success {
     background: var(--color-brand-dark-blue);
-}
-@keyframes toast-in {
-    from {
-        clip-path: inset(0 0 100% 0);
-        transform: translateY(10px);
-    }
 }

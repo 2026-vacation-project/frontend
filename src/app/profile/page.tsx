@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { css } from '../../appStyles';
 import { usersApi } from '../../api/users';
-import { Avatar, Button, EmptyState, Field, InlineNotice, LoadingRows } from '../../components/ui';
+import { Avatar, Button, EmptyState, Field, LoadingRows } from '../../components/ui';
 import { useApp } from '../../context/useApp';
 import { AuthGate, PageHeader } from '../layout';
 import type { UserResponse } from '../../types/api';
@@ -118,13 +118,12 @@ export default function ProfilePage() {
                         <div>
                             <h2>{profileUser.name}</h2>
                             <p>{profileUser.email}</p>
-                            <span>{profileUser.id}</span>
                         </div>
                     </section>
                     {isOwnProfile ? (
                         <form className={css('profile-preferences')} onSubmit={save}>
                             <h2>관심 게임</h2>
-                            <p>쉼표로 구분해 입력하세요. 현재 API의 `preferred_games` 필드에 저장됩니다.</p>
+                            <p>좋아하는 게임을 쉼표로 구분해 입력해 주세요.</p>
                             <Field label="관심 게임">
                                 <input
                                     value={games}
@@ -151,8 +150,8 @@ export default function ProfilePage() {
                             <h2>참여한 그룹</h2>
                             <p>
                                 {isOwnProfile
-                                    ? '내 계정이 멤버로 등록된 그룹입니다.'
-                                    : `${profileUser.name}님이 멤버로 등록된 그룹입니다.`}
+                                    ? '내가 함께하고 있는 그룹이에요.'
+                                    : `${profileUser.name}님이 함께하고 있는 그룹이에요.`}
                             </p>
                         </div>
                     </div>
@@ -171,15 +170,10 @@ export default function ProfilePage() {
                     ) : (
                         <EmptyState
                             title="참여한 그룹이 없어요"
-                            description="현재 조회 가능한 그룹에서 멤버 정보를 찾지 못했어요."
+                            description="새 그룹에 참여하면 이곳에서 한눈에 확인할 수 있어요."
                         />
                     )}
                 </section>
-                {isOwnProfile && (
-                    <InlineNotice title="프로필 필드 범위">
-                        현재 API는 이름과 프로필 이미지 수정 엔드포인트를 제공하지 않습니다.
-                    </InlineNotice>
-                )}
             </div>
         </AuthGate>
     );

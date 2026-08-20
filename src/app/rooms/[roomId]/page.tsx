@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { css } from '../../../appStyles';
 import { roomsApi } from '../../../api/rooms';
-import { Avatar, Button, EmptyState, InlineNotice, LoadingRows, RoleBadge, StatusLabel } from '../../../components/ui';
+import { Avatar, Button, EmptyState, LoadingRows, RoleBadge, StatusLabel } from '../../../components/ui';
 import { useApp } from '../../../context/useApp';
 import { AuthGate } from '../../layout';
 import type { RoomResponse } from '../../../types/api';
@@ -113,7 +113,7 @@ export default function RoomDetailPage() {
                             <div>
                                 <strong>{room.game_name}</strong>
                                 <small>
-                                    {group?.name ?? `그룹 ${groupId}`} · {relativeTime(room.created_at)}
+                                    {group?.name ?? '선택한 그룹'} · {relativeTime(room.created_at)}
                                 </small>
                             </div>
                         </div>
@@ -173,7 +173,7 @@ export default function RoomDetailPage() {
                                 </div>
                                 <div>
                                     <dt>방장</dt>
-                                    <dd>{host?.name ?? room.host_id}</dd>
+                                    <dd>{host?.name ?? '확인 중'}</dd>
                                 </div>
                             </dl>
                         </section>
@@ -239,9 +239,6 @@ export default function RoomDetailPage() {
                                 </Button>
                             </div>
                         )}
-                        <InlineNotice title="API 기준">
-                            <span>참가와 나가기는 실제 그룹 모집방 API로 처리됩니다.</span>
-                        </InlineNotice>
                     </aside>
                 </div>
             </div>

@@ -59,7 +59,7 @@ export default function OAuthCallbackPage() {
                     <>
                         <div className={css('oauth-callback__spinner')} aria-hidden="true" />
                         <h1>계정을 연결하고 있어요</h1>
-                        <p>인증 정보를 확인하는 동안 잠시만 기다려 주세요.</p>
+                        <p>로그인을 마무리하는 동안 잠시만 기다려 주세요.</p>
                     </>
                 ) : (
                     <>

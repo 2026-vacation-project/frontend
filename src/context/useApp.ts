@@ -13,7 +13,6 @@ export interface AppContextValue {
     activeGroup: GroupResponse | null;
     activeGroupId: number | null;
     loadingGroups: boolean;
-    backendError: string | null;
     toast: ToastState | null;
     login: (provider: OAuthProvider, code: string) => Promise<UserResponse>;
     logout: () => void;

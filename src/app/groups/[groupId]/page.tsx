@@ -5,7 +5,7 @@ import { groupsApi } from '../../../api/groups';
 import { rolesApi } from '../../../api/roles';
 import { roomsApi } from '../../../api/rooms';
 import { RoomRow } from '../../../components/room/RoomRow';
-import { Avatar, Button, EmptyState, Field, InlineNotice, LoadingRows, RoleBadge } from '../../../components/ui';
+import { Avatar, Button, EmptyState, Field, LoadingRows, RoleBadge } from '../../../components/ui';
 import { useApp } from '../../../context/useApp';
 import { AuthGate } from '../../layout';
 import type { GroupResponse, RoleResponse, RoomResponse } from '../../../types/api';
@@ -187,7 +187,7 @@ export default function GroupDetailPage() {
                         <div className={css('section-heading')}>
                             <div>
                                 <h2>그룹 모집방</h2>
-                                <p>이 그룹에서 실제로 생성된 모집만 표시합니다.</p>
+                                <p>이 그룹에서 함께할 수 있는 모집을 모아봤어요.</p>
                             </div>
                         </div>
                         {rooms.length ? (
@@ -262,12 +262,9 @@ export default function GroupDetailPage() {
                         ) : (
                             <EmptyState
                                 title="아직 멤버가 없어요"
-                                description="사용자는 그룹 참여 API를 통해 가입할 수 있어요."
+                                description="친구들이 그룹에 참여하면 이곳에서 역할을 정할 수 있어요."
                             />
                         )}
-                        <InlineNotice tone="warning" title="초대와 역할 해제는 준비 중이에요">
-                            현재 Swagger에는 사용자 검색·초대와 역할 해제 API가 없습니다.
-                        </InlineNotice>
                     </section>
                 )}
 
@@ -372,13 +369,7 @@ export default function GroupDetailPage() {
                                 <h2>그룹 이름</h2>
                                 <p>{group.name}</p>
                             </div>
-                            <Button tone="secondary" disabled>
-                                수정 API 필요
-                            </Button>
                         </div>
-                        <InlineNotice title="백엔드 미지원">
-                            그룹 이름 수정과 초대 링크 API가 Swagger에 추가되면 이 영역을 활성화할 수 있어요.
-                        </InlineNotice>
                         <div className={css('danger-zone')}>
                             <div>
                                 <h2>그룹 나가기</h2>

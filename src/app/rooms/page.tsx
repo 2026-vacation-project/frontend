@@ -79,7 +79,7 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
                     <p>
                         {activeGroup
                             ? `${activeGroup.name} 안에서 지금 열려 있는 모집을 살펴보세요.`
-                            : '그룹을 선택하면 실제 모집방을 불러옵니다.'}
+                            : '그룹을 선택하고 함께할 팀원을 찾아보세요.'}
                     </p>
                 </div>
                 <Link className={css('button button--primary')} to="/rooms/create">
@@ -116,7 +116,7 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
                     </div>
                     <div className={css('scope-note')}>
                         <span />
-                        선택한 그룹의 모집만 검색합니다. 전역 모집 API는 아직 제공되지 않습니다.
+                        그룹을 바꾸면 해당 그룹의 모집을 바로 확인할 수 있어요.
                     </div>
 
                     {loading || loadingGroups ? (
@@ -132,7 +132,7 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
                     ) : !activeGroup ? (
                         <EmptyState
                             title="먼저 그룹을 선택해 주세요"
-                            description="현재 API는 그룹 안의 모집방만 조회할 수 있어요."
+                            description="참여 중인 그룹을 선택하면 열려 있는 모집을 보여드릴게요."
                             action={
                                 <Link className={css('button button--primary')} to="/groups">
                                     그룹 선택하기
