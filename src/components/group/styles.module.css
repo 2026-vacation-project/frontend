@@ -1,0 +1,57 @@
+.group-row {
+    min-height: 4.75rem;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--color-divider);
+}
+.group-row__select {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    border: 0;
+    background: transparent;
+    text-align: left;
+}
+.group-row__select > span:nth-child(2) {
+    min-width: 0;
+    display: grid;
+}
+.group-row__select strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.group-row__select small {
+    color: var(--color-text-muted);
+}
+.group-row > a {
+    width: 2rem;
+    height: 2rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+}
+.group-row > a:hover {
+    background: var(--color-surface-secondary);
+}
+.group-row > a svg {
+    width: 1rem;
+}
+.group-row.is-active .group-mark {
+    color: var(--color-on-primary);
+    background: var(--color-primary);
+}
+.group-mark {
+    width: 2.35rem;
+    height: 2.35rem;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-sm);
+    color: var(--color-primary-text);
+    background: var(--color-primary-soft);
+    font-weight: 800;
+}

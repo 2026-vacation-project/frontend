@@ -1,0 +1,40 @@
+.oauth-callback {
+    min-height: calc(100vh - var(--topbar-height));
+    display: grid;
+    place-items: center;
+    padding-block: var(--space-7);
+}
+.oauth-callback .login-panel {
+    width: min(100%, 28rem);
+    justify-items: center;
+    text-align: center;
+}
+.oauth-callback .login-panel > img {
+    width: 3.5rem;
+    height: 3.5rem;
+}
+.oauth-callback .notice {
+    width: 100%;
+    text-align: left;
+}
+.oauth-callback .button {
+    width: 100%;
+}
+.oauth-callback__spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid var(--color-primary-soft);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: oauth-spin 700ms linear infinite;
+}
+@keyframes oauth-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .oauth-callback__spinner {
+        animation-duration: 1400ms;
+    }
+}

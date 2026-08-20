@@ -1,0 +1,50 @@
+.profile-grid {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: var(--space-7);
+    padding: var(--space-6) 0;
+    border-bottom: 1px solid var(--color-divider);
+}
+.profile-identity {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+.profile-identity p {
+    color: var(--color-text-secondary);
+}
+.profile-identity span {
+    color: var(--color-text-muted);
+    font-size: var(--text-caption);
+}
+.profile-preferences {
+    display: grid;
+    gap: var(--space-3);
+}
+.profile-preferences > p {
+    color: var(--color-text-secondary);
+    font-size: var(--text-small);
+}
+.profile-preferences .button {
+    justify-self: end;
+}
+.profile-groups {
+    padding: var(--space-7) 0;
+}
+.simple-list {
+    margin-top: var(--space-4);
+    border-top: 1px solid var(--color-text-primary);
+}
+.simple-list a {
+    min-height: 4.5rem;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    border-bottom: 1px solid var(--color-divider);
+}
+.simple-list a > span:nth-child(2) {
+    display: grid;
+}
+.simple-list small {
+    color: var(--color-text-muted);
+}

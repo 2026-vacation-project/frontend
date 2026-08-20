@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react'
+import type { SVGProps } from 'react';
 
 export type IconName =
     | 'arrow'
@@ -14,7 +14,7 @@ export type IconName =
     | 'search'
     | 'settings'
     | 'sport'
-    | 'user'
+    | 'user';
 
 const paths: Record<IconName, React.ReactNode> = {
     arrow: (
@@ -92,7 +92,7 @@ const paths: Record<IconName, React.ReactNode> = {
             <path d="M4 21a8 8 0 0 1 16 0" />
         </>
     ),
-}
+};
 
 export function Icon({ name, ...props }: { name: IconName } & SVGProps<SVGSVGElement>) {
     return (
@@ -108,5 +108,5 @@ export function Icon({ name, ...props }: { name: IconName } & SVGProps<SVGSVGEle
         >
             {paths[name]}
         </svg>
-    )
+    );
 }

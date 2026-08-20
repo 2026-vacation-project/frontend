@@ -1,0 +1,89 @@
+.login-page {
+    min-height: calc(100vh - var(--topbar-height));
+    display: grid;
+    grid-template-columns: 1fr minmax(21rem, 27rem);
+    align-items: center;
+    gap: clamp(3rem, 9vw, 9rem);
+    padding-block: var(--space-8);
+}
+.login-intro > h1 {
+    margin-top: var(--space-7);
+    font-size: 3rem;
+    letter-spacing: -0.04em;
+}
+.login-intro > p {
+    max-width: 31rem;
+    margin-top: var(--space-4);
+    color: var(--color-text-secondary);
+    font-size: var(--text-body-lg);
+}
+.login-lineup {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-7);
+}
+.login-lineup span {
+    width: 3.5rem;
+    height: 4.75rem;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-sm);
+}
+.login-lineup span:nth-child(-n + 3) {
+    border-style: solid;
+    border-color: color-mix(in srgb, var(--color-primary) 44%, var(--color-border));
+    background: var(--color-primary-soft);
+}
+.login-panel {
+    display: grid;
+    gap: var(--space-5);
+    padding: var(--space-6);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+}
+.login-panel > p {
+    color: var(--color-text-secondary);
+}
+.provider-list,
+.login-panel form {
+    display: grid;
+    gap: var(--space-3);
+}
+.provider-list .button {
+    min-height: 3.25rem;
+}
+.provider-mark {
+    width: 1.75rem;
+    height: 1.75rem;
+    display: inline-grid;
+    place-items: center;
+    border-radius: var(--radius-sm);
+    color: var(--color-on-strong);
+    font-size: var(--text-small);
+    font-weight: 850;
+}
+.provider-mark--google {
+    background: var(--color-brand-dark-blue);
+}
+.provider-mark--discord {
+    color: var(--color-on-primary);
+    background: var(--color-primary);
+}
+.selected-provider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--color-divider);
+}
+.selected-provider button {
+    margin-left: auto;
+    padding: 0;
+    border: 0;
+    color: var(--color-primary-text);
+    background: transparent;
+    font-weight: 700;
+}
+.login-submit {
+    width: 100%;
+}

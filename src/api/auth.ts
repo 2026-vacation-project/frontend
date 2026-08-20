@@ -1,11 +1,12 @@
-import { apiRequest } from './client'
-import type { OAuthProvider, UserCreate, UserResponse } from '../types/api'
+import { apiRequest } from './client';
+import type { OAuthLoginRequest, OAuthProvider, TokenResponse } from '../types/api';
 
 export const authApi = {
-    login(provider: OAuthProvider, body: UserCreate) {
-        return apiRequest<UserResponse>(`/api/v1/auth/login/${provider}`, {
+    login(provider: OAuthProvider, code: string) {
+        const body: OAuthLoginRequest = { code };
+        return apiRequest<TokenResponse>(`/api/v1/auth/login/${provider}`, {
             method: 'POST',
             body: JSON.stringify(body),
-        })
+        });
     },
-}
+};

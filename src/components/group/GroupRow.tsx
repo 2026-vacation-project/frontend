@@ -1,20 +1,21 @@
-import { Link } from 'react-router'
-import type { GroupResponse } from '../../types/api'
-import { Icon } from '../ui/Icon'
+import { Link } from 'react-router';
+import { css } from '../../appStyles';
+import type { GroupResponse } from '../../types/api';
+import { Icon } from '../ui/Icon';
 
 export function GroupRow({
     group,
     active,
     onSelect,
 }: {
-    group: GroupResponse
-    active?: boolean
-    onSelect?: (groupId: number) => void
+    group: GroupResponse;
+    active?: boolean;
+    onSelect?: (groupId: number) => void;
 }) {
     return (
-        <article className={`group-row ${active ? 'is-active' : ''}`}>
-            <button className="group-row__select" onClick={() => onSelect?.(group.id)} aria-pressed={active}>
-                <span className="group-mark" aria-hidden="true">
+        <article className={css('group-row', active && 'is-active')}>
+            <button className={css('group-row__select')} onClick={() => onSelect?.(group.id)} aria-pressed={active}>
+                <span className={css('group-mark')} aria-hidden="true">
                     {group.name.slice(0, 1)}
                 </span>
                 <span>
@@ -26,5 +27,5 @@ export function GroupRow({
                 <Icon name="chevron" />
             </Link>
         </article>
-    )
+    );
 }

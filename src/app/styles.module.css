@@ -1,0 +1,192 @@
+:global(#root),
+.app-shell {
+    min-height: 100vh;
+}
+.main-content {
+    min-height: calc(100vh - var(--topbar-height));
+}
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    height: var(--topbar-height);
+    border-bottom: 1px solid var(--color-divider);
+    background: color-mix(in srgb, var(--color-background) 96%, transparent);
+    backdrop-filter: blur(14px);
+}
+.topbar__inner {
+    width: min(calc(100% - 2rem), var(--content-width));
+    min-width: 0;
+    height: 100%;
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-7);
+}
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-size: 1.22rem;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    white-space: nowrap;
+}
+.brand img {
+    width: 2rem;
+    height: 2rem;
+}
+.desktop-nav {
+    display: flex;
+    align-items: stretch;
+    align-self: stretch;
+    gap: var(--space-5);
+}
+.desktop-nav a {
+    position: relative;
+    display: grid;
+    place-items: center;
+    color: var(--color-text-secondary);
+    font-weight: 650;
+}
+.desktop-nav a::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    height: 2px;
+    background: transparent;
+}
+.desktop-nav a:hover,
+.desktop-nav a.active {
+    color: var(--color-text-primary);
+}
+.desktop-nav a.active::after {
+    background: var(--color-primary);
+}
+.topbar__actions {
+    flex: 0 0 auto;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+.api-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--color-error);
+    font-size: var(--text-caption);
+    font-weight: 700;
+}
+.api-indicator span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+.profile-menu {
+    position: relative;
+}
+.profile-menu summary {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 44px;
+    list-style: none;
+    font-weight: 650;
+}
+.profile-menu summary::-webkit-details-marker {
+    display: none;
+}
+.profile-menu summary > svg {
+    width: 1rem;
+    transition: transform 160ms ease;
+}
+.profile-menu[open] summary > svg {
+    transform: rotate(90deg);
+}
+.profile-menu__panel {
+    position: absolute;
+    top: calc(100% + 0.65rem);
+    right: 0;
+    width: 12rem;
+    padding: var(--space-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-floating);
+}
+.profile-menu__panel a,
+.profile-menu__panel button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-height: 44px;
+    padding: 0 var(--space-3);
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    text-align: left;
+}
+.profile-menu__panel a:hover,
+.profile-menu__panel button:hover {
+    background: var(--color-surface-secondary);
+}
+.profile-menu__panel svg {
+    width: 1.1rem;
+}
+.connection-banner {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-3);
+    padding: 0.45rem 1rem;
+    color: var(--color-error-strong);
+    background: var(--color-error-soft);
+    font-size: var(--text-small);
+}
+.connection-banner a {
+    font-weight: 750;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+.page-header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-5);
+    padding: var(--space-7) 0 var(--space-6);
+    border-bottom: 1px solid var(--color-divider);
+}
+.page-header p {
+    margin-top: var(--space-2);
+    color: var(--color-text-secondary);
+}
+.mobile-nav,
+.mobile-recruit {
+    display: none;
+}
+
+.auth-gate {
+    min-height: 36rem;
+    display: grid;
+    place-items: center;
+    text-align: center;
+}
+.auth-gate > div {
+    max-width: 28rem;
+    display: grid;
+    justify-items: center;
+    gap: var(--space-3);
+}
+.auth-gate img {
+    width: 3.5rem;
+}
+.auth-gate p {
+    color: var(--color-text-secondary);
+}
+.auth-gate .button {
+    margin-top: var(--space-2);
+}

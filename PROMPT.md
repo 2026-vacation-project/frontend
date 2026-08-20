@@ -67,29 +67,42 @@ Tailwind CSS는 사용하지 않는다.
 
 ```text
 src/
+├── app/                    # Next.js App Router 스타일의 화면 폴더 구조
+│   ├── layout.tsx
+│   ├── styles.module.css
+│   ├── not-found.tsx
+│   ├── not-found.module.css
+│   ├── page.tsx
+│   ├── page.module.css
+│   ├── rooms/[roomId]/
+│   │   ├── page.tsx
+│   │   └── page.module.css
+│   └── groups/[groupId]/
+│       ├── page.tsx
+│       └── page.module.css
 ├── components/
-│   ├── ui/
-│   ├── room/
-│   ├── group/
+│   ├── ui/                 # index.tsx + styles.module.css
+│   ├── room/               # RoomRow.tsx + styles.module.css
+│   ├── group/              # GroupRow.tsx + styles.module.css
 │   ├── role/
 │   ├── user/
 │   └── notification/
-├── pages/
-├── layouts/
 ├── hooks/
 ├── services/
-├── styles/
-│   ├── globals.css
-│   ├── tokens.css
-│   └── reset.css
 ├── types/
 ├── utils/
-├── router/
-├── App.tsx
+├── styles.module.css      # App.tsx의 CSS Module 진입점
+├── main.module.css         # 문서 전역 기반
+├── theme.module.css        # 디자인 토큰
+├── App.tsx                 # React Router 경로 설정
 └── main.tsx
 ```
 
 공통 UI 컴포넌트는 `components/ui`에 분리한다.
+
+스타일은 관련 TSX와 같은 폴더에 배치하고 CSS Modules를 통해 참조한다. 라우트 화면은 `page.module.css`, 재사용 컴포넌트와 레이아웃은 `styles.module.css`로 이름을 통일한다.
+
+TypeScript와 JavaScript는 세미콜론을 사용하며 Prettier의 `semi` 옵션을 `true`로 유지한다.
 
 도메인별 UI는 `room`, `group`, `role`, `user`, `notification` 등으로 분리한다.
 
@@ -99,33 +112,32 @@ API 관련 코드는 `services`에 분리한다.
 
 # 3. 라우팅 구조
 
-React Router를 사용한다고 가정한다.
+React Router를 사용하되 화면 파일은 `src/app` 아래에 Next.js App Router와 비슷한 폴더 구조로 배치한다. 실제 URL 매핑과 인증 게이트는 `App.tsx`에서 명시적으로 관리하며, 폴더 이름만으로 라우트를 자동 생성하지 않는다.
 
 다음 라우트를 기본 구조로 사용한다.
 
 ```text
-/
- /login
- /rooms
- /rooms/create
- /rooms/:roomId
- /rooms/:roomId/edit
+app/page.tsx                              → /
+app/login/page.tsx                        → /login
+app/rooms/page.tsx                        → /rooms
+app/rooms/create/page.tsx                 → /rooms/create
+app/rooms/[roomId]/page.tsx               → /rooms/:roomId
+app/rooms/[roomId]/edit/page.tsx          → /rooms/:roomId/edit
 
- /groups
- /groups/create
- /groups/:groupId
- /groups/:groupId/members
- /groups/:groupId/roles
- /groups/:groupId/settings
+app/groups/page.tsx                       → /groups
+app/groups/create/page.tsx                → /groups/create
+app/groups/[groupId]/page.tsx             → /groups/:groupId
+app/groups/[groupId]/members/page.tsx     → /groups/:groupId/members
+app/groups/[groupId]/roles/page.tsx       → /groups/:groupId/roles
+app/groups/[groupId]/settings/page.tsx    → /groups/:groupId/settings
 
- /profile
- /profile/:userId
-
- /notifications
- /settings
+app/profile/page.tsx                      → /profile
+app/profile/[userId]/page.tsx             → /profile/:userId
+app/notifications/page.tsx                → /notifications
+app/settings/page.tsx                     → /settings
 ```
 
-중첩 라우팅이 필요한 경우 React Router의 nested route 구조를 사용한다.
+`[roomId]`, `[groupId]`처럼 대괄호로 감싼 폴더는 동적 경로임을 구조상 표현한다. 관련 스타일은 각 `page.tsx`와 같은 폴더의 `page.module.css`에 둔다.
 
 ---
 

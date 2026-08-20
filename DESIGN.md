@@ -2,30 +2,34 @@
 name: "팀모아"
 description: "게임 파티 모집을 라인업 명부처럼 읽고 바로 참여하는 게임 전용 시스템"
 colors:
-  primary: "#1d6f50"
-  primary-hover: "#155c41"
-  primary-active: "#104b35"
-  primary-soft: "#e4f1e9"
-  background: "#f6f7f3"
+  brand-blue: "#008bfe"
+  brand-dark-blue: "#03234c"
+  primary: "#008bfe"
+  primary-hover: "#2ca0ff"
+  primary-active: "#1596ff"
+  primary-text: "#006fc9"
+  on-primary: "#03234c"
+  primary-soft: "#e5f3ff"
+  background: "#f5f9ff"
   surface: "#ffffff"
-  surface-secondary: "#edf0eb"
-  surface-strong: "#202824"
-  text-primary: "#17201c"
-  text-secondary: "#4e5b54"
-  text-muted: "#5f6d66"
-  border: "#cfd7d1"
-  divider: "#e1e6e2"
-  success: "#197349"
-  warning: "#b45309"
-  warning-soft: "#fff1d6"
-  error: "#b83b32"
-  error-soft: "#fae9e7"
-  info: "#356575"
-  info-soft: "#e7f1f3"
-  signal: "#ed6a3d"
-  role-orange: "#ef6a42"
-  signal-soft: "#fff0e9"
-  focus: "#19725a"
+  surface-secondary: "#eaf4ff"
+  surface-strong: "#03234c"
+  text-primary: "#03234c"
+  text-secondary: "#354e6d"
+  text-muted: "#5f748d"
+  border: "#b9d5ec"
+  divider: "#d8e8f5"
+  success: "#006fc9"
+  warning: "#8a4b08"
+  warning-soft: "#fff3dc"
+  error: "#b42318"
+  error-soft: "#fdecea"
+  info: "#075f9a"
+  info-soft: "#e5f3ff"
+  signal: "#008bfe"
+  role-blue: "#008bfe"
+  signal-soft: "#dff1ff"
+  focus: "#008bfe"
 typography:
   display:
     fontFamily: "Pretendard, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif"
@@ -81,17 +85,17 @@ spacing:
 components:
   button-primary:
     backgroundColor: "{colors.primary}"
-    textColor: "{colors.surface}"
+    textColor: "{colors.on-primary}"
     typography: "{typography.label}"
     rounded: "{rounded.sm}"
     padding: "0.62rem 1rem"
     height: "44px"
   button-primary-hover:
     backgroundColor: "{colors.primary-hover}"
-    textColor: "{colors.surface}"
+    textColor: "{colors.on-primary}"
   button-primary-active:
     backgroundColor: "{colors.primary-active}"
-    textColor: "{colors.surface}"
+    textColor: "{colors.on-primary}"
   button-secondary:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.text-primary}"
@@ -101,7 +105,7 @@ components:
     height: "44px"
   button-secondary-hover:
     backgroundColor: "{colors.primary-soft}"
-    textColor: "{colors.primary}"
+    textColor: "{colors.primary-text}"
   button-quiet:
     backgroundColor: "transparent"
     textColor: "{colors.text-secondary}"
@@ -125,7 +129,7 @@ components:
     height: "3rem"
   filter-tab-active:
     backgroundColor: "transparent"
-    textColor: "{colors.primary}"
+    textColor: "{colors.primary-text}"
     typography: "{typography.label}"
     padding: "0 1rem"
     height: "46px"
@@ -153,52 +157,53 @@ components:
 
 **Creative North Star: "게임 파티 라인업 명부"**
 
-팀모아는 게임 파티 모집을 라인업 명부처럼 한 줄씩 읽고 바로 행동하는 운영 화면이다. 따뜻한 종이색 바탕, 깊은 잉크색 글자, 가는 구분선이 정보의 골격을 만들고, 모집 행과 참가 슬롯이 게임·포지션·현재 인원·다음 행동을 같은 시야에 둔다.
+팀모아는 게임 파티 모집을 라인업 명부처럼 한 줄씩 읽고 바로 행동하는 운영 화면이다. 옅은 블루 화이트 바탕, 팀모아 Dark Blue 글자, 가는 구분선이 정보의 골격을 만들고, 모집 행과 참가 슬롯이 게임·포지션·현재 인원·다음 행동을 같은 시야에 둔다.
 
-표현은 친근하지만 장식적이지 않고, 활기차지만 게임 전용처럼 보이지 않는다. 깊은 초록은 선택과 참가 행동에만 집중시키고 주황은 역할과 마감 신호를 보조한다. 카드형 통계 대시보드, 보라·파랑 SaaS 그라데이션, 의미 없는 글래스와 장식용 배지는 이 세계의 반대편이다.
+표현은 친근하지만 장식적이지 않고, 활기차지만 게임 전용처럼 보이지 않는다. 팀모아 Blue는 선택과 참가 행동, 역할과 슬롯에 집중시키고 팀모아 Dark Blue는 텍스트와 강한 면의 중심을 잡는다. 카드형 통계 대시보드, 여러 색을 섞은 SaaS 그라데이션, 의미 없는 글래스와 장식용 배지는 이 세계의 반대편이다.
 
 **Key Characteristics:**
 
-- 따뜻한 오프화이트 바탕과 깊은 녹흑색 잉크가 만드는 명부 같은 인상
+- 옅은 블루 화이트 바탕과 팀모아 Dark Blue 잉크가 만드는 명부 같은 인상
 - 카드 그리드 대신 가는 선으로 구획한 곧은 모집 행과 그룹 행
 - 한 가족의 Pretendard 가변 글꼴로 만드는 단정한 한국어 위계
-- 짙은 초록 행동·선택과 주황 역할·마감 신호의 제한된 색 문법
+- 팀모아 Blue 행동·선택과 팀모아 Dark Blue 텍스트·강조 면의 제한된 색 문법
 - 그룹 선택 → 게임 검색 → 인원·포지션 비교 → 참가 또는 모집 개설로 이어지는 짧은 흐름
 
 ## Colors
 
-팔레트는 따뜻한 종이와 녹색 잉크를 기본으로 삼고, 상태 신호만 절제된 보조색으로 분리한다.
+팔레트는 README의 팀모아 Blue와 팀모아 Dark Blue를 원색으로 삼고, 배경·선·상호작용 색은 두 브랜드 색에서 파생한다. 오류와 경고만 의미 보존을 위해 절제된 상태색으로 분리한다.
 
 ### Primary
 
-- **Assembly Green** (`primary`): 참가, 모집 개설, 선택 상태, 활성 내비게이션에만 쓰는 주 행동색이다.
-- **Canopy Green / Forest Press** (`primary-hover`, `primary-active`): 기본 초록의 상호작용 깊이를 만들며 새로운 색 역할을 만들지 않는다.
-- **Clubhouse Mint** (`primary-soft`): 선택된 그룹, 참여 상태, 채워진 슬롯의 낮은 강도 배경이다.
+- **팀모아 Blue** (`brand-blue`, `primary`): 참가, 모집 개설, 역할, 선택 상태, 활성 내비게이션에 쓰는 주 행동색이다.
+- **Sky Lift / Pressed Sky** (`primary-hover`, `primary-active`): 기본 블루의 상호작용 깊이를 만들며 새로운 색 역할을 만들지 않는다.
+- **Readable Blue** (`primary-text`): 밝은 면 위 링크·탭·아이콘에서 가독성을 확보하는 짙은 파생 블루다.
+- **Blue Wash** (`primary-soft`): 선택된 그룹, 참여 상태, 채워진 슬롯의 낮은 강도 배경이다.
 
 ### Secondary
 
-- **Signal Orange** (`signal`): 필요한 역할과 마감 임박처럼 즉시 비교해야 하는 신호의 기준색이다.
-- **Implemented Role Orange** (`role-orange`): 현재 모집 행과 상세 화면의 역할점이 실제로 받는 컴포넌트 색이다.
-- **Orange Wash** (`signal-soft`): 주황 신호가 넓은 면에 필요할 때 쓰는 배경색이다.
+- **팀모아 Dark Blue** (`brand-dark-blue`): 기본 텍스트와 라인업 보드, 강한 요약 면에 쓰는 중심색이다.
+- **Role Blue** (`role-blue`, `signal`): 모집 행과 상세 화면의 역할점, 즉시 비교해야 하는 신호에 쓰는 브랜드 블루다.
+- **Signal Wash** (`signal-soft`): 블루 신호가 넓은 면에 필요할 때 쓰는 배경색이다.
 
 ### Tertiary
 
-- **Open Slot Green** (`success`): 모집 중, 참여 성공처럼 긍정 상태를 텍스트와 상태점으로 표시한다.
+- **Open Slot Blue** (`success`): 모집 중, 참여 성공처럼 긍정 상태를 텍스트와 상태점으로 표시한다.
 - **Deadline Amber / Amber Wash** (`warning`, `warning-soft`): API 제한, 권한 전 상태, 주의가 필요한 사실을 보여준다.
 - **Correction Red / Correction Wash** (`error`, `error-soft`): 연결 실패, 삭제, 오류 메시지에만 쓴다.
 - **Roster Blue / Roster Blue Wash** (`info`, `info-soft`): 중립적인 API 범위와 설명 공지에 쓴다.
 
 ### Neutral
 
-- **Warm Roster Paper** (`background`): 모든 페이지의 기본 바탕이다.
-- **Clean Sheet / Chalk Wash** (`surface`, `surface-secondary`): 입력·패널과 낮은 강도의 요약 영역을 구분한다.
-- **Chalkboard Ink** (`surface-strong`): 게임 이니셜과 공개 홈의 라인업 보드처럼 집중이 필요한 어두운 면이다.
-- **Ledger Ink / Soft Ink / Pencil Note** (`text-primary`, `text-secondary`, `text-muted`): 제목, 설명, 보조 메타데이터의 세 단계 읽기 위계다.
-- **Registration Line / Hairline Rule** (`border`, `divider`): 입력 경계와 행 구분을 만들며 카드 외곽선을 반복하지 않는다.
+- **Blue Roster Paper** (`background`): 모든 페이지의 기본 바탕이다.
+- **Clean Sheet / Blue Wash** (`surface`, `surface-secondary`): 입력·패널과 낮은 강도의 요약 영역을 구분한다.
+- **Dark Blue Board** (`surface-strong`): 게임 이니셜과 공개 홈의 라인업 보드처럼 집중이 필요한 어두운 면이다.
+- **Dark Blue Ink / Soft Ink / Pencil Note** (`text-primary`, `text-secondary`, `text-muted`): 제목, 설명, 보조 메타데이터의 세 단계 읽기 위계다.
+- **Blue Registration Line / Hairline Rule** (`border`, `divider`): 입력 경계와 행 구분을 만들며 카드 외곽선을 반복하지 않는다.
 
 ### Named Rules
 
-**The Two Signal Rule.** 짙은 초록은 행동과 선택, 주황은 역할과 마감에만 쓴다. 임시 보라색 파비콘은 UI 강조색으로 확장하지 않는다.
+**The Two Brand Color Rule.** 팀모아 Blue는 행동·선택·역할에, 팀모아 Dark Blue는 텍스트·강조 면에 쓴다. 오류와 경고 외의 새로운 강조색은 추가하지 않는다.
 
 ## Typography
 
@@ -235,9 +240,9 @@ components:
 
 ### Shadow Vocabulary
 
-- **Floating** (`0 0.625rem 1.5rem rgba(19, 35, 27, 0.12)`): 메뉴, 토스트, 모바일 모집 CTA처럼 화면 위에 떠 있는 조작에 사용한다.
-- **Overlay** (`0 1rem 3rem rgba(19, 35, 27, 0.18)`): 모달처럼 배경 계층에서 명확히 분리되어야 하는 오버레이에 사용한다.
-- **Showcase Board** (`0 1.25rem 3.5rem rgba(22, 36, 29, 0.18)`): 공개 홈의 라인업 보드에만 사용하는 예외적 연출이다.
+- **Floating** (`0 0.625rem 1.5rem rgba(3, 35, 76, 0.14)`): 메뉴, 토스트, 모바일 모집 CTA처럼 화면 위에 떠 있는 조작에 사용한다.
+- **Overlay** (`0 1rem 3rem rgba(3, 35, 76, 0.20)`): 모달처럼 배경 계층에서 명확히 분리되어야 하는 오버레이에 사용한다.
+- **Showcase Board** (`0 1.25rem 3.5rem rgba(3, 35, 76, 0.22)`): 공개 홈의 라인업 보드에만 사용하는 예외적 연출이다.
 
 ### Named Rules
 
@@ -254,37 +259,37 @@ components:
 ### Buttons
 
 - **Shape:** 단정하게 살짝 굽은 직사각형(0.375rem)이며 주요 터치 높이는 최소 44px이다.
-- **Primary:** Assembly Green 면 위 흰 글자, 0.62rem × 1rem 내부 여백, 굵기 720이다.
-- **Hover / Focus:** hover에서 1px 위로 이동하고 더 짙은 초록으로 바뀐다. focus-visible은 3px 외곽선과 3px 간격을 사용하며 reduced-motion 환경에서는 전환을 사실상 제거한다.
-- **Secondary:** 흰 면과 Registration Line 경계로 시작해 hover에서 Clubhouse Mint 면과 초록 글자로 바뀐다.
+- **Primary:** 팀모아 Blue 면 위 팀모아 Dark Blue 글자, 0.62rem × 1rem 내부 여백, 굵기 720이다.
+- **Hover / Focus:** hover에서 1px 위로 이동하고 밝은 블루로 바뀐다. focus-visible은 3px 외곽선과 3px 간격을 사용하며 reduced-motion 환경에서는 전환을 사실상 제거한다.
+- **Secondary:** 흰 면과 Blue Registration Line 경계로 시작해 hover에서 Blue Wash 면과 팀모아 Blue 글자로 바뀐다.
 - **Quiet / Danger:** quiet는 투명 배경의 보조 행동, danger는 흰 면과 붉은 글자·경계의 파괴 행동이다.
 
 ### Chips
 
 - **Style:** 필터는 알약 배지 대신 46px 높이의 텍스트 탭과 2px 하단선으로 표현한다. 작은 수량·예시·권한 표지만 예외적으로 알약형을 쓴다.
-- **State:** 선택된 필터는 초록 글자와 하단선으로, 모집 상태는 색점과 한국어 상태 문구를 함께 사용해 색에만 의존하지 않는다.
+- **State:** 선택된 필터는 팀모아 Blue 글자와 하단선으로, 모집 상태는 색점과 한국어 상태 문구를 함께 사용해 색에만 의존하지 않는다.
 
 ### Cards / Containers
 
 - **Corner Style:** 일반 정보는 카드화하지 않는다. 실제로 경계가 필요한 폼, 로그인, 설정, 참가 패널만 0.625–0.875rem 모서리를 사용한다.
-- **Background:** 페이지는 Warm Roster Paper, 입력·폼 패널은 Clean Sheet, 요약은 Chalk Wash를 사용한다.
+- **Background:** 페이지는 Blue Roster Paper, 입력·폼 패널은 Clean Sheet, 요약은 Blue Wash를 사용한다.
 - **Shadow Strategy:** 일반 컨테이너에는 그림자가 없고 Elevation 규칙의 부유 계층만 예외다.
-- **Border:** 1px Registration Line 또는 Hairline Rule을 사용한다.
+- **Border:** 1px Blue Registration Line 또는 Hairline Rule을 사용한다.
 - **Internal Padding:** 소형 공지는 0.85rem × 1rem, 일반 패널은 1.5rem, 큰 폼 패널은 2rem이다.
 
 ### Inputs / Fields
 
-- **Style:** 흰 배경, 1px Registration Line, 0.375rem 모서리, 최소 44px 높이를 사용한다. 검색 입력은 3rem 높이의 아이콘 결합형이다.
-- **Focus:** 경계를 Assembly Green으로 바꾸고 같은 초록의 12% 투명도 3px 링을 더한다.
+- **Style:** 흰 배경, 1px Blue Registration Line, 0.375rem 모서리, 최소 44px 높이를 사용한다. 검색 입력은 3rem 높이의 아이콘 결합형이다.
+- **Focus:** 경계를 팀모아 Blue로 바꾸고 같은 블루의 16% 투명도 3px 링을 더한다.
 - **Error / Disabled:** 오류는 Correction Red 텍스트와 공지로 설명하고, 비활성 조작은 커서와 버튼 투명도 52%로 상태를 남긴다.
 
 ### Navigation
 
-데스크톱 상단바는 4.5rem 높이의 고정형 명부 머리글이며 활성 항목을 2px 초록 하단선으로 표시한다. 모바일에서는 760px 이하부터 4개 하단 탭으로 전환하고 아이콘과 텍스트를 함께 유지한다. 프로필 메뉴만 흰 부유 패널과 Floating 그림자를 쓴다.
+데스크톱 상단바는 4.5rem 높이의 고정형 명부 머리글이며 활성 항목을 2px 팀모아 Blue 하단선으로 표시한다. 모바일에서는 760px 이하부터 4개 하단 탭으로 전환하고 아이콘과 텍스트를 함께 유지한다. 프로필 메뉴만 흰 부유 패널과 Floating 그림자를 쓴다.
 
 ### Recruitment Row
 
-모집 행은 시스템의 서명 컴포넌트다. 게임 이니셜, 게임명과 제목, 방장·그룹·시간, 필요한 포지션, 현재/목표 인원, 슬롯 레일, 상태 문구, 행동을 한 행 안에 배치한다. 행 자체는 배경 카드가 아니며 Hairline Rule 아래선으로 다음 항목과 연결된다. hover는 중앙에만 매우 옅은 초록 그라데이션을 주고 구조는 움직이지 않는다.
+모집 행은 시스템의 서명 컴포넌트다. 게임 이니셜, 게임명과 제목, 방장·그룹·시간, 필요한 포지션, 현재/목표 인원, 슬롯 레일, 상태 문구, 행동을 한 행 안에 배치한다. 행 자체는 배경 카드가 아니며 Hairline Rule 아래선으로 다음 항목과 연결된다. hover는 중앙에만 매우 옅은 블루 그라데이션을 주고 구조는 움직이지 않는다.
 
 참가 직후 채워진 슬롯은 220ms 동안 왼쪽에서 6px 이동하며 나타나고, 숫자와 한국어 상태도 함께 갱신된다. 모집 중 상태점은 1.8초 펄스를 사용하되 텍스트를 항상 병기하며, `prefers-reduced-motion`에서는 모든 전환과 애니메이션을 0.01ms로 축소한다.
 
@@ -299,15 +304,15 @@ components:
 - **Do** 모집을 게임·포지션·현재 인원·상태·행동이 한눈에 비교되는 곧은 행으로 보여준다.
 - **Do** 참가 인원을 숫자와 슬롯 레일 두 방식으로 함께 표현한다.
 - **Do** 검색과 필터를 모집 목록 바로 위에 두고, 그룹 선택을 실제 데이터 조회의 선행 조건으로 명확히 보인다.
-- **Do** 초록 행동, 주황 역할·마감, 텍스트가 병기된 상태 신호의 역할을 지킨다.
+- **Do** 팀모아 Blue 행동·역할, 팀모아 Dark Blue 텍스트·강조 면, 텍스트가 병기된 상태 신호의 역할을 지킨다.
 - **Do** Swagger에 없는 기능은 설명 공지, 빈 상태, 또는 비활성 조작으로 정직하게 표시한다.
 - **Do** 모든 주요 조작에 최소 44px 터치 영역과 분명한 키보드 포커스를 유지한다.
 
 ### Don't:
 
 - **Don't** 모집 목록을 둥근 카드 그리드나 통계 타일 대시보드로 바꾼다.
-- **Don't** 보라·파랑 SaaS 그라데이션, 장식용 글래스, 과도한 배지·그림자·모션을 추가한다.
-- **Don't** 초록을 넓은 장식 면에 남발하거나 주황을 일반 내비게이션 강조색으로 사용한다.
+- **Don't** 여러 색을 섞은 SaaS 그라데이션, 장식용 글래스, 과도한 배지·그림자·모션을 추가한다.
+- **Don't** 팀모아 Blue를 넓은 장식 면에 남발하거나 브랜드 체계 밖의 색을 일반 내비게이션 강조색으로 사용한다.
 - **Don't** 색만으로 모집 상태, 오류, 역할, 선택 여부를 전달한다.
 - **Don't** 지원되지 않는 전역 모집·초대·알림 데이터를 실제처럼 만들거나 공개 홈 예시를 실데이터처럼 보이게 한다.
 - **Don't** 760px 이하에서 하단 내비게이션과 모집 CTA가 본문 행동을 가리게 한다.

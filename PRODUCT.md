@@ -34,9 +34,9 @@ web
 - 데스크톱, 태블릿, 모바일 반응형과 키보드 사용을 지원한다.
 - API 호출은 서비스 계층에 모으고 `http://127.0.0.1:8000/openapi.json`의 실제 요청·응답 스키마를 그대로 따른다.
 - Swagger에 없는 API는 추측하거나 목 엔드포인트로 만들지 않는다. 전역 모집 검색·필터, 그룹 수정·초대, 역할 해제, 알림 목록은 현재 백엔드 미지원 기능으로 명시한다.
-- 현재 인증 명세는 `POST /api/v1/auth/login/{provider}`에 `email`, `name`, 선택적 `profile_image`를 보내는 방식이며 OAuth Redirect, Cookie, Bearer Token은 정의되어 있지 않다.
+- 인증은 Google/Discord Authorization Code 흐름을 사용한다. 프론트엔드는 OAuth 콜백의 `code`를 `POST /api/v1/auth/login/{provider}`로 전달하고, 응답의 JWT를 이후 API 요청에 Bearer Token으로 사용한다.
 - 현재 모집방은 그룹 하위에서만 조회할 수 있고 `game_name`, `target_count`, `target_role`, `unit_type` 필드를 사용한다.
-- 실제 OAuth 클라이언트 정보, Firebase 프로젝트 설정, 운영 환경 주소는 아직 결정되지 않았다.
+- 실제 OAuth 클라이언트 정보, Firebase 프로젝트 설정, 운영 환경 주소는 배포 환경별 환경 변수로 제공한다.
 
 ## Brand Commitments
 

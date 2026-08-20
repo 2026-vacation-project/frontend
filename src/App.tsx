@@ -1,25 +1,33 @@
-import { Route, Routes } from 'react-router'
-import { AppProvider } from './context/AppContext'
-import { AppLayout, AuthGate } from './layouts/AppLayout'
-import { GroupDetailPage } from './pages/GroupDetailPage'
-import { GroupsPage } from './pages/GroupsPage'
-import { HomePage } from './pages/HomePage'
-import { LoginPage } from './pages/LoginPage'
-import { NotFoundPage } from './pages/NotFoundPage'
-import { NotificationsPage } from './pages/NotificationsPage'
-import { ProfilePage } from './pages/ProfilePage'
-import { RoomDetailPage } from './pages/RoomDetailPage'
-import { RoomFormPage } from './pages/RoomFormPage'
-import { RoomsPage } from './pages/RoomsPage'
-import { SettingsPage } from './pages/SettingsPage'
+import { Route, Routes } from 'react-router';
+import OAuthCallbackPage from './app/auth/callback/[provider]/page';
+import GroupMembersPage from './app/groups/[groupId]/members/page';
+import GroupDetailPage from './app/groups/[groupId]/page';
+import GroupRolesPage from './app/groups/[groupId]/roles/page';
+import GroupSettingsPage from './app/groups/[groupId]/settings/page';
+import GroupsCreatePage from './app/groups/create/page';
+import GroupsPage from './app/groups/page';
+import RootLayout, { AuthGate } from './app/layout';
+import LoginPage from './app/login/page';
+import NotFoundPage from './app/not-found';
+import NotificationsPage from './app/notifications/page';
+import HomePage from './app/page';
+import UserProfilePage from './app/profile/[userId]/page';
+import ProfilePage from './app/profile/page';
+import RoomEditPage from './app/rooms/[roomId]/edit/page';
+import RoomDetailPage from './app/rooms/[roomId]/page';
+import RoomCreatePage from './app/rooms/create/page';
+import RoomsPage from './app/rooms/page';
+import SettingsPage from './app/settings/page';
+import { AppProvider } from './context/AppContext';
 
 export default function App() {
     return (
         <AppProvider>
             <Routes>
-                <Route element={<AppLayout />}>
+                <Route element={<RootLayout />}>
                     <Route index element={<HomePage />} />
                     <Route path="login" element={<LoginPage />} />
+                    <Route path="auth/callback/:provider" element={<OAuthCallbackPage />} />
                     <Route
                         path="rooms"
                         element={
@@ -32,7 +40,7 @@ export default function App() {
                         path="rooms/create"
                         element={
                             <AuthGate>
-                                <RoomFormPage />
+                                <RoomCreatePage />
                             </AuthGate>
                         }
                     />
@@ -48,7 +56,7 @@ export default function App() {
                         path="rooms/:roomId/edit"
                         element={
                             <AuthGate>
-                                <RoomFormPage edit />
+                                <RoomEditPage />
                             </AuthGate>
                         }
                     />
@@ -64,7 +72,7 @@ export default function App() {
                         path="groups/create"
                         element={
                             <AuthGate>
-                                <GroupsPage create />
+                                <GroupsCreatePage />
                             </AuthGate>
                         }
                     />
@@ -80,7 +88,7 @@ export default function App() {
                         path="groups/:groupId/members"
                         element={
                             <AuthGate>
-                                <GroupDetailPage />
+                                <GroupMembersPage />
                             </AuthGate>
                         }
                     />
@@ -88,7 +96,7 @@ export default function App() {
                         path="groups/:groupId/roles"
                         element={
                             <AuthGate>
-                                <GroupDetailPage />
+                                <GroupRolesPage />
                             </AuthGate>
                         }
                     />
@@ -96,7 +104,7 @@ export default function App() {
                         path="groups/:groupId/settings"
                         element={
                             <AuthGate>
-                                <GroupDetailPage />
+                                <GroupSettingsPage />
                             </AuthGate>
                         }
                     />
@@ -112,7 +120,7 @@ export default function App() {
                         path="profile/:userId"
                         element={
                             <AuthGate>
-                                <ProfilePage />
+                                <UserProfilePage />
                             </AuthGate>
                         }
                     />
@@ -136,5 +144,5 @@ export default function App() {
                 </Route>
             </Routes>
         </AppProvider>
-    )
+    );
 }
