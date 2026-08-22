@@ -12,19 +12,25 @@ export function GroupRow({
     active?: boolean;
     onSelect?: (groupId: string) => void;
 }) {
+    const label = (
+        <>
+            <span className={css('group-mark')} aria-hidden="true">
+                {group.name.slice(0, 1)}
+            </span>
+            <span>
+                <strong>{group.name}</strong>
+                <small>
+                    {!group.is_public && '비공개 · '}멤버 {group.members?.length ?? 0}명
+                </small>
+            </span>
+        </>
+    );
+
     return (
         <article className={css('group-row', active && 'is-active')}>
-            <button className={css('group-row__select')} onClick={() => onSelect?.(group.id)} aria-pressed={active}>
-                <span className={css('group-mark')} aria-hidden="true">
-                    {group.name.slice(0, 1)}
-                </span>
-                <span>
-                    <strong>{group.name}</strong>
-                    <small>멤버 {group.members?.length ?? 0}명</small>
-                </span>
-            </button>
-            <Link to={`/groups/${group.id}`} aria-label={`${group.name} 상세 보기`}>
-                <Icon name="chevron" />
+            <Link className={css('group-row__link')} to={`/groups/${group.id}`} onClick={() => onSelect?.(group.id)}>
+                {label}
+                <Icon name="chevron" aria-hidden="true" />
             </Link>
         </article>
     );

@@ -14,6 +14,12 @@ export const groupsApi = {
             body: JSON.stringify(body),
         });
     },
+    updateVisibility(groupId: string, isPublic: boolean) {
+        return apiRequest<GroupResponse>(`/api/v1/groups/${groupId}/visibility`, {
+            method: 'PATCH',
+            body: JSON.stringify({ is_public: isPublic }),
+        });
+    },
     remove(groupId: string) {
         return apiRequest<unknown>(`/api/v1/groups/${groupId}`, { method: 'DELETE' });
     },

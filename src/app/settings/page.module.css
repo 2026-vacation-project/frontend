@@ -1,9 +1,7 @@
 .settings-section {
     margin-top: var(--space-6);
-    padding: var(--space-5);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    background: var(--color-surface);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-text-primary);
 }
 .settings-section > h2 {
     margin-bottom: var(--space-3);
@@ -21,20 +19,16 @@
     color: var(--color-text-secondary);
 }
 .permission {
-    padding: 0.3rem 0.6rem;
-    border-radius: 999px;
+    padding: 0.15rem 0;
     font-size: var(--text-caption);
     font-weight: 750;
 }
 .permission--granted {
     color: var(--color-success);
-    background: var(--color-primary-soft);
 }
 .permission--denied {
     color: var(--color-error);
-    background: var(--color-error-soft);
 }
 .permission--default {
     color: var(--color-warning);
-    background: var(--color-warning-soft);
 }

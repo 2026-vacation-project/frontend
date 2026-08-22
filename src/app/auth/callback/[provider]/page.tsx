@@ -8,9 +8,9 @@ import { getErrorMessage } from '../../../../utils/format';
 
 type CallbackStatus = 'loading' | 'error';
 
-function getProviderError(error: string | null, description: string | null) {
-    if (error === 'access_denied') return '계정 연결이 취소되었어요.';
-    return description || '계정 제공자가 로그인을 완료하지 못했어요.';
+function getProviderError(error: string | null) {
+    if (error === 'access_denied') return '로그인을 취소했어요.';
+    return '로그인을 완료하지 못했어요.';
 }
 
 export default function OAuthCallbackPage() {
@@ -28,17 +28,17 @@ export default function OAuthCallbackPage() {
 
         async function completeLogin() {
             try {
-                if (!isOAuthProvider(providerParam)) throw new Error('지원하지 않는 로그인 제공자예요.');
+                if (!isOAuthProvider(providerParam)) throw new Error('지원하지 않는 로그인 방법이에요.');
 
                 const searchParams = new URLSearchParams(location.search);
                 const returnTo = consumeOAuthAttempt(providerParam, searchParams.get('state'));
                 const providerError = searchParams.get('error');
                 if (providerError) {
-                    throw new Error(getProviderError(providerError, searchParams.get('error_description')));
+                    throw new Error(getProviderError(providerError));
                 }
 
                 const code = searchParams.get('code');
-                if (!code) throw new Error('로그인 인가 코드가 전달되지 않았어요. 다시 시도해 주세요.');
+                if (!code) throw new Error('로그인을 완료하지 못했어요. 다시 시도해 주세요.');
 
                 await login(providerParam, code);
                 navigate(returnTo, { replace: true });
@@ -54,17 +54,17 @@ export default function OAuthCallbackPage() {
     return (
         <div className={css('oauth-callback page-container')}>
             <section className={css('login-panel')} aria-live="polite" aria-busy={status === 'loading'}>
-                <img src="/favicon.svg" alt="" />
+                <img src="/favicon.svg" alt="" draggable={false} />
                 {status === 'loading' ? (
                     <>
                         <div className={css('oauth-callback__spinner')} aria-hidden="true" />
-                        <h1>계정을 연결하고 있어요</h1>
-                        <p>로그인을 마무리하는 동안 잠시만 기다려 주세요.</p>
+                        <h1>로그인 중이에요</h1>
+                        <p>잠시만 기다려 주세요.</p>
                     </>
                 ) : (
                     <>
                         <h1>로그인하지 못했어요</h1>
-                        <InlineNotice tone="error" title="계정 연결 실패">
+                        <InlineNotice tone="error" title="로그인 실패">
                             {error}
                         </InlineNotice>
                         <Link className={css('button button--primary')} to="/login" replace>

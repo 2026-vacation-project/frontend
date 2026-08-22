@@ -1,21 +1,44 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { css } from '../../appStyles';
+import { gamesApi } from '../../api/games';
 import { usersApi } from '../../api/users';
-import { Avatar, Button, EmptyState, Field, LoadingRows } from '../../components/ui';
+import { GameArtwork } from '../../components/game/GameArtwork';
+import { Avatar, Button, EmptyState, LoadingRows } from '../../components/ui';
 import { useApp } from '../../context/useApp';
 import { AuthGate, PageHeader } from '../layout';
-import type { UserResponse } from '../../types/api';
+import type { GameSearchResult, UserResponse } from '../../types/api';
+import { cacheGameCover, getCachedGameCover } from '../../utils/gameCovers';
 import { getErrorMessage } from '../../utils/format';
+
+function uniqueGameNames(games: string[]) {
+    const seen = new Set<string>();
+    const unique: string[] = [];
+    for (const game of games) {
+        const name = game.trim();
+        const key = name.toLocaleLowerCase();
+        if (!name || seen.has(key)) continue;
+        seen.add(key);
+        unique.push(name);
+    }
+    return unique;
+}
 
 export default function ProfilePage() {
     const { userId } = useParams();
     const { currentUser, groups, refreshCurrentUser, showToast } = useApp();
     const isOwnProfile = !userId || userId === currentUser?.id;
+    const savedPreferredGames = uniqueGameNames(currentUser?.preferred_games ?? []);
     const [remoteUser, setRemoteUser] = useState<UserResponse | null>(null);
     const [loadingProfile, setLoadingProfile] = useState(Boolean(userId && userId !== currentUser?.id));
     const [profileError, setProfileError] = useState<string | null>(null);
-    const [games, setGames] = useState(currentUser?.preferred_games?.join(', ') ?? '');
+    const [preferredGamesDraft, setPreferredGamesDraft] = useState<string[] | null>(null);
+    const preferredGames = preferredGamesDraft ?? savedPreferredGames;
+    const [gameQuery, setGameQuery] = useState('');
+    const [gameResults, setGameResults] = useState<GameSearchResult[]>([]);
+    const [searchingGames, setSearchingGames] = useState(false);
+    const [gameSearchError, setGameSearchError] = useState<string | null>(null);
+    const [lastSearchedQuery, setLastSearchedQuery] = useState('');
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
@@ -44,17 +67,70 @@ export default function ProfilePage() {
         };
     }, [currentUser?.id, userId]);
 
+    useEffect(() => {
+        const searchQuery = gameQuery.trim();
+        if (searchQuery.length < 2) return;
+
+        const controller = new AbortController();
+        let active = true;
+        const timer = window.setTimeout(() => {
+            setSearchingGames(true);
+            setGameSearchError(null);
+            gamesApi
+                .search(searchQuery, 8, controller.signal)
+                .then((results) => {
+                    if (!active) return;
+                    setGameResults(results);
+                    setLastSearchedQuery(searchQuery);
+                })
+                .catch((error: unknown) => {
+                    if (!active || controller.signal.aborted) return;
+                    setGameResults([]);
+                    setLastSearchedQuery(searchQuery);
+                    setGameSearchError(getErrorMessage(error));
+                })
+                .finally(() => {
+                    if (active) setSearchingGames(false);
+                });
+        }, 280);
+
+        return () => {
+            active = false;
+            window.clearTimeout(timer);
+            controller.abort();
+        };
+    }, [gameQuery]);
+
+    function changeGameQuery(value: string) {
+        setGameQuery(value);
+        setGameResults([]);
+        setLastSearchedQuery('');
+        setGameSearchError(null);
+    }
+
+    function addGame(game: GameSearchResult) {
+        const alreadyAdded = preferredGames.some((name) => name.toLocaleLowerCase() === game.name.toLocaleLowerCase());
+        if (alreadyAdded) {
+            showToast('이미 관심 게임에 추가되어 있어요.', 'info');
+            return;
+        }
+        setPreferredGamesDraft((current) => [...(current ?? savedPreferredGames), game.name]);
+        cacheGameCover(game.name, game.cover_url ?? null);
+        changeGameQuery('');
+    }
+
+    function removeGame(gameName: string) {
+        setPreferredGamesDraft((current) => (current ?? savedPreferredGames).filter((name) => name !== gameName));
+    }
+
     async function save(event: React.FormEvent) {
         event.preventDefault();
         if (!currentUser || !isOwnProfile) return;
-        const preferredGames = games
-            .split(',')
-            .map((item) => item.trim())
-            .filter(Boolean);
         setSaving(true);
         try {
             await usersApi.updatePreferences(currentUser.id, preferredGames);
             await refreshCurrentUser();
+            setPreferredGamesDraft(null);
             showToast('관심 게임을 저장했어요.', 'success');
         } catch (error) {
             showToast(getErrorMessage(error), 'error');
@@ -79,11 +155,11 @@ export default function ProfilePage() {
         return (
             <div className={css('profile-page page-container')}>
                 <EmptyState
-                    title="프로필을 불러오지 못했어요"
+                    title="사용자 정보를 불러오지 못했어요"
                     description={profileError}
                     action={
                         <Link className={css('button button--primary')} to="/profile">
-                            내 프로필 보기
+                            내 정보 보기
                         </Link>
                     }
                 />
@@ -94,22 +170,21 @@ export default function ProfilePage() {
     if (!profileUser)
         return (
             <div className={css('profile-page page-container')}>
-                <EmptyState title="사용자를 찾을 수 없어요" description="요청한 프로필 정보가 없습니다." />
+                <EmptyState title="사용자를 찾을 수 없어요" description="찾는 사용자 정보가 없습니다." />
             </div>
         );
 
     const membersOf = groups.filter((group) => (group.members ?? []).some((member) => member.id === profileUser.id));
-    const preferredGames = profileUser.preferred_games ?? [];
+    const displayedPreferredGames = isOwnProfile ? preferredGames : (profileUser.preferred_games ?? []);
+    const hasPreferenceChanges = JSON.stringify(preferredGames) !== JSON.stringify(savedPreferredGames);
 
     return (
         <AuthGate>
             <div className={css('profile-page page-container')}>
                 <PageHeader
-                    title={isOwnProfile ? '내 프로필' : `${profileUser.name} 프로필`}
+                    title={isOwnProfile ? '내 정보' : `${profileUser.name}님의 정보`}
                     description={
-                        isOwnProfile
-                            ? '좋아하는 게임과 함께하는 그룹을 관리하세요.'
-                            : '이 사용자가 좋아하는 게임과 함께하는 그룹을 확인하세요.'
+                        isOwnProfile ? '관심 게임과 참여 중인 그룹을 관리합니다.' : '관심 게임과 참여 중인 그룹입니다.'
                     }
                 />
                 <div className={css('profile-grid')}>
@@ -122,25 +197,125 @@ export default function ProfilePage() {
                     </section>
                     {isOwnProfile ? (
                         <form className={css('profile-preferences')} onSubmit={save}>
-                            <h2>관심 게임</h2>
-                            <p>좋아하는 게임을 쉼표로 구분해 입력해 주세요.</p>
-                            <Field label="관심 게임">
-                                <input
-                                    value={games}
-                                    onChange={(event) => setGames(event.target.value)}
-                                    placeholder="오버워치 2, 발로란트, 리그 오브 레전드"
-                                />
-                            </Field>
-                            <Button type="submit" loading={saving}>
-                                저장
-                            </Button>
+                            <div className={css('profile-preferences__heading')}>
+                                <h2>관심 게임</h2>
+                                <Button type="submit" loading={saving} disabled={!hasPreferenceChanges}>
+                                    저장
+                                </Button>
+                            </div>
+                            <p>게임을 검색해 관심 목록에 추가할 수 있습니다.</p>
+                            <div className={css('field')}>
+                                <label className={css('field__label')} htmlFor="preferred-game-search">
+                                    게임 검색
+                                </label>
+                                <div className={css('game-search')}>
+                                    <input
+                                        id="preferred-game-search"
+                                        value={gameQuery}
+                                        onChange={(event) => changeGameQuery(event.target.value)}
+                                        placeholder="두 글자 이상 입력해 주세요"
+                                        role="combobox"
+                                        aria-autocomplete="list"
+                                        aria-expanded={gameQuery.trim().length >= 2}
+                                        aria-controls="preferred-game-results"
+                                        autoComplete="off"
+                                        maxLength={100}
+                                    />
+                                    {gameQuery.trim().length >= 2 && (
+                                        <div
+                                            className={css('game-search__panel')}
+                                            id="preferred-game-results"
+                                            role="listbox"
+                                        >
+                                            {searchingGames || lastSearchedQuery !== gameQuery.trim() ? (
+                                                <div className={css('game-search__status')}>검색 중…</div>
+                                            ) : gameSearchError ? (
+                                                <div className={css('game-search__status game-search__status--error')}>
+                                                    게임을 검색하지 못했어요. 잠시 후 다시 시도해 주세요.
+                                                </div>
+                                            ) : !gameResults.length ? (
+                                                <div className={css('game-search__status')}>
+                                                    검색 결과가 없습니다. 다른 이름을 입력해 보세요.
+                                                </div>
+                                            ) : (
+                                                gameResults.map((game) => (
+                                                    <button
+                                                        key={game.id}
+                                                        type="button"
+                                                        className={css('game-result')}
+                                                        role="option"
+                                                        aria-selected={preferredGames.some(
+                                                            (name) =>
+                                                                name.toLocaleLowerCase() ===
+                                                                game.name.toLocaleLowerCase(),
+                                                        )}
+                                                        onClick={() => addGame(game)}
+                                                    >
+                                                        <GameArtwork name={game.name} src={game.cover_url} size="sm" />
+                                                        <span>
+                                                            <strong>{game.name}</strong>
+                                                            <small>
+                                                                {[
+                                                                    game.first_release_date?.slice(0, 4),
+                                                                    game.platforms.slice(0, 2).join(' · '),
+                                                                ]
+                                                                    .filter(Boolean)
+                                                                    .join(' · ') || '게임 정보 보기'}
+                                                            </small>
+                                                        </span>
+                                                    </button>
+                                                ))
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                                <span className={css('field__hint')}>검색 결과를 누르면 아래 목록에 추가됩니다.</span>
+                            </div>
+                            <div className={css('preference-list')} aria-live="polite">
+                                <div className={css('preference-list__heading')}>
+                                    <strong>선택한 게임</strong>
+                                    <span>{preferredGames.length}개</span>
+                                </div>
+                                {preferredGames.length ? (
+                                    <ul>
+                                        {preferredGames.map((gameName) => (
+                                            <li key={gameName} className={css('preference-game-row')}>
+                                                <GameArtwork
+                                                    name={gameName}
+                                                    src={getCachedGameCover(gameName)}
+                                                    size="sm"
+                                                />
+                                                <strong>{gameName}</strong>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeGame(gameName)}
+                                                    aria-label={`${gameName} 관심 게임에서 삭제`}
+                                                >
+                                                    삭제
+                                                </button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p className={css('preference-list__empty')}>아직 선택한 게임이 없습니다.</p>
+                                )}
+                            </div>
                         </form>
                     ) : (
                         <section className={css('profile-preferences')}>
                             <h2>관심 게임</h2>
-                            <p>
-                                {preferredGames.length ? preferredGames.join(' · ') : '아직 공개된 관심 게임이 없어요.'}
-                            </p>
+                            {displayedPreferredGames.length ? (
+                                <ul className={css('preference-public-list')}>
+                                    {displayedPreferredGames.map((gameName) => (
+                                        <li key={gameName} className={css('preference-game-row')}>
+                                            <GameArtwork name={gameName} src={getCachedGameCover(gameName)} size="sm" />
+                                            <strong>{gameName}</strong>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p>아직 공개된 관심 게임이 없어요.</p>
+                            )}
                         </section>
                     )}
                 </div>
@@ -150,8 +325,8 @@ export default function ProfilePage() {
                             <h2>참여한 그룹</h2>
                             <p>
                                 {isOwnProfile
-                                    ? '내가 함께하고 있는 그룹이에요.'
-                                    : `${profileUser.name}님이 함께하고 있는 그룹이에요.`}
+                                    ? '현재 참여 중인 그룹입니다.'
+                                    : `${profileUser.name}님이 참여 중인 그룹입니다.`}
                             </p>
                         </div>
                     </div>
@@ -169,8 +344,8 @@ export default function ProfilePage() {
                         </div>
                     ) : (
                         <EmptyState
-                            title="참여한 그룹이 없어요"
-                            description="새 그룹에 참여하면 이곳에서 한눈에 확인할 수 있어요."
+                            title="참여 중인 그룹이 없습니다"
+                            description="그룹에 참여하면 여기에서 확인할 수 있습니다."
                         />
                     )}
                 </section>

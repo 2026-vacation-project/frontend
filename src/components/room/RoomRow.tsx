@@ -4,7 +4,7 @@ import type { RoomResponse } from '../../types/api';
 import { relativeTime, roomProgress } from '../../utils/format';
 import { getCachedGameCover } from '../../utils/gameCovers';
 import { GameArtwork } from '../game/GameArtwork';
-import { Avatar, Button, RoleBadge, StatusLabel } from '../ui';
+import { Avatar, Button, StatusLabel } from '../ui';
 
 interface RoomRowProps {
     room: RoomResponse;
@@ -48,21 +48,15 @@ export function RoomRow({
                 <div>
                     <div className={css('room-row__eyeline')}>
                         <strong>{room.game_name}</strong>
-                        {example && <span className={css('example-label')}>화면 예시</span>}
                     </div>
-                    {example ? (
-                        <span className={css('room-row__title')}>
-                            {room.target_role
-                                ? `${room.target_role} 포지션을 찾고 있어요`
-                                : '같이 즐길 팀원을 찾고 있어요'}
-                        </span>
-                    ) : (
-                        <Link className={css('room-row__title')} to={`/rooms/${room.id}?group=${room.group_id}`}>
-                            {room.target_role
-                                ? `${room.target_role} 포지션을 찾고 있어요`
-                                : '같이 즐길 팀원을 찾고 있어요'}
-                        </Link>
-                    )}
+                    <Link
+                        className={css('room-row__title')}
+                        to={example ? '/login' : `/rooms/${room.id}?group=${room.group_id}`}
+                        aria-label={`${room.game_name} 모집 ${example ? '시작하기' : '상세 보기'}`}
+                    >
+                        {room.target_count}
+                        {room.unit_type} 모집
+                    </Link>
                     <div className={css('room-row__meta')}>
                         <Avatar name={hostName} size="sm" />
                         <span>{hostName}</span>
@@ -70,15 +64,6 @@ export function RoomRow({
                         <span>{relativeTime(room.created_at)}</span>
                     </div>
                 </div>
-            </div>
-
-            <div className={css('room-row__need')}>
-                <span className={css('room-row__label')}>필요 포지션</span>
-                {room.target_role ? (
-                    <RoleBadge name={room.target_role} color="#008bfe" />
-                ) : (
-                    <span className={css('muted')}>포지션 무관</span>
-                )}
             </div>
 
             <div className={css('room-row__capacity')}>

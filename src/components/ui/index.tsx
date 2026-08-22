@@ -1,5 +1,5 @@
 import { useEffect, useId } from 'react';
-import { animated, type SpringValues, useSpring, useTransition } from '@react-spring/web';
+import { animated, type SpringValues, useTransition } from '@react-spring/web';
 import { createPortal } from 'react-dom';
 import { css } from '../../appStyles';
 import { Icon, type IconName } from './Icon';
@@ -74,9 +74,9 @@ export function SearchInput(props: React.InputHTMLAttributes<HTMLInputElement>) 
 
 export function Avatar({ name, src, size = 'md' }: { name: string; src?: string | null; size?: 'sm' | 'md' | 'lg' }) {
     return src ? (
-        <img className={css('avatar', `avatar--${size}`)} src={src} alt={`${name} 프로필`} />
+        <img className={css('avatar', `avatar--${size}`)} src={src} alt={`${name} 사진`} draggable={false} />
     ) : (
-        <span className={css('avatar', `avatar--${size}`)} aria-label={`${name} 프로필`}>
+        <span className={css('avatar', `avatar--${size}`)} aria-label={`${name} 사진`}>
             {initials(name)}
         </span>
     );
@@ -110,23 +110,12 @@ export function EmptyState({
     description: string;
     action?: React.ReactNode;
 }) {
-    const styles = useSpring({
-        from: { opacity: 0, transform: 'translateY(10px)' },
-        to: { opacity: 1, transform: 'translateY(0px)' },
-        config: { tension: 260, friction: 26 },
-    });
-
     return (
-        <animated.div className={css('empty-state')} style={styles}>
-            <div className={css('empty-state__mark')} aria-hidden="true">
-                <span />
-                <span />
-                <span />
-            </div>
+        <div className={css('empty-state')}>
             <h2>{title}</h2>
             <p>{description}</p>
             {action}
-        </animated.div>
+        </div>
     );
 }
 
@@ -173,9 +162,9 @@ export function Modal({
     children: React.ReactNode;
 }) {
     const transitions = useTransition(open, {
-        from: { opacity: 0, transform: 'translateY(14px) scale(0.98)' },
-        enter: { opacity: 1, transform: 'translateY(0px) scale(1)' },
-        leave: { opacity: 0, transform: 'translateY(8px) scale(0.98)' },
+        from: { opacity: 0, transform: 'translateY(8px)' },
+        enter: { opacity: 1, transform: 'translateY(0px)' },
+        leave: { opacity: 0, transform: 'translateY(8px)' },
         config: { tension: 300, friction: 28 },
     });
 

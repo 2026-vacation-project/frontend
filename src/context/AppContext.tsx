@@ -95,8 +95,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setActiveGroupId(groupId);
     }, []);
 
-    async function createGroup(name: string) {
-        const created = await groupsApi.create({ name });
+    async function createGroup(name: string, isPublic: boolean) {
+        const created = await groupsApi.create({ name, is_public: isPublic });
         if (currentUser) await groupsApi.join(created.id, currentUser.id);
         await refreshGroups();
         setActiveGroupId(created.id);

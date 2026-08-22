@@ -2,7 +2,6 @@ import { Link } from 'react-router';
 import { css } from '../appStyles';
 import { GameArtwork } from '../components/game/GameArtwork';
 import { RoomRow } from '../components/room/RoomRow';
-import { Button } from '../components/ui';
 import { Icon } from '../components/ui/Icon';
 import { useApp } from '../context/useApp';
 import type { RoomResponse } from '../types/api';
@@ -23,7 +22,6 @@ const exampleRooms: RoomResponse[] = [
         host_id: exampleHost.id,
         game_name: '오버워치 2',
         target_count: 5,
-        target_role: '힐러',
         unit_type: '명',
         status: 'RECRUITING',
         created_at: new Date(Date.now() - 6 * 60_000).toISOString(),
@@ -39,7 +37,6 @@ const exampleRooms: RoomResponse[] = [
         host_id: exampleHost.id,
         game_name: '발로란트',
         target_count: 5,
-        target_role: '감시자',
         unit_type: '명',
         status: 'RECRUITING',
         created_at: new Date(Date.now() - 18 * 60_000).toISOString(),
@@ -56,7 +53,6 @@ const exampleRooms: RoomResponse[] = [
         host_id: exampleHost.id,
         game_name: '리그 오브 레전드',
         target_count: 5,
-        target_role: '정글',
         unit_type: '명',
         status: 'COMPLETED',
         created_at: new Date(Date.now() - 42 * 60_000).toISOString(),
@@ -86,20 +82,20 @@ export default function HomePage() {
                         <br />
                         바로 모으세요.
                     </h1>
-                    <p>플레이할 게임과 필요한 포지션, 남은 자리를 확인하고 마음 맞는 파티에 바로 참여해 보세요.</p>
+                    <p>함께할 그룹을 만들고, 그 안에서 게임과 인원을 정해 모집하세요.</p>
                     <div className={css('hero-actions')}>
                         <Link className={css('button button--primary button--large')} to="/login">
-                            팀모아 시작하기 <Icon name="arrow" />
+                            로그인 <Icon name="arrow" />
                         </Link>
                         <a className={css('button button--secondary button--large')} href="#preview">
-                            모집방 둘러보기
+                            모집방 보기
                         </a>
                     </div>
                 </div>
-                <div className={css('home-hero__board')} aria-label="팀 모집 과정 예시">
+                <div className={css('home-hero__board')} aria-label="팀 모집 현황">
                     <div className={css('board-title')}>
-                        <span>오늘의 라인업</span>
-                        <strong>함께할 자리</strong>
+                        <strong>모집 현황</strong>
+                        <span>남은 자리</span>
                     </div>
                     <div className={css('board-line')}>
                         <span className={css('board-game')}>
@@ -130,23 +126,16 @@ export default function HomePage() {
                         </div>
                         <b>4/5</b>
                     </div>
-                    <div className={css('board-callout')}>
-                        <Icon name="plus" />
-                        <span>
-                            <strong>빈자리를 고르면</strong> 바로 팀에 합류해요
-                        </span>
-                    </div>
                 </div>
             </section>
 
             <section className={css('preview-section page-container')} id="preview">
                 <header className={css('section-heading')}>
                     <div>
-                        <h2>지금 이런 팀을 찾고 있어요</h2>
-                        <p>팀모아에서 모집을 찾는 모습을 미리 둘러보세요.</p>
+                        <h2>모집방 둘러보기</h2>
                     </div>
                     <Link className={css('text-link')} to="/login">
-                        로그인하고 시작하기 <Icon name="arrow" />
+                        로그인 <Icon name="arrow" />
                     </Link>
                 </header>
                 <div className={css('room-list room-list--preview')}>
@@ -164,41 +153,23 @@ export default function HomePage() {
             </section>
 
             <section className={css('how-it-works page-container')} aria-labelledby="how-title">
-                <h2 id="how-title">모집부터 다음 약속까지 한곳에서</h2>
+                <h2 id="how-title">팀모아에서 할 수 있는 일</h2>
                 <div className={css('process-list')}>
                     <div>
-                        <Icon name="search" />
-                        <strong>파티 조건을 빠르게 비교</strong>
-                        <p>게임, 현재 인원, 필요한 포지션을 한 줄에서 확인해요.</p>
+                        <Icon name="group" />
+                        <strong>그룹 만들기</strong>
+                        <p>같이 게임할 사람들과 그룹을 만듭니다.</p>
+                    </div>
+                    <div>
+                        <Icon name="plus" />
+                        <strong>그룹에서 모집하기</strong>
+                        <p>그룹 안에서 게임과 필요한 인원을 정합니다.</p>
                     </div>
                     <div>
                         <Icon name="check" />
-                        <strong>한 번에 참가</strong>
-                        <p>마음에 드는 모집을 찾으면 남은 자리를 바로 채워요.</p>
+                        <strong>함께 참가하기</strong>
+                        <p>멤버와 모집 현황을 확인하고 게임을 시작합니다.</p>
                     </div>
-                    <div>
-                        <Icon name="group" />
-                        <strong>그룹으로 다시 모이기</strong>
-                        <p>친구와 역할을 저장하고 다음 팀도 빠르게 만들어요.</p>
-                    </div>
-                </div>
-                <div className={css('home-close')}>
-                    <div>
-                        <h2>
-                            이번에는 기다리지 말고
-                            <br />
-                            먼저 팀을 열어보세요.
-                        </h2>
-                        <p>간단한 계정 연결 후 바로 그룹과 모집방을 만들 수 있어요.</p>
-                    </div>
-                    <Button
-                        onClick={() => {
-                            window.location.href = '/login';
-                        }}
-                        icon="arrow"
-                    >
-                        시작하기
-                    </Button>
                 </div>
             </section>
         </div>

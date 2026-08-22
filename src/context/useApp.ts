@@ -18,7 +18,7 @@ export interface AppContextValue {
     logout: () => void;
     selectGroup: (groupId: string) => void;
     refreshGroups: () => Promise<void>;
-    createGroup: (name: string) => Promise<GroupResponse>;
+    createGroup: (name: string, isPublic: boolean) => Promise<GroupResponse>;
     refreshCurrentUser: () => Promise<void>;
     showToast: (message: string, tone?: ToastState['tone']) => void;
     clearToast: () => void;

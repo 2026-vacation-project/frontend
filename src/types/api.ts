@@ -33,11 +33,13 @@ export interface GameSearchResult {
 
 export interface GroupCreate {
     name: string;
+    is_public: boolean;
 }
 
 export interface GroupResponse {
     id: string;
     name: string;
+    is_public: boolean;
     created_at?: string | null;
     members?: UserResponse[];
 }
@@ -57,14 +59,12 @@ export interface RoleResponse {
 export interface RoomCreate {
     game_name: string;
     target_count: number;
-    target_role?: string | null;
     unit_type: UnitType;
 }
 
 export interface RoomUpdate {
     game_name?: string | null;
     target_count?: number | null;
-    target_role?: string | null;
     unit_type?: UnitType | null;
     status?: RoomStatus | null;
 }
@@ -75,7 +75,6 @@ export interface RoomResponse {
     host_id: string;
     game_name: string;
     target_count: number;
-    target_role: string | null;
     unit_type: UnitType;
     status: RoomStatus;
     created_at?: string | null;

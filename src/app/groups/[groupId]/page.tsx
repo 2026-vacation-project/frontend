@@ -13,6 +13,29 @@ import { getErrorMessage } from '../../../utils/format';
 
 type GroupTab = 'rooms' | 'members' | 'roles' | 'settings';
 
+async function copyText(value: string) {
+    if (navigator.clipboard?.writeText) {
+        try {
+            await navigator.clipboard.writeText(value);
+            return;
+        } catch {
+            // Some browsers expose the clipboard API but block it outside a secure connection.
+        }
+    }
+
+    const textArea = document.createElement('textarea');
+    textArea.value = value;
+    textArea.setAttribute('readonly', '');
+    textArea.style.position = 'fixed';
+    textArea.style.opacity = '0';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    const copied = document.execCommand('copy');
+    textArea.remove();
+    if (!copied) throw new Error('링크를 복사하지 못했어요.');
+}
+
 export default function GroupDetailPage() {
     const { groupId } = useParams();
     const id = groupId ?? '';
@@ -28,6 +51,8 @@ export default function GroupDetailPage() {
     const [roleColor, setRoleColor] = useState('#008bfe');
     const [editingRole, setEditingRole] = useState<RoleResponse | null>(null);
     const [saving, setSaving] = useState(false);
+    const [joiningGroup, setJoiningGroup] = useState(false);
+    const [savingVisibility, setSavingVisibility] = useState(false);
 
     const tab: GroupTab = location.pathname.endsWith('/members')
         ? 'members'
@@ -36,6 +61,7 @@ export default function GroupDetailPage() {
           : location.pathname.endsWith('/settings')
             ? 'settings'
             : 'rooms';
+    const joined = (group?.members ?? []).some((member) => member.id === currentUser?.id);
 
     const load = useCallback(async () => {
         if (!id) return;
@@ -62,6 +88,10 @@ export default function GroupDetailPage() {
         const timer = window.setTimeout(() => void load(), 0);
         return () => window.clearTimeout(timer);
     }, [load]);
+
+    useEffect(() => {
+        if (group && !joined && tab !== 'rooms') navigate(`/groups/${id}`, { replace: true });
+    }, [group, id, joined, navigate, tab]);
 
     async function saveRole(event: React.FormEvent) {
         event.preventDefault();
@@ -96,7 +126,7 @@ export default function GroupDetailPage() {
         if (!roleId) return;
         try {
             await rolesApi.assign(id, roleId, userId);
-            showToast('멤버에게 역할을 부여했어요.', 'success');
+            showToast('멤버의 역할을 정했어요.', 'success');
         } catch (assignError) {
             showToast(getErrorMessage(assignError), 'error');
         }
@@ -111,6 +141,60 @@ export default function GroupDetailPage() {
             navigate('/groups');
         } catch (leaveError) {
             showToast(getErrorMessage(leaveError), 'error');
+        }
+    }
+
+    async function joinGroup() {
+        if (!currentUser) return;
+        setJoiningGroup(true);
+        try {
+            await groupsApi.join(id, currentUser.id);
+            await refreshGroups();
+            await load();
+            showToast('그룹에 참여했어요. 이제 이 그룹에서 모집할 수 있어요.', 'success');
+        } catch (joinError) {
+            showToast(getErrorMessage(joinError), 'error');
+        } finally {
+            setJoiningGroup(false);
+        }
+    }
+
+    async function shareGroup() {
+        if (!group) return;
+        const url = `${window.location.origin}/groups/${id}`;
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: `${group.name} 그룹`,
+                    text: '팀모아에서 그룹에 참여해 보세요.',
+                    url,
+                });
+                return;
+            } catch (shareError) {
+                if (shareError instanceof DOMException && shareError.name === 'AbortError') return;
+            }
+        }
+
+        try {
+            await copyText(url);
+            showToast('그룹 링크를 복사했어요.', 'success');
+        } catch (copyError) {
+            showToast(getErrorMessage(copyError), 'error');
+        }
+    }
+
+    async function changeVisibility(isPublic: boolean) {
+        if (!group || group.is_public === isPublic) return;
+        setSavingVisibility(true);
+        try {
+            const updated = await groupsApi.updateVisibility(id, isPublic);
+            setGroup(updated);
+            await refreshGroups();
+            showToast(isPublic ? '그룹을 공개로 바꿨어요.' : '그룹을 비공개로 바꿨어요.', 'success');
+        } catch (visibilityError) {
+            showToast(getErrorMessage(visibilityError), 'error');
+        } finally {
+            setSavingVisibility(false);
         }
     }
 
@@ -158,14 +242,25 @@ export default function GroupDetailPage() {
                         <div>
                             <h1>{group.name}</h1>
                             <p>
-                                멤버 {members.length}명 · 모집 중{' '}
+                                {group.is_public ? '공개 그룹' : '비공개 그룹'} · 멤버 {members.length}명 · 모집 중{' '}
                                 {rooms.filter((room) => room.status === 'RECRUITING').length}개
                             </p>
                         </div>
                     </div>
-                    <Link className={css('button button--primary')} to={`/rooms/create?group=${id}`}>
-                        그룹에서 모집하기
-                    </Link>
+                    <div className={css('group-detail__actions')}>
+                        <Button tone="secondary" onClick={() => void shareGroup()}>
+                            링크 공유
+                        </Button>
+                        {joined ? (
+                            <Link className={css('button button--primary')} to={`/rooms/create?group=${id}`}>
+                                그룹에서 모집하기
+                            </Link>
+                        ) : (
+                            <Button onClick={() => void joinGroup()} loading={joiningGroup}>
+                                그룹 참여하기
+                            </Button>
+                        )}
+                    </div>
                 </header>
                 <nav className={css('group-tabs')} aria-label="그룹 메뉴">
                     {(
@@ -175,11 +270,13 @@ export default function GroupDetailPage() {
                             ['roles', '역할', `/groups/${id}/roles`],
                             ['settings', '설정', `/groups/${id}/settings`],
                         ] as const
-                    ).map(([value, label, to]) => (
-                        <Link className={css(tab === value && 'is-active')} key={value} to={to}>
-                            {label}
-                        </Link>
-                    ))}
+                    )
+                        .filter(([value]) => joined || value === 'rooms')
+                        .map(([value, label, to]) => (
+                            <Link className={css(tab === value && 'is-active')} key={value} to={to}>
+                                {label}
+                            </Link>
+                        ))}
                 </nav>
 
                 {tab === 'rooms' && (
@@ -187,7 +284,7 @@ export default function GroupDetailPage() {
                         <div className={css('section-heading')}>
                             <div>
                                 <h2>그룹 모집방</h2>
-                                <p>이 그룹에서 함께할 수 있는 모집을 모아봤어요.</p>
+                                <p>이 그룹에서 만든 모집방입니다.</p>
                             </div>
                         </div>
                         {rooms.length ? (
@@ -206,32 +303,45 @@ export default function GroupDetailPage() {
                             </div>
                         ) : (
                             <EmptyState
-                                title="아직 모집이 없어요"
-                                description="그룹의 첫 모집을 시작해 보세요."
+                                title={joined ? '이 그룹의 첫 모집방을 만들어 보세요' : '이 그룹에 참여해 주세요'}
+                                description={
+                                    joined
+                                        ? '게임과 필요한 인원을 정하면 바로 모집을 시작할 수 있습니다.'
+                                        : '그룹에 참여하면 이 안에서 모집방을 만들고 참가할 수 있습니다.'
+                                }
                                 action={
-                                    <Link className={css('button button--primary')} to={`/rooms/create?group=${id}`}>
-                                        모집 시작하기
-                                    </Link>
+                                    joined ? (
+                                        <Link
+                                            className={css('button button--primary')}
+                                            to={`/rooms/create?group=${id}`}
+                                        >
+                                            이 그룹에서 모집하기
+                                        </Link>
+                                    ) : (
+                                        <Button onClick={() => void joinGroup()} loading={joiningGroup}>
+                                            그룹 참여하기
+                                        </Button>
+                                    )
                                 }
                             />
                         )}
                     </section>
                 )}
 
-                {tab === 'members' && (
+                {tab === 'members' && joined && (
                     <section className={css('tab-content')}>
                         <div className={css('section-heading')}>
                             <div>
                                 <h2>멤버</h2>
-                                <p>그룹 구성원에게 기존 역할을 부여할 수 있어요.</p>
+                                <p>멤버의 역할을 정할 수 있습니다.</p>
                             </div>
                             <span className={css('count-label')}>{members.length}명</span>
                         </div>
                         {members.length ? (
                             <div className={css('member-table')}>
                                 <div className={css('member-table__head')}>
-                                    <span>사용자</span>
-                                    <span>역할 부여</span>
+                                    <span>멤버</span>
+                                    <span>역할 정하기</span>
                                 </div>
                                 {members.map((member) => (
                                     <div className={css('member-table__row')} key={member.id}>
@@ -245,7 +355,7 @@ export default function GroupDetailPage() {
                                         <select
                                             defaultValue=""
                                             onChange={(event) => void assignRole(event.target.value, member.id)}
-                                            aria-label={`${member.name}에게 역할 부여`}
+                                            aria-label={`${member.name}의 역할 정하기`}
                                         >
                                             <option value="" disabled>
                                                 역할 선택
@@ -262,19 +372,19 @@ export default function GroupDetailPage() {
                         ) : (
                             <EmptyState
                                 title="아직 멤버가 없어요"
-                                description="친구들이 그룹에 참여하면 이곳에서 역할을 정할 수 있어요."
+                                description="멤버가 참여하면 역할을 정할 수 있습니다."
                             />
                         )}
                     </section>
                 )}
 
-                {tab === 'roles' && (
+                {tab === 'roles' && joined && (
                     <section className={css('tab-content role-layout')}>
                         <div>
                             <div className={css('section-heading')}>
                                 <div>
                                     <h2>역할</h2>
-                                    <p>이름과 색상으로 그룹 안의 역할을 구분하세요.</p>
+                                    <p>그룹에서 사용할 역할 이름과 색상을 관리합니다.</p>
                                 </div>
                             </div>
                             {roles.length ? (
@@ -306,7 +416,7 @@ export default function GroupDetailPage() {
                             ) : (
                                 <EmptyState
                                     title="아직 역할이 없어요"
-                                    description="첫 역할을 만들어 멤버와 모집 조건에 사용해 보세요."
+                                    description="역할을 만든 뒤 멤버에게 정해 줄 수 있습니다."
                                 />
                             )}
                         </div>
@@ -332,7 +442,7 @@ export default function GroupDetailPage() {
                                         value={roleColor}
                                         onChange={(event) => setRoleColor(event.target.value)}
                                         pattern="^#[0-9A-Fa-f]{6}$"
-                                        aria-label="HEX 색상"
+                                        aria-label="색상 직접 입력"
                                     />
                                 </div>
                             </Field>
@@ -362,13 +472,30 @@ export default function GroupDetailPage() {
                     </section>
                 )}
 
-                {tab === 'settings' && (
+                {tab === 'settings' && joined && (
                     <section className={css('tab-content settings-stack')}>
                         <div className={css('settings-row')}>
                             <div>
                                 <h2>그룹 이름</h2>
                                 <p>{group.name}</p>
                             </div>
+                        </div>
+                        <div className={css('settings-row')}>
+                            <div>
+                                <h2>그룹 공개 범위</h2>
+                                <p>
+                                    {group.is_public
+                                        ? '그룹 목록에서 누구나 찾고 참여할 수 있어요.'
+                                        : '참여한 멤버에게만 보이며, 다른 사람은 공유 링크로 들어올 수 있어요.'}
+                                </p>
+                            </div>
+                            <Button
+                                tone="secondary"
+                                loading={savingVisibility}
+                                onClick={() => void changeVisibility(!group.is_public)}
+                            >
+                                {group.is_public ? '비공개로 변경' : '공개로 변경'}
+                            </Button>
                         </div>
                         <div className={css('danger-zone')}>
                             <div>

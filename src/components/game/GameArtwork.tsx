@@ -23,7 +23,13 @@ export function GameArtwork({
             aria-hidden="true"
         >
             {showImage ? (
-                <img src={src ?? undefined} alt="" loading="lazy" onError={() => setFailedSrc(src ?? null)} />
+                <img
+                    src={src ?? undefined}
+                    alt=""
+                    loading="lazy"
+                    draggable={false}
+                    onError={() => setFailedSrc(src ?? null)}
+                />
             ) : (
                 <span className={css('game-artwork__fallback')}>{name.trim().slice(0, 1).toUpperCase()}</span>
             )}

@@ -52,8 +52,7 @@ export function createOAuthAuthorizationUrl(provider: OAuthProvider, returnTo?: 
     const config = providerConfig[provider];
     const clientId = config.clientId.trim();
     if (!clientId) {
-        const providerName = provider === 'google' ? 'Google' : 'Discord';
-        throw new Error(`${providerName} OAuth 클라이언트 ID가 설정되지 않았어요.`);
+        throw new Error('로그인이 아직 준비되지 않았어요. 관리자에게 문의해 주세요.');
     }
 
     const state = createState();
@@ -80,20 +79,20 @@ export function consumeOAuthAttempt(provider: OAuthProvider, receivedState: stri
     sessionStorage.removeItem(key);
 
     if (!stored || !receivedState) {
-        throw new Error('로그인 요청 정보를 찾을 수 없어요. 로그인 페이지에서 다시 시도해 주세요.');
+        throw new Error('로그인을 처음부터 다시 시도해 주세요.');
     }
 
     try {
         const attempt = JSON.parse(stored) as Partial<OAuthAttempt>;
         if (typeof attempt.state !== 'string' || attempt.state !== receivedState) {
-            throw new Error('로그인 요청의 보안 정보가 일치하지 않아요. 다시 시도해 주세요.');
+            throw new Error('로그인을 확인하지 못했어요. 다시 시도해 주세요.');
         }
         if (typeof attempt.startedAt !== 'number' || Date.now() - attempt.startedAt > oauthAttemptLifetimeMs) {
-            throw new Error('로그인 요청이 만료되었어요. 다시 시도해 주세요.');
+            throw new Error('로그인 시간이 지났어요. 다시 시도해 주세요.');
         }
         return sanitizeReturnTo(attempt.returnTo);
     } catch (error) {
-        if (error instanceof Error && error.message.startsWith('로그인 요청')) throw error;
-        throw new Error('로그인 요청 정보를 확인하지 못했어요. 다시 시도해 주세요.', { cause: error });
+        if (error instanceof Error && error.message.startsWith('로그인')) throw error;
+        throw new Error('로그인을 확인하지 못했어요. 다시 시도해 주세요.', { cause: error });
     }
 }

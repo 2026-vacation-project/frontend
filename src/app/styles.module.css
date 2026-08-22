@@ -7,7 +7,6 @@
 }
 .route-view {
     min-height: inherit;
-    will-change: opacity, transform;
 }
 .topbar {
     position: sticky;
@@ -15,8 +14,7 @@
     z-index: 40;
     height: var(--topbar-height);
     border-bottom: 1px solid var(--color-divider);
-    background: color-mix(in srgb, var(--color-background) 96%, transparent);
-    backdrop-filter: blur(14px);
+    background: var(--color-surface);
 }
 .topbar__inner {
     width: min(calc(100% - 2rem), var(--content-width));
@@ -32,7 +30,7 @@
     align-items: center;
     gap: 0.65rem;
     font-size: 1.22rem;
-    font-weight: 800;
+    font-weight: 780;
     letter-spacing: -0.035em;
     white-space: nowrap;
 }
@@ -103,7 +101,7 @@
     width: 12rem;
     padding: var(--space-2);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     background: var(--color-surface);
     box-shadow: var(--shadow-floating);
     transform-origin: top right;
@@ -135,7 +133,7 @@
     justify-content: space-between;
     gap: var(--space-5);
     padding: var(--space-7) 0 var(--space-6);
-    border-bottom: 1px solid var(--color-divider);
+    border-bottom: 1px solid var(--color-text-primary);
 }
 .page-header p {
     margin-top: var(--space-2);

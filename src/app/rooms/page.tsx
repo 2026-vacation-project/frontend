@@ -5,6 +5,7 @@ import { roomsApi } from '../../api/rooms';
 import { GroupRow } from '../../components/group/GroupRow';
 import { RoomRow } from '../../components/room/RoomRow';
 import { EmptyState, InlineNotice, LoadingRows, SearchInput } from '../../components/ui';
+import { Icon } from '../../components/ui/Icon';
 import { useApp } from '../../context/useApp';
 import type { RoomResponse } from '../../types/api';
 import { getErrorMessage } from '../../utils/format';
@@ -19,6 +20,14 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
     const [query, setQuery] = useState('');
     const [filter, setFilter] = useState<Filter>('all');
     const [joiningId, setJoiningId] = useState<string | null>(null);
+    const joinedGroups = groups.filter((group) =>
+        (group.members ?? []).some((member) => member.id === currentUser?.id),
+    );
+    const activeGroupJoined = Boolean(activeGroup && joinedGroups.some((group) => group.id === activeGroup.id));
+    const selectedJoinedGroup = joinedGroups.find((group) => group.id === activeGroupId) ?? joinedGroups[0];
+    const hasNoGroups = !loadingGroups && groups.length === 0;
+    const needsGroup = !loadingGroups && joinedGroups.length === 0;
+    const createRoomPath = selectedJoinedGroup ? `/rooms/create?group=${selectedJoinedGroup.id}` : '/rooms/create';
 
     const loadRooms = useCallback(async () => {
         if (!activeGroupId) {
@@ -44,9 +53,7 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
     const visibleRooms = useMemo(
         () =>
             rooms.filter((room) => {
-                const matchesQuery = `${room.game_name} ${room.target_role ?? ''}`
-                    .toLowerCase()
-                    .includes(query.trim().toLowerCase());
+                const matchesQuery = room.game_name.toLowerCase().includes(query.trim().toLowerCase());
                 const matchesFilter =
                     filter === 'all' ||
                     (filter === 'recruiting' && room.status === 'RECRUITING') ||
@@ -59,6 +66,10 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
 
     async function joinRoom(room: RoomResponse) {
         if (!currentUser) return;
+        if (!activeGroupJoined) {
+            showToast('모집에 참가하려면 먼저 이 그룹에 참여해 주세요.', 'info');
+            return;
+        }
         setJoiningId(room.id);
         try {
             await roomsApi.join(room.group_id, room.id, currentUser.id);
@@ -75,16 +86,54 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
         <div className={css('rooms-page page-container')}>
             <section className={css('explorer-heading')}>
                 <div>
-                    <h1>{home ? `${currentUser?.name ?? ''}님, 오늘은 무엇을 함께할까요?` : '모집방 찾기'}</h1>
+                    <h1>
+                        {activeGroup
+                            ? `${activeGroup.name} 모집방`
+                            : home
+                              ? `${currentUser?.name ?? ''}님의 모집방`
+                              : '모집방'}
+                    </h1>
                     <p>
                         {activeGroup
-                            ? `${activeGroup.name} 안에서 지금 열려 있는 모집을 살펴보세요.`
-                            : '그룹을 선택하고 함께할 팀원을 찾아보세요.'}
+                            ? activeGroupJoined
+                                ? '이 그룹 안에서 만든 모집방을 보고 있어요.'
+                                : '이 그룹에 참여하면 모집방을 만들고 참가할 수 있어요.'
+                            : hasNoGroups
+                              ? '모집방은 그룹 안에서 만들고 함께 관리합니다.'
+                              : '먼저 그룹을 골라 주세요.'}
                     </p>
                 </div>
-                <Link className={css('button button--primary')} to="/rooms/create">
-                    새 모집 만들기
-                </Link>
+                <div className={css('explorer-heading__actions')}>
+                    {home && !hasNoGroups && (
+                        <Link className={css('button button--secondary')} to="/groups/create">
+                            <Icon name="plus" className={css('button__icon')} />
+                            <span>그룹 추가</span>
+                        </Link>
+                    )}
+                    <Link
+                        className={css('button button--primary')}
+                        to={
+                            hasNoGroups
+                                ? '/groups/create?next=room'
+                                : activeGroup && !activeGroupJoined
+                                  ? `/groups/${activeGroup.id}`
+                                  : needsGroup
+                                    ? '/groups?next=room'
+                                    : createRoomPath
+                        }
+                    >
+                        {home && hasNoGroups && <Icon name="plus" className={css('button__icon')} />}
+                        <span>
+                            {hasNoGroups
+                                ? '첫 그룹 만들기'
+                                : activeGroup && !activeGroupJoined
+                                  ? '이 그룹 참여하기'
+                                  : needsGroup
+                                    ? '참여할 그룹 찾기'
+                                    : '이 그룹에서 모집하기'}
+                        </span>
+                    </Link>
+                </div>
             </section>
 
             <div className={css('explorer-grid')}>
@@ -93,7 +142,7 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
                         <SearchInput
                             value={query}
                             onChange={(event) => setQuery(event.target.value)}
-                            placeholder="게임 또는 포지션 검색"
+                            placeholder="게임 검색"
                         />
                         <div className={css('filter-tabs')} role="tablist" aria-label="모집 필터">
                             {(
@@ -116,7 +165,11 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
                     </div>
                     <div className={css('scope-note')}>
                         <span />
-                        그룹을 바꾸면 해당 그룹의 모집을 바로 확인할 수 있어요.
+                        {activeGroup
+                            ? activeGroupJoined
+                                ? `${activeGroup.name} 모집방만 보고 있어요.`
+                                : `${activeGroup.name} 그룹에 참여하기 전입니다.`
+                            : '그룹을 고르면 모집방을 볼 수 있어요.'}
                     </div>
 
                     {loading || loadingGroups ? (
@@ -129,10 +182,20 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
                                 다시 시도
                             </button>
                         </InlineNotice>
+                    ) : hasNoGroups ? (
+                        <EmptyState
+                            title="함께 모집할 그룹부터 만들어 보세요"
+                            description="그룹을 만들면 바로 그 안에서 첫 모집방을 열 수 있습니다."
+                            action={
+                                <Link className={css('button button--primary')} to="/groups/create?next=room">
+                                    첫 그룹 만들기
+                                </Link>
+                            }
+                        />
                     ) : !activeGroup ? (
                         <EmptyState
                             title="먼저 그룹을 선택해 주세요"
-                            description="참여 중인 그룹을 선택하면 열려 있는 모집을 보여드릴게요."
+                            description="그룹 목록에서 확인할 그룹을 선택하세요."
                             action={
                                 <Link className={css('button button--primary')} to="/groups">
                                     그룹 선택하기
@@ -141,13 +204,26 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
                         />
                     ) : visibleRooms.length === 0 ? (
                         <EmptyState
-                            title={rooms.length ? '검색 결과가 없어요' : '아직 모집 중인 팀이 없어요'}
+                            title={
+                                rooms.length
+                                    ? '검색 결과가 없어요'
+                                    : activeGroupJoined
+                                      ? '아직 모집 중인 팀이 없어요'
+                                      : '이 그룹에 먼저 참여해 주세요'
+                            }
                             description={
-                                rooms.length ? '검색어나 필터를 바꿔보세요.' : '첫 모집을 열고 친구들에게 알려보세요.'
+                                rooms.length
+                                    ? '검색어나 필터를 바꿔보세요.'
+                                    : activeGroupJoined
+                                      ? '이 그룹의 첫 모집을 만들어 보세요.'
+                                      : '그룹에 참여하면 모집방을 만들고 참가할 수 있습니다.'
                             }
                             action={
-                                <Link className={css('button button--primary')} to="/rooms/create">
-                                    모집 시작하기
+                                <Link
+                                    className={css('button button--primary')}
+                                    to={activeGroupJoined ? createRoomPath : `/groups/${activeGroup.id}`}
+                                >
+                                    {activeGroupJoined ? '이 그룹에서 모집하기' : '그룹 참여하기'}
                                 </Link>
                             }
                         />
@@ -193,17 +269,17 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
                         </div>
                     ) : (
                         <div className={css('compact-empty')}>
-                            <p>아직 그룹이 없어요.</p>
-                            <Link className={css('text-link')} to="/groups/create">
+                            <p>모집방은 그룹 안에서 만들어집니다.</p>
+                            <Link className={css('text-link')} to="/groups/create?next=room">
                                 첫 그룹 만들기
                             </Link>
                         </div>
                     )}
                     {activeGroup && (
                         <div className={css('group-brief')}>
-                            <span>현재 선택</span>
+                            <span>선택한 그룹</span>
                             <strong>{activeGroup.name}</strong>
-                            <p>{activeGroup.members?.length ?? 0}명의 멤버가 함께하고 있어요.</p>
+                            <p>멤버 {activeGroup.members?.length ?? 0}명</p>
                             <Link className={css('text-link')} to={`/groups/${activeGroup.id}`}>
                                 그룹 관리
                             </Link>

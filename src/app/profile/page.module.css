@@ -14,15 +14,90 @@
     color: var(--color-text-secondary);
 }
 .profile-preferences {
+    min-width: 0;
     display: grid;
+    align-content: start;
     gap: var(--space-3);
 }
 .profile-preferences > p {
     color: var(--color-text-secondary);
     font-size: var(--text-small);
 }
+.profile-preferences__heading {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
 .profile-preferences .button {
     justify-self: end;
+}
+.preference-list {
+    margin-top: var(--space-2);
+}
+.preference-list__heading {
+    min-height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    border-bottom: 1px solid var(--color-text-primary);
+    font-size: var(--text-small);
+}
+.preference-list__heading > span {
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
+}
+.preference-list ul,
+.preference-public-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+.preference-game-row {
+    min-height: 4.75rem;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--color-divider);
+}
+.preference-game-row > strong {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.preference-game-row > button {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 var(--space-2);
+    border: 0;
+    color: var(--color-text-secondary);
+    background: transparent;
+    font-size: var(--text-small);
+    font-weight: 700;
+}
+.preference-game-row > button:hover {
+    color: var(--color-error);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+.preference-list__empty {
+    min-height: 5rem;
+    display: grid;
+    place-items: center;
+    border-bottom: 1px solid var(--color-divider);
+    color: var(--color-text-muted);
+    font-size: var(--text-small);
+}
+.preference-public-list {
+    border-top: 1px solid var(--color-text-primary);
+}
+.preference-public-list .preference-game-row {
+    grid-template-columns: auto minmax(0, 1fr);
 }
 .profile-groups {
     padding: var(--space-7) 0;

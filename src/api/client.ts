@@ -16,31 +16,20 @@ export class ApiError extends Error {
     }
 }
 
-function readErrorMessage(payload: unknown, status: number) {
+function readErrorMessage(status: number) {
     const friendly: Record<number, string> = {
-        400: '요청 내용을 다시 확인해 주세요.',
+        400: '입력한 내용을 다시 확인해 주세요.',
         401: '로그인이 필요해요.',
-        403: '이 작업을 수행할 권한이 없어요.',
-        404: '요청한 정보를 찾을 수 없어요.',
-        409: '이미 처리되었거나 현재 상태와 충돌해요.',
+        403: '이 작업을 할 수 없어요.',
+        404: '찾는 정보가 없어요.',
+        409: '이미 끝났거나 지금은 할 수 없는 작업이에요.',
         422: '입력한 내용을 확인해 주세요.',
         500: '잠시 문제가 생겼어요. 조금 뒤에 다시 시도해 주세요.',
         503: '서비스를 잠시 이용할 수 없어요. 조금 뒤에 다시 시도해 주세요.',
     };
     if (friendly[status]) return friendly[status];
 
-    if (payload && typeof payload === 'object' && 'detail' in payload) {
-        const detail = (payload as { detail: unknown }).detail;
-        if (typeof detail === 'string') return detail;
-        if (Array.isArray(detail)) {
-            const first = detail[0];
-            if (first && typeof first === 'object' && 'msg' in first) {
-                return String(first.msg);
-            }
-        }
-    }
-
-    return '요청을 처리하지 못했어요.';
+    return '잠시 문제가 생겼어요. 다시 시도해 주세요.';
 }
 
 export async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
@@ -69,7 +58,7 @@ export async function apiRequest<T>(path: string, init: RequestInit = {}): Promi
 
     if (!response.ok) {
         if (response.status === 401 && session?.accessToken) clearAuthSession();
-        throw new ApiError(readErrorMessage(payload, response.status), response.status, payload);
+        throw new ApiError(readErrorMessage(response.status), response.status, payload);
     }
 
     return payload as T;

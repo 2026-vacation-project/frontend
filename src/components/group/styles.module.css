@@ -4,7 +4,10 @@
     align-items: center;
     border-bottom: 1px solid var(--color-divider);
 }
-.group-row__select {
+.group-row:hover {
+    background: var(--color-surface-secondary);
+}
+.group-row__link {
     min-width: 0;
     flex: 1;
     display: flex;
@@ -15,30 +18,24 @@
     background: transparent;
     text-align: left;
 }
-.group-row__select > span:nth-child(2) {
+.group-row__link {
+    align-self: stretch;
+}
+.group-row__link > svg {
+    width: 1rem;
+    margin-left: auto;
+}
+.group-row__link > span:nth-child(2) {
     min-width: 0;
     display: grid;
 }
-.group-row__select strong {
+.group-row__link strong {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.group-row__select small {
+.group-row__link small {
     color: var(--color-text-muted);
-}
-.group-row > a {
-    width: 2rem;
-    height: 2rem;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-}
-.group-row > a:hover {
-    background: var(--color-surface-secondary);
-}
-.group-row > a svg {
-    width: 1rem;
 }
 .group-row.is-active .group-mark {
     color: var(--color-on-primary);

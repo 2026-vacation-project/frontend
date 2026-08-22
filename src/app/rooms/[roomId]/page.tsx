@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { css } from '../../../appStyles';
 import { roomsApi } from '../../../api/rooms';
 import { GameArtwork } from '../../../components/game/GameArtwork';
-import { Avatar, Button, EmptyState, LoadingRows, RoleBadge, StatusLabel } from '../../../components/ui';
+import { Avatar, Button, EmptyState, LoadingRows, StatusLabel } from '../../../components/ui';
 import { useApp } from '../../../context/useApp';
 import { AuthGate } from '../../layout';
 import type { RoomResponse } from '../../../types/api';
@@ -23,7 +23,7 @@ export default function RoomDetailPage() {
 
     const loadRoom = useCallback(async () => {
         if (!roomId || !groupId) {
-            setError('그룹 정보가 없어 모집방을 조회할 수 없어요.');
+            setError('그룹을 찾지 못해 모집방을 열 수 없어요.');
             setLoading(false);
             return;
         }
@@ -65,7 +65,7 @@ export default function RoomDetailPage() {
         try {
             await roomsApi.remove(groupId, room.id);
             showToast('모집방을 삭제했어요.', 'success');
-            navigate('/rooms');
+            navigate(`/groups/${groupId}`);
         } catch (deleteError) {
             showToast(getErrorMessage(deleteError), 'error');
         } finally {
@@ -104,6 +104,12 @@ export default function RoomDetailPage() {
         <AuthGate>
             <div className={css('room-detail page-container')}>
                 <nav className={css('breadcrumb')} aria-label="현재 위치">
+                    {group && (
+                        <>
+                            <Link to={`/groups/${group.id}`}>{group.name}</Link>
+                            <span>/</span>
+                        </>
+                    )}
                     <Link to="/rooms">모집방</Link>
                     <span>/</span>
                     <span>{room.game_name}</span>
@@ -120,9 +126,8 @@ export default function RoomDetailPage() {
                             </div>
                         </div>
                         <h1>
-                            {room.target_role
-                                ? `${room.target_role} 역할과 함께할 팀원을 찾아요`
-                                : '함께 즐길 팀원을 찾고 있어요'}
+                            {room.target_count}
+                            {room.unit_type} 모집
                         </h1>
                     </div>
                     <StatusLabel status={room.status} />
@@ -132,7 +137,7 @@ export default function RoomDetailPage() {
                     <section className={css('detail-main')}>
                         <div className={css('lineup-summary')}>
                             <div>
-                                <span>현재 라인업</span>
+                                <span>참가 현황</span>
                                 <strong>
                                     {participants.length}
                                     <small>
@@ -150,27 +155,17 @@ export default function RoomDetailPage() {
                             </div>
                         </div>
                         <section className={css('detail-section')}>
-                            <h2>모집 조건</h2>
+                            <h2>모집 정보</h2>
                             <dl className={css('condition-list')}>
                                 <div>
                                     <dt>게임</dt>
                                     <dd>{room.game_name}</dd>
                                 </div>
                                 <div>
-                                    <dt>목표 인원</dt>
+                                    <dt>모을 인원</dt>
                                     <dd>
                                         {room.target_count}
                                         {room.unit_type}
-                                    </dd>
-                                </div>
-                                <div>
-                                    <dt>필요 포지션</dt>
-                                    <dd>
-                                        {room.target_role ? (
-                                            <RoleBadge name={room.target_role} color="#008bfe" />
-                                        ) : (
-                                            '포지션 무관'
-                                        )}
                                     </dd>
                                 </div>
                                 <div>
@@ -183,7 +178,7 @@ export default function RoomDetailPage() {
                             <div className={css('section-heading')}>
                                 <div>
                                     <h2>참가자</h2>
-                                    <p>{participants.length}명이 함께하고 있어요.</p>
+                                    <p>{participants.length}명 참가</p>
                                 </div>
                             </div>
                             {participants.length ? (
@@ -204,7 +199,10 @@ export default function RoomDetailPage() {
                                     ))}
                                 </div>
                             ) : (
-                                <EmptyState title="아직 참가자가 없어요" description="첫 번째 자리를 채워보세요." />
+                                <EmptyState
+                                    title="참가자가 없습니다"
+                                    description="모집 중에는 누구나 참가할 수 있습니다."
+                                />
                             )}
                         </section>
                     </section>
@@ -216,9 +214,7 @@ export default function RoomDetailPage() {
                             <small>{room.unit_type}</small>
                         </strong>
                         <p>
-                            {room.status === 'RECRUITING'
-                                ? '지금 참가하면 바로 라인업에 추가됩니다.'
-                                : '이 모집은 더 이상 참가할 수 없어요.'}
+                            {room.status === 'RECRUITING' ? '참가하면 참가자 목록에 추가됩니다.' : '마감된 모집입니다.'}
                         </p>
                         <Button
                             className={css('join-panel__button')}

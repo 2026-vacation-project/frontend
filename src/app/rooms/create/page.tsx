@@ -5,7 +5,7 @@ import { css } from '../../../appStyles';
 import { gamesApi } from '../../../api/games';
 import { roomsApi } from '../../../api/rooms';
 import { GameArtwork } from '../../../components/game/GameArtwork';
-import { Button, Field, InlineNotice, LoadingRows } from '../../../components/ui';
+import { Button, EmptyState, Field, InlineNotice, LoadingRows } from '../../../components/ui';
 import { useApp } from '../../../context/useApp';
 import type { GameSearchResult, RoomCreate, UnitType } from '../../../types/api';
 import { cacheGameCover, getCachedGameCover } from '../../../utils/gameCovers';
@@ -16,10 +16,10 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
     const { roomId } = useParams();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    const { currentUser, groups, activeGroupId, selectGroup, showToast } = useApp();
+    const { currentUser, groups, activeGroupId, loadingGroups, selectGroup, showToast } = useApp();
     const requestedGroup = searchParams.get('group') || activeGroupId || groups[0]?.id || '';
     const [groupId, setGroupId] = useState(requestedGroup);
-    const [form, setForm] = useState<RoomCreate>({ game_name: '', target_count: 5, target_role: '', unit_type: '명' });
+    const [form, setForm] = useState<RoomCreate>({ game_name: '', target_count: 5, unit_type: '명' });
     const [loading, setLoading] = useState(edit);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -29,6 +29,13 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
     const [searchingGames, setSearchingGames] = useState(false);
     const [gameSearchError, setGameSearchError] = useState<string | null>(null);
     const [lastSearchedQuery, setLastSearchedQuery] = useState('');
+    const joinedGroups = groups.filter((group) =>
+        (group.members ?? []).some((member) => member.id === currentUser?.id),
+    );
+    const effectiveGroupId = joinedGroups.some((group) => group.id === groupId)
+        ? groupId
+        : (joinedGroups.find((group) => group.id === activeGroupId)?.id ?? joinedGroups[0]?.id ?? '');
+    const selectedGroup = joinedGroups.find((group) => group.id === effectiveGroupId);
 
     const gameResultTransitions = useTransition(gameResults, {
         keys: (game) => game.id,
@@ -40,17 +47,16 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
     });
 
     useEffect(() => {
-        if (!edit || !roomId || !groupId) return;
+        if (!edit || !roomId || !effectiveGroupId) return;
         const timer = window.setTimeout(() => {
             setLoading(true);
             roomsApi
-                .get(groupId, roomId)
+                .get(effectiveGroupId, roomId)
                 .then((room) => {
                     const coverUrl = getCachedGameCover(room.game_name);
                     setForm({
                         game_name: room.game_name,
                         target_count: room.target_count,
-                        target_role: room.target_role ?? '',
                         unit_type: room.unit_type,
                     });
                     setConfirmedGameName(room.game_name);
@@ -65,7 +71,7 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
                 .finally(() => setLoading(false));
         }, 0);
         return () => window.clearTimeout(timer);
-    }, [edit, roomId, groupId]);
+    }, [edit, roomId, effectiveGroupId]);
 
     useEffect(() => {
         const searchQuery = form.game_name.trim();
@@ -122,18 +128,17 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
 
     async function submit(event: React.FormEvent) {
         event.preventDefault();
-        if (!currentUser || !groupId) return;
+        if (!currentUser || !effectiveGroupId) return;
         setSubmitting(true);
         setError(null);
         try {
-            const body = { ...form, target_role: form.target_role?.trim() || null };
             const room =
                 edit && roomId
-                    ? await roomsApi.update(groupId, roomId, body)
-                    : await roomsApi.create(groupId, currentUser.id, body);
-            selectGroup(groupId);
+                    ? await roomsApi.update(effectiveGroupId, roomId, form)
+                    : await roomsApi.create(effectiveGroupId, currentUser.id, form);
+            selectGroup(effectiveGroupId);
             showToast(edit ? '모집 정보를 수정했어요.' : '새 모집을 시작했어요.', 'success');
-            navigate(`/rooms/${room.id}?group=${groupId}`);
+            navigate(`/rooms/${room.id}?group=${effectiveGroupId}`);
         } catch (submitError) {
             setError(getErrorMessage(submitError));
         } finally {
@@ -146,35 +151,58 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
             <div className={css('form-page page-container')}>
                 <PageHeader
                     title={edit ? '모집방 수정' : '새 모집 만들기'}
-                    description="필요한 정보만 입력하면 바로 모집을 시작할 수 있어요."
+                    description={
+                        selectedGroup
+                            ? `${selectedGroup.name} 그룹 안에 ${edit ? '있는 모집방을 수정합니다.' : '새 모집방을 만듭니다.'}`
+                            : '모집방은 그룹 안에 만들어집니다.'
+                    }
                 />
-                {loading ? (
+                {loading || loadingGroups ? (
                     <LoadingRows count={3} />
+                ) : !joinedGroups.length ? (
+                    <EmptyState
+                        title={groups.length ? '먼저 그룹에 참여해 주세요' : '먼저 그룹을 만들어 주세요'}
+                        description={
+                            groups.length
+                                ? '기존 그룹에 참여하거나 새 그룹을 만들면 그 안에서 모집을 시작할 수 있습니다.'
+                                : '그룹을 만든 다음 바로 그 안에서 첫 모집을 시작할 수 있습니다.'
+                        }
+                        action={
+                            <Link
+                                className={css('button button--primary')}
+                                to={groups.length ? '/groups?next=room' : '/groups/create?next=room'}
+                            >
+                                {groups.length ? '참여할 그룹 찾기' : '첫 그룹 만들기'}
+                            </Link>
+                        }
+                    />
                 ) : (
                     <form className={css('entity-form')} onSubmit={submit}>
                         <div className={css('form-section')}>
-                            <h2>어디에서 모집할까요?</h2>
-                            <Field label="그룹">
-                                <select value={groupId} onChange={(event) => setGroupId(event.target.value)} required>
+                            <h2>어느 그룹에서 모집할까요?</h2>
+                            <p>선택한 그룹의 멤버가 이 모집방을 함께 사용합니다.</p>
+                            <Field label="모집방이 만들어질 그룹">
+                                <select
+                                    value={effectiveGroupId}
+                                    onChange={(event) => {
+                                        setGroupId(event.target.value);
+                                        selectGroup(event.target.value);
+                                    }}
+                                    required
+                                >
                                     <option value="" disabled>
                                         그룹 선택
                                     </option>
-                                    {groups.map((group) => (
+                                    {joinedGroups.map((group) => (
                                         <option key={group.id} value={group.id}>
                                             {group.name}
                                         </option>
                                     ))}
                                 </select>
                             </Field>
-                            {!groups.length && (
-                                <InlineNotice tone="warning" title="그룹이 필요해요">
-                                    모집을 시작하려면 먼저 친구들과 함께할{' '}
-                                    <Link to="/groups/create">그룹을 만들어 주세요.</Link>
-                                </InlineNotice>
-                            )}
                         </div>
                         <div className={css('form-section')}>
-                            <h2>어떤 게임을 함께할까요?</h2>
+                            <h2>게임</h2>
                             <Field label="게임 검색" hint="두 글자 이상 입력하고 검색 결과에서 게임을 선택해 주세요.">
                                 <div className={css('game-search')}>
                                     <input
@@ -198,14 +226,14 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
                                             role="listbox"
                                         >
                                             {searchingGames || lastSearchedQuery !== form.game_name.trim() ? (
-                                                <div className={css('game-search__status')}>게임을 찾고 있어요…</div>
+                                                <div className={css('game-search__status')}>검색 중…</div>
                                             ) : gameSearchError ? (
                                                 <div className={css('game-search__status game-search__status--error')}>
                                                     {gameSearchError}
                                                 </div>
                                             ) : lastSearchedQuery === form.game_name.trim() && !gameResults.length ? (
                                                 <div className={css('game-search__status')}>
-                                                    검색 결과가 없어요. 다른 이름으로 찾아보세요.
+                                                    검색 결과가 없습니다. 다른 이름을 입력하세요.
                                                 </div>
                                             ) : (
                                                 gameResultTransitions((styles, game) => (
@@ -253,7 +281,7 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
                             )}
                         </div>
                         <div className={css('form-section form-section--split')}>
-                            <Field label="목표 인원">
+                            <Field label="몇 명을 모을까요?">
                                 <input
                                     type="number"
                                     min="2"
@@ -263,7 +291,7 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
                                     required
                                 />
                             </Field>
-                            <Field label="모집 단위">
+                            <Field label="인원 세는 방법">
                                 <select
                                     value={form.unit_type}
                                     onChange={(event) =>
@@ -275,17 +303,6 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
                                 </select>
                             </Field>
                         </div>
-                        <div className={css('form-section')}>
-                            <h2>어떤 포지션이 필요할까요?</h2>
-                            <Field label="필요 포지션" hint="선택 사항이에요. 그룹 역할 이름과 맞추면 찾기 쉬워집니다.">
-                                <input
-                                    value={form.target_role ?? ''}
-                                    onChange={(event) => setForm({ ...form, target_role: event.target.value })}
-                                    placeholder="예: 힐러, 정글, 감시자"
-                                    maxLength={30}
-                                />
-                            </Field>
-                        </div>
                         {error && (
                             <InlineNotice tone="error" title="저장하지 못했어요">
                                 {error}
@@ -294,7 +311,7 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
                         <div className={css('form-actions')}>
                             <Link
                                 className={css('button button--quiet')}
-                                to={edit && roomId ? `/rooms/${roomId}?group=${groupId}` : '/rooms'}
+                                to={edit && roomId ? `/rooms/${roomId}?group=${effectiveGroupId}` : '/rooms'}
                             >
                                 취소
                             </Link>

@@ -27,9 +27,6 @@
     .room-row {
         grid-template-columns: minmax(15rem, 1.6fr) minmax(7rem, 0.7fr) minmax(6rem, 0.6fr);
     }
-    .room-row__need {
-        display: none;
-    }
 }
 
 @media (max-width: 760px) {
@@ -67,8 +64,7 @@
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         border-top: 1px solid var(--color-border);
-        background: color-mix(in srgb, var(--color-surface) 97%, transparent);
-        backdrop-filter: blur(14px);
+        background: var(--color-surface);
     }
     .mobile-nav a {
         display: grid;
@@ -96,10 +92,9 @@
         align-items: center;
         gap: 0.4rem;
         padding: 0 0.95rem;
-        border-radius: 999px;
+        border-radius: var(--radius-sm);
         color: var(--color-on-primary);
         background: var(--color-primary);
-        box-shadow: var(--shadow-floating);
         font-weight: 750;
     }
     .mobile-recruit svg {
@@ -111,6 +106,9 @@
         align-items: start;
         padding: var(--space-6) 0 var(--space-5);
     }
+    .explorer-heading {
+        flex-direction: column;
+    }
     .home-hero {
         min-height: auto;
         grid-template-columns: 1fr;
@@ -120,11 +118,9 @@
         max-width: 12ch;
     }
     .home-hero__board {
-        min-height: 22rem;
         margin: var(--space-4) 0 var(--space-5);
-        padding: var(--space-5);
+        padding: var(--space-4) 0;
         overflow: hidden;
-        transform: none;
     }
     .board-title {
         margin-bottom: var(--space-5);
@@ -135,12 +131,6 @@
     }
     .board-line i {
         width: 1rem;
-    }
-    .board-callout {
-        right: 0.75rem;
-        bottom: 0.75rem;
-        max-width: min(15rem, calc(100% - 1.5rem));
-        transform: none;
     }
     .preview-section,
     .how-it-works {
@@ -165,17 +155,6 @@
     .process-list > div:last-child {
         border-bottom: 0;
     }
-    .home-close {
-        align-items: start;
-        flex-direction: column;
-        padding: var(--space-6);
-    }
-    .home-close > div {
-        min-width: 0;
-    }
-    .home-close h2 {
-        font-size: var(--text-h1);
-    }
     .room-toolbar {
         grid-template-columns: 1fr;
     }
@@ -190,7 +169,7 @@
         grid-template-columns: minmax(0, 1fr) auto;
         gap: var(--space-4);
         min-height: auto;
-        padding: var(--space-4) 0;
+        padding: var(--space-4) var(--space-2);
     }
     .room-row__activity {
         grid-column: 1 / -1;
@@ -269,13 +248,6 @@
         margin-top: var(--space-5);
         font-size: 2.25rem;
     }
-    .login-lineup {
-        margin-top: var(--space-5);
-    }
-    .login-lineup span {
-        width: 2.5rem;
-        height: 3.5rem;
-    }
     .profile-identity {
         padding-bottom: var(--space-5);
         border-bottom: 1px solid var(--color-divider);
@@ -307,6 +279,13 @@
     }
     .page-header > .button,
     .explorer-heading > .button {
+        width: 100%;
+    }
+    .explorer-heading__actions {
+        width: 100%;
+        display: grid;
+    }
+    .explorer-heading__actions > .button {
         width: 100%;
     }
     .hero-actions {

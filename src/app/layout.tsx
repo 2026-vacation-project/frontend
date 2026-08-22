@@ -13,36 +13,49 @@ const navItems = [
 ];
 
 export function AppLayout() {
-    const { currentUser, logout, toast, clearToast } = useApp();
+    const { currentUser, groups, activeGroupId, loadingGroups, logout, toast, clearToast } = useApp();
     const location = useLocation();
     const outlet = useOutlet();
+    const prefersReducedMotion = useReducedMotion();
     const profileMenuRef = useRef<HTMLDivElement>(null);
     const [profileMenuOpen, setProfileMenuOpen] = useState(false);
-
-    useReducedMotion();
-
-    const routeTransitions = useTransition(
-        { key: location.pathname, outlet },
-        {
-            keys: (route) => route.key,
-            from: { opacity: 0, transform: 'translateY(10px)' },
-            enter: { opacity: 1, transform: 'translateY(0px)' },
-            leave: { opacity: 0, transform: 'translateY(-6px)' },
-            exitBeforeEnter: true,
-            config: { tension: 280, friction: 30 },
-        },
+    const joinedGroups = groups.filter((group) =>
+        (group.members ?? []).some((member) => member.id === currentUser?.id),
     );
+    const selectedJoinedGroup = joinedGroups.find((group) => group.id === activeGroupId) ?? joinedGroups[0];
+    const hasNoGroups = !loadingGroups && groups.length === 0;
+    const needsGroup = !loadingGroups && joinedGroups.length === 0;
+    const recruitPath = hasNoGroups
+        ? '/groups/create?next=room'
+        : needsGroup
+          ? '/groups?next=room'
+          : selectedJoinedGroup
+            ? `/rooms/create?group=${selectedJoinedGroup.id}`
+            : '/rooms/create';
+    const recruitLabel = hasNoGroups ? '그룹 만들기' : needsGroup ? '그룹 찾기' : '모집하기';
+
+    const routeTransitions = useTransition([{ key: location.key, outlet }], {
+        keys: (route) => route.key,
+        initial: { opacity: 1, transform: 'translateY(0px)' },
+        from: { opacity: 0, transform: 'translateY(6px)' },
+        enter: { opacity: 1, transform: 'translateY(0px)' },
+        leave: { opacity: 0, transform: 'translateY(-3px)' },
+        exitBeforeEnter: true,
+        immediate: prefersReducedMotion ?? false,
+        config: { duration: 120 },
+    });
+
     const profileMenuTransitions = useTransition(profileMenuOpen, {
-        from: { opacity: 0, transform: 'translateY(-8px) scale(0.96)' },
-        enter: { opacity: 1, transform: 'translateY(0px) scale(1)' },
-        leave: { opacity: 0, transform: 'translateY(-5px) scale(0.97)' },
+        from: { opacity: 0, transform: 'translateY(-4px)' },
+        enter: { opacity: 1, transform: 'translateY(0px)' },
+        leave: { opacity: 0, transform: 'translateY(-4px)' },
         config: { tension: 340, friction: 26 },
     });
     const toastTransitions = useTransition(toast ? [toast] : [], {
         keys: (item) => item.id,
-        from: { opacity: 0, transform: 'translateY(18px) scale(0.97)' },
-        enter: { opacity: 1, transform: 'translateY(0px) scale(1)' },
-        leave: { opacity: 0, transform: 'translateY(12px) scale(0.98)' },
+        from: { opacity: 0, transform: 'translateY(8px)' },
+        enter: { opacity: 1, transform: 'translateY(0px)' },
+        leave: { opacity: 0, transform: 'translateY(8px)' },
         config: { tension: 320, friction: 26 },
     });
 
@@ -73,7 +86,7 @@ export function AppLayout() {
             <header className={css('topbar')}>
                 <div className={css('topbar__inner')}>
                     <Link className={css('brand')} to="/" aria-label="팀모아 홈">
-                        <img src="/favicon.svg" alt="" />
+                        <img src="/favicon.svg" alt="" draggable={false} />
                         <span>팀모아</span>
                     </Link>
 
@@ -88,9 +101,9 @@ export function AppLayout() {
                     <div className={css('topbar__actions')}>
                         {currentUser ? (
                             <>
-                                <Link className={css('button button--primary topbar__recruit')} to="/rooms/create">
+                                <Link className={css('button button--primary topbar__recruit')} to={recruitPath}>
                                     <Icon name="plus" className={css('button__icon')} />
-                                    <span>모집하기</span>
+                                    <span>{recruitLabel}</span>
                                 </Link>
                                 <div className={css('profile-menu')} ref={profileMenuRef}>
                                     <button
@@ -114,7 +127,7 @@ export function AppLayout() {
                                                 onClick={() => setProfileMenuOpen(false)}
                                             >
                                                 <Link to="/profile">
-                                                    <Icon name="user" />내 프로필
+                                                    <Icon name="user" />내 정보
                                                 </Link>
                                                 <Link to="/settings">
                                                     <Icon name="settings" />
@@ -158,12 +171,15 @@ export function AppLayout() {
                 </nav>
             )}
 
-            {currentUser && location.pathname !== '/rooms/create' && (
-                <Link className={css('mobile-recruit')} to="/rooms/create">
-                    <Icon name="plus" />
-                    <span>모집하기</span>
-                </Link>
-            )}
+            {currentUser &&
+                location.pathname !== '/rooms/create' &&
+                !location.pathname.startsWith('/profile') &&
+                !(needsGroup && location.pathname.startsWith('/groups')) && (
+                    <Link className={css('mobile-recruit')} to={recruitPath}>
+                        <Icon name="plus" />
+                        <span>{recruitLabel}</span>
+                    </Link>
+                )}
             {toastTransitions((styles, item) => (
                 <Toast
                     message={item.message}
@@ -206,11 +222,11 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
     return (
         <section className={css('auth-gate')}>
             <div>
-                <img src="/favicon.svg" alt="" />
-                <h1>로그인 후 이용할 수 있어요</h1>
-                <p>그룹을 만들고 모집에 참여하려면 먼저 계정을 연결해 주세요.</p>
+                <img src="/favicon.svg" alt="" draggable={false} />
+                <h1>로그인이 필요합니다</h1>
+                <p>그룹을 만들거나 모집에 참가하려면 로그인해 주세요.</p>
                 <Link className={css('button button--primary')} to={`/login?returnTo=${encodeURIComponent(returnTo)}`}>
-                    로그인하러 가기
+                    로그인
                 </Link>
             </div>
         </section>
