@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router';
+import { Navigate, Route, Routes } from 'react-router';
 import OAuthCallbackPage from './app/auth/callback/[provider]/page';
 import GroupMembersPage from './app/groups/[groupId]/members/page';
 import GroupDetailPage from './app/groups/[groupId]/page';
@@ -9,7 +9,6 @@ import GroupsPage from './app/groups/page';
 import RootLayout, { AuthGate } from './app/layout';
 import LoginPage from './app/login/page';
 import NotFoundPage from './app/not-found';
-import NotificationsPage from './app/notifications/page';
 import HomePage from './app/page';
 import UserProfilePage from './app/profile/[userId]/page';
 import ProfilePage from './app/profile/page';
@@ -124,14 +123,7 @@ export default function App() {
                             </AuthGate>
                         }
                     />
-                    <Route
-                        path="notifications"
-                        element={
-                            <AuthGate>
-                                <NotificationsPage />
-                            </AuthGate>
-                        }
-                    />
+                    <Route path="notifications" element={<Navigate to="/settings" replace />} />
                     <Route
                         path="settings"
                         element={

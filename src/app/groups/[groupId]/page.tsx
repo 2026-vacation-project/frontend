@@ -5,11 +5,12 @@ import { groupsApi } from '../../../api/groups';
 import { rolesApi } from '../../../api/roles';
 import { roomsApi } from '../../../api/rooms';
 import { RoomRow } from '../../../components/room/RoomRow';
-import { Avatar, Button, EmptyState, Field, LoadingRows, RoleBadge } from '../../../components/ui';
+import { Avatar, Button, Dropdown, EmptyState, Field, LoadingRows, RoleBadge } from '../../../components/ui';
+import { useConfirmDialog } from '../../../components/ui/useConfirmDialog';
 import { useApp } from '../../../context/useApp';
 import { AuthGate } from '../../layout';
 import type { GroupResponse, RoleResponse, RoomResponse } from '../../../types/api';
-import { getErrorMessage } from '../../../utils/format';
+import { getErrorMessage, userDisplayName, userDisplayNameDetail } from '../../../utils/format';
 
 type GroupTab = 'rooms' | 'members' | 'roles' | 'settings';
 
@@ -54,6 +55,8 @@ export default function GroupDetailPage() {
     const [joiningGroup, setJoiningGroup] = useState(false);
     const [savingVisibility, setSavingVisibility] = useState(false);
     const [sharingGroup, setSharingGroup] = useState(false);
+    const [updatingMemberId, setUpdatingMemberId] = useState<string | null>(null);
+    const { confirm, dialog: confirmDialog } = useConfirmDialog();
 
     const tab: GroupTab = location.pathname.endsWith('/members')
         ? 'members'
@@ -113,7 +116,13 @@ export default function GroupDetailPage() {
     }
 
     async function removeRole(role: RoleResponse) {
-        if (!window.confirm(`${role.name} 태그를 삭제할까요?`)) return;
+        const confirmed = await confirm({
+            title: `${role.name} 태그를 삭제할까요?`,
+            description: '이 태그는 멤버와 모집방에서도 함께 제거됩니다.',
+            confirmLabel: '태그 삭제',
+            tone: 'danger',
+        });
+        if (!confirmed) return;
         try {
             await rolesApi.remove(id, role.id);
             showToast('태그를 삭제했어요.', 'success');
@@ -123,18 +132,38 @@ export default function GroupDetailPage() {
         }
     }
 
-    async function assignRole(roleId: string, userId: string) {
-        if (!roleId) return;
+    async function changeMemberTags(userId: string, nextValue: string | string[]) {
+        if (!Array.isArray(nextValue) || updatingMemberId) return;
+        const currentTagIds = new Set(
+            roles.filter((role) => (role.user_ids ?? []).includes(userId)).map((role) => role.id),
+        );
+        const nextTagIds = new Set(nextValue);
+        const changedRole = roles.find((role) => currentTagIds.has(role.id) !== nextTagIds.has(role.id));
+        if (!changedRole) return;
+
+        setUpdatingMemberId(userId);
         try {
-            await rolesApi.assign(id, roleId, userId);
-            showToast('멤버에게 태그를 붙였어요.', 'success');
+            const updatedRole = nextTagIds.has(changedRole.id)
+                ? await rolesApi.assign(id, changedRole.id, userId)
+                : await rolesApi.unassign(id, changedRole.id, userId);
+            setRoles((current) => current.map((role) => (role.id === updatedRole.id ? updatedRole : role)));
+            showToast(nextTagIds.has(changedRole.id) ? '태그를 붙였어요.' : '태그를 뗐어요.', 'success');
         } catch (assignError) {
             showToast(getErrorMessage(assignError), 'error');
+        } finally {
+            setUpdatingMemberId(null);
         }
     }
 
     async function leaveGroup() {
-        if (!currentUser || !window.confirm('이 그룹에서 나갈까요?')) return;
+        if (!currentUser) return;
+        const confirmed = await confirm({
+            title: '이 그룹에서 나갈까요?',
+            description: '이 그룹에서 받은 태그도 함께 사라집니다.',
+            confirmLabel: '그룹 나가기',
+            tone: 'danger',
+        });
+        if (!confirmed) return;
         try {
             await groupsApi.leave(id, currentUser.id);
             await refreshGroups();
@@ -206,7 +235,13 @@ export default function GroupDetailPage() {
     }
 
     async function deleteGroup() {
-        if (!window.confirm('그룹을 삭제할까요? 그룹의 모집방과 태그도 함께 삭제됩니다.')) return;
+        const confirmed = await confirm({
+            title: '그룹을 삭제할까요?',
+            description: '그룹의 모집방과 태그가 모두 삭제되며 되돌릴 수 없습니다.',
+            confirmLabel: '그룹 삭제',
+            tone: 'danger',
+        });
+        if (!confirmed) return;
         try {
             await groupsApi.remove(id);
             await refreshGroups();
@@ -301,17 +336,18 @@ export default function GroupDetailPage() {
                         </div>
                         {rooms.length ? (
                             <div className={css('room-list')}>
-                                {rooms.map((room) => (
-                                    <RoomRow
-                                        key={room.id}
-                                        room={room}
-                                        hostName={
-                                            (room.participants ?? []).find((member) => member.id === room.host_id)?.name
-                                        }
-                                        groupName={group.name}
-                                        currentUserId={currentUser?.id}
-                                    />
-                                ))}
+                                {rooms.map((room) => {
+                                    const host = (room.participants ?? []).find((member) => member.id === room.host_id);
+                                    return (
+                                        <RoomRow
+                                            key={room.id}
+                                            room={room}
+                                            hostName={host ? userDisplayName(host) : undefined}
+                                            groupName={group.name}
+                                            currentUserId={currentUser?.id}
+                                        />
+                                    );
+                                })}
                             </div>
                         ) : (
                             <EmptyState
@@ -353,33 +389,54 @@ export default function GroupDetailPage() {
                             <div className={css('member-table')}>
                                 <div className={css('member-table__head')}>
                                     <span>멤버</span>
-                                    <span>태그 붙이기</span>
+                                    <span>태그</span>
                                 </div>
-                                {members.map((member) => (
-                                    <div className={css('member-table__row')} key={member.id}>
-                                        <div>
-                                            <Avatar name={member.name} src={member.profile_image} />
-                                            <span>
-                                                <strong>{member.name}</strong>
-                                                <small>{member.email}</small>
-                                            </span>
+                                {members.map((member) => {
+                                    const memberTags = roles.filter((role) =>
+                                        (role.user_ids ?? []).includes(member.id),
+                                    );
+                                    const displayNameDetail = userDisplayNameDetail(member);
+                                    return (
+                                        <div className={css('member-table__row')} key={member.id}>
+                                            <div>
+                                                <Avatar name={userDisplayName(member)} src={member.profile_image} />
+                                                <span>
+                                                    <strong>{member.name}</strong>
+                                                    {displayNameDetail && <small>{displayNameDetail}</small>}
+                                                </span>
+                                            </div>
+                                            <div className={css('member-tag-control')}>
+                                                {memberTags.length > 0 && (
+                                                    <div
+                                                        className={css('member-tags')}
+                                                        aria-label={`${userDisplayName(member)}의 태그`}
+                                                    >
+                                                        {memberTags.map((tag) => (
+                                                            <RoleBadge key={tag.id} name={tag.name} color={tag.color} />
+                                                        ))}
+                                                    </div>
+                                                )}
+                                                <Dropdown
+                                                    multiple
+                                                    ariaLabel={`${userDisplayName(member)}의 태그 선택`}
+                                                    value={memberTags.map((tag) => tag.id)}
+                                                    onChange={(nextValue) =>
+                                                        void changeMemberTags(member.id, nextValue)
+                                                    }
+                                                    placeholder={
+                                                        roles.length ? '태그 선택' : '먼저 태그를 만들어 주세요'
+                                                    }
+                                                    disabled={!roles.length || updatingMemberId === member.id}
+                                                    options={roles.map((role) => ({
+                                                        value: role.id,
+                                                        label: role.name,
+                                                        color: role.color,
+                                                    }))}
+                                                />
+                                            </div>
                                         </div>
-                                        <select
-                                            defaultValue=""
-                                            onChange={(event) => void assignRole(event.target.value, member.id)}
-                                            aria-label={`${member.name}에게 태그 붙이기`}
-                                        >
-                                            <option value="" disabled>
-                                                태그 선택
-                                            </option>
-                                            {roles.map((role) => (
-                                                <option value={role.id} key={role.id}>
-                                                    {role.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         ) : (
                             <EmptyState
@@ -404,7 +461,7 @@ export default function GroupDetailPage() {
                                     {roles.map((role) => (
                                         <div className={css('role-row')} key={role.id}>
                                             <RoleBadge name={role.name} color={role.color} />
-                                            <span>{role.color}</span>
+                                            <span>멤버 {role.user_ids?.length ?? 0}명</span>
                                             <div>
                                                 <button
                                                     onClick={() => {
@@ -428,7 +485,7 @@ export default function GroupDetailPage() {
                             ) : (
                                 <EmptyState
                                     title="아직 태그가 없어요"
-                                    description="태그를 만든 뒤 멤버에게 붙일 수 있습니다."
+                                    description="태그를 만들면 멤버에게 붙이고 모집방에서 찾을 태그로 고를 수 있습니다."
                                 />
                             )}
                         </div>
@@ -529,6 +586,7 @@ export default function GroupDetailPage() {
                         </div>
                     </section>
                 )}
+                {confirmDialog}
             </div>
         </AuthGate>
     );

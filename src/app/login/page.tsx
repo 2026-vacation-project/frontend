@@ -5,7 +5,7 @@ import { createOAuthAuthorizationUrl } from '../../auth/oauth';
 import { Button, InlineNotice } from '../../components/ui';
 import { useApp } from '../../context/useApp';
 import type { OAuthProvider } from '../../types/api';
-import { getErrorMessage } from '../../utils/format';
+import { getErrorMessage, userDisplayName } from '../../utils/format';
 
 function ProviderLogo({ provider }: { provider: OAuthProvider }) {
     if (provider === 'google') {
@@ -67,7 +67,7 @@ export default function LoginPage() {
                 <div className={css('login-panel')}>
                     <img src="/favicon.svg" alt="" draggable={false} />
                     <h1>이미 로그인되어 있어요</h1>
-                    <p>{currentUser.name} 계정으로 팀모아를 이용 중입니다.</p>
+                    <p>{userDisplayName(currentUser)} 계정으로 팀모아를 이용 중입니다.</p>
                     <Link className={css('button button--primary')} to="/rooms">
                         모집방으로 이동
                     </Link>

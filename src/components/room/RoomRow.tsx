@@ -4,7 +4,7 @@ import type { RoomResponse } from '../../types/api';
 import { relativeTime, roomProgress } from '../../utils/format';
 import { getCachedGameCover } from '../../utils/gameCovers';
 import { GameArtwork } from '../game/GameArtwork';
-import { Avatar, Button, StatusLabel } from '../ui';
+import { Avatar, Button, RoleBadge, StatusLabel } from '../ui';
 
 interface RoomRowProps {
     room: RoomResponse;
@@ -56,6 +56,14 @@ export function RoomRow({
                     >
                         {room.target_count}명 모집
                     </Link>
+                    {(room.tags ?? []).length > 0 && (
+                        <div className={css('room-row__tags')} aria-label="모집 태그">
+                            {(room.tags ?? []).slice(0, 3).map((tag) => (
+                                <RoleBadge key={tag.id} name={tag.name} color={tag.color} />
+                            ))}
+                            {(room.tags ?? []).length > 3 && <span>+{(room.tags ?? []).length - 3}</span>}
+                        </div>
+                    )}
                     <div className={css('room-row__meta')}>
                         <Avatar name={hostName} size="sm" />
                         <span>{hostName}</span>

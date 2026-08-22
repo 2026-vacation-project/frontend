@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import { usersApi } from '../../api/users';
 import { css } from '../../appStyles';
 import { Button } from '../../components/ui';
+import { useConfirmDialog } from '../../components/ui/useConfirmDialog';
 import { useApp } from '../../context/useApp';
 import {
     getNotificationPreference,
@@ -11,7 +12,7 @@ import {
     setNotificationPreference,
     unregisterFromPushNotifications,
 } from '../../notifications/push';
-import { getErrorMessage } from '../../utils/format';
+import { getErrorMessage, userDisplayName } from '../../utils/format';
 import { AuthGate, PageHeader } from '../layout';
 
 const notificationKinds = [
@@ -36,6 +37,7 @@ export default function SettingsPage() {
     });
     const [requesting, setRequesting] = useState(false);
     const [loggingOutAll, setLoggingOutAll] = useState(false);
+    const { confirm, dialog: confirmDialog } = useConfirmDialog();
 
     useEffect(() => {
         const syncPermission = () => {
@@ -115,7 +117,12 @@ export default function SettingsPage() {
     }
 
     async function handleLogoutAll() {
-        const confirmed = window.confirm('모든 기기에서 로그아웃할까요?\n참가 중인 모든 모집방에서도 나가게 됩니다.');
+        const confirmed = await confirm({
+            title: '모든 기기에서 로그아웃할까요?',
+            description: '다른 기기의 로그인도 끝나며, 참가 중인 모든 모집방에서도 나가게 됩니다.',
+            confirmLabel: '모두 로그아웃',
+            tone: 'danger',
+        });
         if (!confirmed) return;
 
         setLoggingOutAll(true);
@@ -133,6 +140,23 @@ export default function SettingsPage() {
         <AuthGate>
             <div className={css('settings-page page-container')}>
                 <PageHeader title="설정" description="알림을 정하고 로그인한 기기를 관리할 수 있어요." />
+                {currentUser && (
+                    <section className={css('settings-section')}>
+                        <h2>계정 정보</h2>
+                        <div className={css('settings-row')}>
+                            <div>
+                                <strong>표시 이름</strong>
+                                <p>{userDisplayName(currentUser)}</p>
+                            </div>
+                        </div>
+                        <div className={css('settings-row')}>
+                            <div>
+                                <strong>이메일</strong>
+                                <p>{currentUser.email}</p>
+                            </div>
+                        </div>
+                    </section>
+                )}
                 <section className={css('settings-section')}>
                     <div className={css('settings-section__heading')}>
                         <div>
@@ -191,7 +215,7 @@ export default function SettingsPage() {
                     ))}
                 </section>
                 <section className={css('settings-section')}>
-                    <h2>계정</h2>
+                    <h2>로그인한 기기</h2>
                     <div className={css('settings-row')}>
                         <div>
                             <strong>모든 기기에서 로그아웃</strong>
@@ -202,6 +226,7 @@ export default function SettingsPage() {
                         </Button>
                     </div>
                 </section>
+                {confirmDialog}
             </div>
         </AuthGate>
     );

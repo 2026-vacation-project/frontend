@@ -23,8 +23,15 @@ export const rolesApi = {
         });
     },
     assign(groupId: string, roleId: string, userId: string) {
-        return apiRequest<unknown>(`/api/v1/groups/${groupId}/roles/${roleId}/assign/${encodeURIComponent(userId)}`, {
-            method: 'POST',
-        });
+        return apiRequest<RoleResponse>(
+            `/api/v1/groups/${groupId}/roles/${roleId}/assign/${encodeURIComponent(userId)}`,
+            { method: 'POST' },
+        );
+    },
+    unassign(groupId: string, roleId: string, userId: string) {
+        return apiRequest<RoleResponse>(
+            `/api/v1/groups/${groupId}/roles/${roleId}/assign/${encodeURIComponent(userId)}`,
+            { method: 'DELETE' },
+        );
     },
 };

@@ -3,11 +3,12 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { css } from '../../../appStyles';
 import { roomsApi } from '../../../api/rooms';
 import { GameArtwork } from '../../../components/game/GameArtwork';
-import { Avatar, Button, EmptyState, LoadingRows, StatusLabel } from '../../../components/ui';
+import { Avatar, Button, EmptyState, LoadingRows, RoleBadge, StatusLabel } from '../../../components/ui';
+import { useConfirmDialog } from '../../../components/ui/useConfirmDialog';
 import { useApp } from '../../../context/useApp';
 import { AuthGate } from '../../layout';
 import type { RoomResponse } from '../../../types/api';
-import { getErrorMessage, relativeTime } from '../../../utils/format';
+import { getErrorMessage, relativeTime, userDisplayName, userDisplayNameDetail } from '../../../utils/format';
 import { getCachedGameCover } from '../../../utils/gameCovers';
 
 export default function RoomDetailPage() {
@@ -20,6 +21,7 @@ export default function RoomDetailPage() {
     const [loading, setLoading] = useState(true);
     const [acting, setActing] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const { confirm, dialog: confirmDialog } = useConfirmDialog();
 
     const loadRoom = useCallback(async () => {
         if (!roomId || !groupId) {
@@ -60,7 +62,14 @@ export default function RoomDetailPage() {
     }
 
     async function deleteRoom() {
-        if (!room || !window.confirm('이 모집방을 삭제할까요? 삭제 후에는 되돌릴 수 없습니다.')) return;
+        if (!room) return;
+        const confirmed = await confirm({
+            title: '이 모집방을 삭제할까요?',
+            description: '참가자 목록도 함께 사라지며 되돌릴 수 없습니다.',
+            confirmLabel: '모집방 삭제',
+            tone: 'danger',
+        });
+        if (!confirmed) return;
         setActing(true);
         try {
             await roomsApi.remove(groupId, room.id);
@@ -96,6 +105,15 @@ export default function RoomDetailPage() {
 
     const group = groups.find((item) => item.id === groupId);
     const participants = room.participants ?? [];
+    const roomTags = room.tags ?? [];
+    const visibleRoomTags = roomTags.slice(0, 3);
+    const visibleTagNames = visibleRoomTags.map((tag) => tag.name).join(', ');
+    const tagRequirementMessage =
+        roomTags.length === 1
+            ? `${visibleTagNames} 태그가 있어야 참가할 수 있어요.`
+            : roomTags.length > 3
+              ? `${visibleTagNames} 등 모집 태그 중 하나가 있어야 참가할 수 있어요.`
+              : `${visibleTagNames} 태그 중 하나가 있어야 참가할 수 있어요.`;
     const host = participants.find((participant) => participant.id === room.host_id);
     const joined = participants.some((participant) => participant.id === currentUser?.id);
     const isHost = room.host_id === currentUser?.id;
@@ -163,8 +181,27 @@ export default function RoomDetailPage() {
                                     <dd>{room.target_count}명</dd>
                                 </div>
                                 <div>
+                                    <dt>찾는 태그</dt>
+                                    <dd>
+                                        {roomTags.length ? (
+                                            <span className={css('condition-tags')}>
+                                                {visibleRoomTags.map((tag) => (
+                                                    <RoleBadge key={tag.id} name={tag.name} color={tag.color} />
+                                                ))}
+                                                {roomTags.length > 3 && (
+                                                    <span className={css('condition-tags__more')}>
+                                                        +{roomTags.length - 3}
+                                                    </span>
+                                                )}
+                                            </span>
+                                        ) : (
+                                            '모든 멤버'
+                                        )}
+                                    </dd>
+                                </div>
+                                <div>
                                     <dt>방장</dt>
-                                    <dd>{host?.name ?? '확인 중'}</dd>
+                                    <dd>{host ? userDisplayName(host) : '확인 중'}</dd>
                                 </div>
                             </dl>
                         </section>
@@ -177,20 +214,24 @@ export default function RoomDetailPage() {
                             </div>
                             {participants.length ? (
                                 <div className={css('member-list')}>
-                                    {participants.map((participant) => (
-                                        <div className={css('member-row')} key={participant.id}>
-                                            <Avatar name={participant.name} src={participant.profile_image} />
-                                            <div>
-                                                <strong>{participant.name}</strong>
-                                                <span>
-                                                    {participant.id === room.host_id ? '방장' : participant.email}
-                                                </span>
+                                    {participants.map((participant) => {
+                                        const displayNameDetail = userDisplayNameDetail(participant);
+                                        return (
+                                            <div className={css('member-row')} key={participant.id}>
+                                                <Avatar
+                                                    name={userDisplayName(participant)}
+                                                    src={participant.profile_image}
+                                                />
+                                                <div>
+                                                    <strong>{participant.name}</strong>
+                                                    {displayNameDetail && <span>{displayNameDetail}</span>}
+                                                </div>
+                                                {participant.id === room.host_id && (
+                                                    <span className={css('host-label')}>방장</span>
+                                                )}
                                             </div>
-                                            {participant.id === room.host_id && (
-                                                <span className={css('host-label')}>방장</span>
-                                            )}
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             ) : (
                                 <EmptyState
@@ -208,7 +249,11 @@ export default function RoomDetailPage() {
                             <small>명</small>
                         </strong>
                         <p>
-                            {room.status === 'RECRUITING' ? '참가하면 참가자 목록에 추가됩니다.' : '마감된 모집입니다.'}
+                            {room.status === 'RECRUITING'
+                                ? roomTags.length
+                                    ? tagRequirementMessage
+                                    : '그룹 멤버라면 누구나 참가할 수 있어요.'
+                                : '마감된 모집입니다.'}
                         </p>
                         <Button
                             className={css('join-panel__button')}
@@ -233,6 +278,7 @@ export default function RoomDetailPage() {
                         )}
                     </aside>
                 </div>
+                {confirmDialog}
             </div>
         </AuthGate>
     );

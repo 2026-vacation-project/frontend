@@ -15,7 +15,7 @@ import {
     listenToPushNotifications,
     unregisterFromPushNotifications,
 } from '../notifications/push';
-import { getErrorMessage } from '../utils/format';
+import { getErrorMessage, userDisplayName } from '../utils/format';
 import { AppContext, type AppContextValue, type ToastState } from './useApp';
 const groupKey = 'teammoa-active-group';
 
@@ -142,7 +142,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const response = await authApi.login(provider, code);
         saveAuthSession(response);
         setCurrentUser(response.user);
-        showToast(`${response.user.name}님, 반가워요.`, 'success');
+        showToast(`${userDisplayName(response.user)}님, 반가워요.`, 'success');
         return response.user;
     }
 

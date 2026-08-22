@@ -8,7 +8,7 @@ import { EmptyState, InlineNotice, LoadingRows, SearchInput } from '../../compon
 import { Icon } from '../../components/ui/Icon';
 import { useApp } from '../../context/useApp';
 import type { RoomResponse } from '../../types/api';
-import { getErrorMessage } from '../../utils/format';
+import { getErrorMessage, userDisplayName } from '../../utils/format';
 
 type Filter = 'all' | 'recruiting' | 'joined';
 
@@ -90,7 +90,7 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
                         {activeGroup
                             ? `${activeGroup.name} 모집방`
                             : home
-                              ? `${currentUser?.name ?? ''}님의 모집방`
+                              ? `${currentUser ? userDisplayName(currentUser) : ''}님의 모집방`
                               : '모집방'}
                     </h1>
                     <p>
@@ -229,19 +229,20 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
                         />
                     ) : (
                         <div className={css('room-list')}>
-                            {visibleRooms.map((room) => (
-                                <RoomRow
-                                    key={room.id}
-                                    room={room}
-                                    hostName={
-                                        (room.participants ?? []).find((member) => member.id === room.host_id)?.name
-                                    }
-                                    groupName={activeGroup.name}
-                                    currentUserId={currentUser?.id}
-                                    onJoin={joinRoom}
-                                    joining={joiningId === room.id}
-                                />
-                            ))}
+                            {visibleRooms.map((room) => {
+                                const host = (room.participants ?? []).find((member) => member.id === room.host_id);
+                                return (
+                                    <RoomRow
+                                        key={room.id}
+                                        room={room}
+                                        hostName={host ? userDisplayName(host) : undefined}
+                                        groupName={activeGroup.name}
+                                        currentUserId={currentUser?.id}
+                                        onJoin={joinRoom}
+                                        joining={joiningId === room.id}
+                                    />
+                                );
+                            })}
                         </div>
                     )}
                 </section>

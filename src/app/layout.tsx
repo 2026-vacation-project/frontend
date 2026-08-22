@@ -1,15 +1,16 @@
 import { animated, useReducedMotion, useTransition } from '@react-spring/web';
 import { Link, NavLink, useLocation, useOutlet } from 'react-router';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { css } from '../appStyles';
 import { useApp } from '../context/useApp';
 import { Avatar, Toast } from '../components/ui';
 import { Icon } from '../components/ui/Icon';
+import { RouteTransitionContext } from '../components/ui/routeTransition';
+import { userDisplayName } from '../utils/format';
 
 const navItems = [
     { to: '/rooms', label: '모집방 찾기', icon: 'home' as const },
     { to: '/groups', label: '그룹', icon: 'group' as const },
-    { to: '/notifications', label: '알림', icon: 'bell' as const },
 ];
 
 export function AppLayout() {
@@ -19,6 +20,7 @@ export function AppLayout() {
     const prefersReducedMotion = useReducedMotion();
     const profileMenuRef = useRef<HTMLDivElement>(null);
     const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+    const [loadingRouteKeys, setLoadingRouteKeys] = useState<Set<string>>(() => new Set());
     const joinedGroups = groups.filter((group) =>
         (group.members ?? []).some((member) => member.id === currentUser?.id),
     );
@@ -33,17 +35,37 @@ export function AppLayout() {
             ? `/rooms/create?group=${selectedJoinedGroup.id}`
             : '/rooms/create';
     const recruitLabel = hasNoGroups ? '그룹 만들기' : needsGroup ? '그룹 찾기' : '모집하기';
+    const skipTransitionForLoading = useCallback((routeKey: string) => {
+        setLoadingRouteKeys((current) => {
+            if (current.has(routeKey)) return current;
+            const next = new Set(current);
+            next.add(routeKey);
+            if (next.size > 20) next.delete(next.values().next().value as string);
+            return next;
+        });
+    }, []);
+    const skipRouteTransition = Boolean(prefersReducedMotion) || loadingRouteKeys.has(location.key);
 
-    const routeTransitions = useTransition([{ key: location.key, outlet }], {
-        keys: (route) => route.key,
-        initial: { opacity: 1, transform: 'translateY(0px)' },
-        from: { opacity: 0, transform: 'translateY(6px)' },
-        enter: { opacity: 1, transform: 'translateY(0px)' },
-        leave: { opacity: 0, transform: 'translateY(-3px)' },
-        exitBeforeEnter: true,
-        immediate: prefersReducedMotion ?? false,
-        config: { duration: 120 },
-    });
+    const [routeTransitions, routeTransitionApi] = useTransition(
+        [{ key: location.key, outlet }],
+        () => ({
+            keys: (route) => route.key,
+            initial: { opacity: 1, transform: 'translateY(0px)' },
+            from: { opacity: 0, transform: 'translateY(6px)' },
+            enter: { opacity: 1, transform: 'translateY(0px)' },
+            leave: { opacity: 0, transform: 'translateY(-3px)' },
+            immediate: skipRouteTransition,
+            config: { duration: 120 },
+        }),
+        [location.key, outlet, skipRouteTransition],
+    );
+
+    useLayoutEffect(() => {
+        if (!skipRouteTransition) return;
+        routeTransitionApi.current.forEach((controller) => {
+            Object.values(controller.springs).forEach((spring) => spring.finish());
+        });
+    }, [routeTransitionApi, skipRouteTransition]);
 
     const profileMenuTransitions = useTransition(profileMenuOpen, {
         from: { opacity: 0, transform: 'translateY(-4px)' },
@@ -114,8 +136,8 @@ export function AppLayout() {
                                         aria-controls="profile-menu-panel"
                                         onClick={() => setProfileMenuOpen((open) => !open)}
                                     >
-                                        <Avatar name={currentUser.name} src={currentUser.profile_image} />
-                                        <span>{currentUser.name}</span>
+                                        <Avatar name={userDisplayName(currentUser)} src={currentUser.profile_image} />
+                                        <span>{userDisplayName(currentUser)}</span>
                                         <Icon name="chevron" />
                                     </button>
                                     {profileMenuTransitions((styles, open) =>
@@ -150,9 +172,13 @@ export function AppLayout() {
 
             <main className={css('main-content')} id="main-content">
                 {routeTransitions((styles, route) => (
-                    <animated.div className={css('route-view')} style={styles}>
-                        {route.outlet}
-                    </animated.div>
+                    <RouteTransitionContext.Provider
+                        value={{ routeKey: route.key, skipForLoading: skipTransitionForLoading }}
+                    >
+                        <animated.div className={css('route-view')} style={styles}>
+                            {route.outlet}
+                        </animated.div>
+                    </RouteTransitionContext.Provider>
                 ))}
             </main>
 

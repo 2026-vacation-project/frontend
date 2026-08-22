@@ -9,6 +9,7 @@ export interface UserResponse {
     id: string;
     email: string;
     name: string;
+    display_name?: string | null;
     profile_image?: string | null;
     fcm_token?: string | null;
     preferred_games?: string[];
@@ -54,22 +55,28 @@ export interface RoleCreate {
     color: string;
 }
 
-export interface RoleResponse {
+export interface TagResponse {
     id: string;
     group_id: string;
     name: string;
     color: string;
 }
 
+export interface RoleResponse extends TagResponse {
+    user_ids?: string[];
+}
+
 export interface RoomCreate {
     game_name: string;
     target_count: number;
+    tag_ids: string[];
 }
 
 export interface RoomUpdate {
     game_name?: string | null;
     target_count?: number | null;
     status?: RoomStatus | null;
+    tag_ids?: string[] | null;
 }
 
 export interface RoomResponse {
@@ -82,4 +89,5 @@ export interface RoomResponse {
     status: RoomStatus;
     created_at?: string | null;
     participants?: UserResponse[];
+    tags?: TagResponse[];
 }

@@ -1,4 +1,14 @@
-import type { RoomResponse } from '../types/api';
+import type { RoomResponse, UserResponse } from '../types/api';
+
+export function userDisplayName(user: UserResponse) {
+    return user.display_name?.trim() || user.name;
+}
+
+export function userDisplayNameDetail(user: UserResponse) {
+    const displayName = user.display_name?.trim();
+    if (!displayName || displayName === user.name.trim()) return null;
+    return displayName;
+}
 
 export function relativeTime(value?: string | null) {
     if (!value) return '방금 전';

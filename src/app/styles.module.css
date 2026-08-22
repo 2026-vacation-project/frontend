@@ -4,9 +4,12 @@
 }
 .main-content {
     min-height: calc(100vh - var(--topbar-height));
+    display: grid;
 }
 .route-view {
+    min-width: 0;
     min-height: inherit;
+    grid-area: 1 / 1;
 }
 .topbar {
     position: sticky;

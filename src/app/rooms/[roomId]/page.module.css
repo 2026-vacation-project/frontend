@@ -111,6 +111,18 @@
     margin: 0;
     font-weight: 650;
 }
+.condition-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+.condition-tags__more {
+    align-self: center;
+    color: var(--color-text-muted);
+    font-size: var(--text-small);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
 .member-list {
     margin-top: var(--space-4);
     border-top: 1px solid var(--color-text-primary);
@@ -162,6 +174,8 @@
 .join-panel > p {
     margin-top: var(--space-3);
     color: var(--color-text-secondary);
+    word-break: keep-all;
+    overflow-wrap: break-word;
 }
 .join-panel__button {
     width: 100%;

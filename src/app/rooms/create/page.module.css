@@ -18,6 +18,15 @@
 .form-section > p {
     color: var(--color-text-secondary);
 }
+.form-help {
+    font-size: var(--text-small);
+}
+.form-help a {
+    color: var(--color-primary-text);
+    font-weight: 720;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
 .game-search {
     position: relative;
 }

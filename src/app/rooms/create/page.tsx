@@ -3,11 +3,12 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { css } from '../../../appStyles';
 import { gamesApi } from '../../../api/games';
+import { rolesApi } from '../../../api/roles';
 import { roomsApi } from '../../../api/rooms';
 import { GameArtwork } from '../../../components/game/GameArtwork';
-import { Button, EmptyState, Field, InlineNotice, LoadingRows } from '../../../components/ui';
+import { Button, Dropdown, EmptyState, Field, InlineNotice, LoadingRows } from '../../../components/ui';
 import { useApp } from '../../../context/useApp';
-import type { GameSearchResult, RoomCreate } from '../../../types/api';
+import type { GameSearchResult, RoleResponse, RoomCreate } from '../../../types/api';
 import { cacheGameCover, getCachedGameCover } from '../../../utils/gameCovers';
 import { getErrorMessage } from '../../../utils/format';
 import { AuthGate, PageHeader } from '../../layout';
@@ -19,7 +20,7 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
     const { currentUser, groups, activeGroupId, loadingGroups, selectGroup, showToast } = useApp();
     const requestedGroup = searchParams.get('group') || activeGroupId || groups[0]?.id || '';
     const [groupId, setGroupId] = useState(requestedGroup);
-    const [form, setForm] = useState<RoomCreate>({ game_name: '', target_count: 5 });
+    const [form, setForm] = useState<RoomCreate>({ game_name: '', target_count: 5, tag_ids: [] });
     const [loading, setLoading] = useState(edit);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -29,6 +30,8 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
     const [searchingGames, setSearchingGames] = useState(false);
     const [gameSearchError, setGameSearchError] = useState<string | null>(null);
     const [lastSearchedQuery, setLastSearchedQuery] = useState('');
+    const [tags, setTags] = useState<RoleResponse[]>([]);
+    const [loadingTags, setLoadingTags] = useState(false);
     const joinedGroups = groups.filter((group) =>
         (group.members ?? []).some((member) => member.id === currentUser?.id),
     );
@@ -57,6 +60,7 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
                     setForm({
                         game_name: room.game_name,
                         target_count: room.target_count,
+                        tag_ids: (room.tags ?? []).map((tag) => tag.id),
                     });
                     setConfirmedGameName(room.game_name);
                     setSelectedGame({
@@ -71,6 +75,29 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
         }, 0);
         return () => window.clearTimeout(timer);
     }, [edit, roomId, effectiveGroupId]);
+
+    useEffect(() => {
+        if (!effectiveGroupId) return;
+        let active = true;
+        const timer = window.setTimeout(() => {
+            setLoadingTags(true);
+            rolesApi
+                .list(effectiveGroupId)
+                .then((nextTags) => {
+                    if (active) setTags(nextTags);
+                })
+                .catch((loadError: unknown) => {
+                    if (active) setError(getErrorMessage(loadError));
+                })
+                .finally(() => {
+                    if (active) setLoadingTags(false);
+                });
+        }, 0);
+        return () => {
+            active = false;
+            window.clearTimeout(timer);
+        };
+    }, [effectiveGroupId]);
 
     useEffect(() => {
         const searchQuery = form.game_name.trim();
@@ -181,23 +208,22 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
                             <h2>어느 그룹에서 모집할까요?</h2>
                             <p>선택한 그룹의 멤버가 이 모집방을 함께 사용합니다.</p>
                             <Field label="모집방이 만들어질 그룹">
-                                <select
+                                <Dropdown
+                                    ariaLabel="모집방이 만들어질 그룹"
                                     value={effectiveGroupId}
-                                    onChange={(event) => {
-                                        setGroupId(event.target.value);
-                                        selectGroup(event.target.value);
+                                    onChange={(nextValue) => {
+                                        const nextGroupId = nextValue as string;
+                                        setGroupId(nextGroupId);
+                                        setForm((current) => ({ ...current, tag_ids: [] }));
+                                        selectGroup(nextGroupId);
                                     }}
-                                    required
-                                >
-                                    <option value="" disabled>
-                                        그룹 선택
-                                    </option>
-                                    {joinedGroups.map((group) => (
-                                        <option key={group.id} value={group.id}>
-                                            {group.name}
-                                        </option>
-                                    ))}
-                                </select>
+                                    placeholder="그룹 선택"
+                                    options={joinedGroups.map((group) => ({
+                                        value: group.id,
+                                        label: group.name,
+                                        description: `멤버 ${group.members?.length ?? 0}명`,
+                                    }))}
+                                />
                             </Field>
                         </div>
                         <div className={css('form-section')}>
@@ -277,6 +303,42 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
                                         다시 선택
                                     </button>
                                 </div>
+                            )}
+                        </div>
+                        <div className={css('form-section')}>
+                            <h2>어떤 태그의 멤버를 찾나요?</h2>
+                            <p>태그를 고르면 해당 태그가 하나 이상 있는 멤버만 참가할 수 있습니다.</p>
+                            <Field
+                                label="모집 태그"
+                                hint={
+                                    form.tag_ids.length
+                                        ? `${form.tag_ids.length}개 태그를 찾고 있어요.`
+                                        : '선택하지 않으면 모든 멤버가 참가할 수 있어요.'
+                                }
+                            >
+                                <Dropdown
+                                    multiple
+                                    ariaLabel="모집할 태그 선택"
+                                    value={form.tag_ids}
+                                    onChange={(nextValue) =>
+                                        setForm((current) => ({ ...current, tag_ids: nextValue as string[] }))
+                                    }
+                                    placeholder={loadingTags ? '태그 불러오는 중…' : '모든 태그'}
+                                    disabled={loadingTags || !tags.length}
+                                    emptyMessage="이 그룹에는 아직 태그가 없습니다."
+                                    options={tags.map((tag) => ({
+                                        value: tag.id,
+                                        label: tag.name,
+                                        color: tag.color,
+                                        description: `멤버 ${tag.user_ids?.length ?? 0}명`,
+                                    }))}
+                                />
+                            </Field>
+                            {!loadingTags && !tags.length && effectiveGroupId && (
+                                <p className={css('form-help')}>
+                                    태그로 모집하려면 먼저{' '}
+                                    <Link to={`/groups/${effectiveGroupId}/roles`}>그룹 태그를 만들어 주세요.</Link>
+                                </p>
                             )}
                         </div>
                         <div className={css('form-section')}>

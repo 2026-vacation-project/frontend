@@ -9,7 +9,7 @@ import { useApp } from '../../context/useApp';
 import { AuthGate, PageHeader } from '../layout';
 import type { GameSearchResult, UserResponse } from '../../types/api';
 import { cacheGameCover, getCachedGameCover } from '../../utils/gameCovers';
-import { getErrorMessage } from '../../utils/format';
+import { getErrorMessage, userDisplayName, userDisplayNameDetail } from '../../utils/format';
 
 function uniqueGameNames(games: string[]) {
     const seen = new Set<string>();
@@ -177,22 +177,24 @@ export default function ProfilePage() {
     const membersOf = groups.filter((group) => (group.members ?? []).some((member) => member.id === profileUser.id));
     const displayedPreferredGames = isOwnProfile ? preferredGames : (profileUser.preferred_games ?? []);
     const hasPreferenceChanges = JSON.stringify(preferredGames) !== JSON.stringify(savedPreferredGames);
+    const displayName = userDisplayName(profileUser);
+    const displayNameDetail = userDisplayNameDetail(profileUser);
 
     return (
         <AuthGate>
             <div className={css('profile-page page-container')}>
                 <PageHeader
-                    title={isOwnProfile ? '내 정보' : `${profileUser.name}님의 정보`}
+                    title={isOwnProfile ? '내 정보' : `${displayName}님의 정보`}
                     description={
                         isOwnProfile ? '관심 게임과 참여 중인 그룹을 관리합니다.' : '관심 게임과 참여 중인 그룹입니다.'
                     }
                 />
                 <div className={css('profile-grid')}>
                     <section className={css('profile-identity')}>
-                        <Avatar name={profileUser.name} src={profileUser.profile_image} size="lg" />
+                        <Avatar name={displayName} src={profileUser.profile_image} size="lg" />
                         <div>
                             <h2>{profileUser.name}</h2>
-                            <p>{profileUser.email}</p>
+                            {displayNameDetail && <p>{displayNameDetail}</p>}
                         </div>
                     </section>
                     {isOwnProfile ? (
@@ -326,7 +328,7 @@ export default function ProfilePage() {
                             <p>
                                 {isOwnProfile
                                     ? '현재 참여 중인 그룹입니다.'
-                                    : `${profileUser.name}님이 참여 중인 그룹입니다.`}
+                                    : `${displayName}님이 참여 중인 그룹입니다.`}
                             </p>
                         </div>
                     </div>
