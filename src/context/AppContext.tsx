@@ -10,6 +10,11 @@ import {
     updateAuthUser,
 } from '../auth/session';
 import type { GroupResponse, OAuthProvider, UserResponse } from '../types/api';
+import {
+    getNotificationPreference,
+    listenToPushNotifications,
+    unregisterFromPushNotifications,
+} from '../notifications/push';
 import { getErrorMessage } from '../utils/format';
 import { AppContext, type AppContextValue, type ToastState } from './useApp';
 const groupKey = 'teammoa-active-group';
@@ -39,6 +44,64 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         window.addEventListener(authSessionChangedEvent, syncSession);
         return () => window.removeEventListener(authSessionChangedEvent, syncSession);
     }, []);
+
+    useEffect(() => {
+        const userId = currentUser?.id;
+        if (
+            !userId ||
+            !('Notification' in window) ||
+            Notification.permission !== 'granted' ||
+            getNotificationPreference(userId) === 'off'
+        ) {
+            return;
+        }
+
+        let active = true;
+        let stopListening: (() => void) | undefined;
+        const updateStoredTarget = (installationId: string | null) => {
+            setCurrentUser((user) => {
+                if (!user || user.id !== userId || user.fcm_token === installationId) return user;
+                const updated = { ...user, fcm_token: installationId };
+                updateAuthUser(updated);
+                return updated;
+            });
+        };
+
+        void listenToPushNotifications({
+            onTargetRegistered: (installationId) => {
+                if (!active || currentUser?.fcm_token === installationId) return;
+                void usersApi
+                    .updateFcmToken(userId, installationId)
+                    .then(() => {
+                        if (active) updateStoredTarget(installationId);
+                    })
+                    .catch(() => undefined);
+            },
+            onTargetUnregistered: (installationId) => {
+                if (!active || currentUser?.fcm_token !== installationId) return;
+                void usersApi
+                    .updateFcmToken(userId, '')
+                    .then(() => {
+                        if (active) updateStoredTarget(null);
+                    })
+                    .catch(() => undefined);
+            },
+            onMessageReceived: (payload) => {
+                const message = payload.notification?.body ?? payload.notification?.title ?? '새 알림이 도착했어요.';
+                showToast(message, 'info');
+            },
+        })
+            .then((stop) => {
+                if (active) stopListening = stop;
+                else stop();
+            })
+            .catch(() => undefined);
+
+        return () => {
+            active = false;
+            stopListening?.();
+        };
+    }, [currentUser?.fcm_token, currentUser?.id, showToast]);
 
     const refreshGroups = useCallback(async () => {
         if (!currentUser) {
@@ -83,12 +146,29 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         return response.user;
     }
 
-    function logout() {
+    async function logout() {
+        if (currentUser) {
+            await Promise.allSettled([usersApi.updateFcmToken(currentUser.id, ''), unregisterFromPushNotifications()]);
+        }
         clearAuthSession();
         setCurrentUser(null);
         setGroups([]);
         setActiveGroupId(null);
-        showToast('로그아웃했어요.', 'info');
+        showToast('이 기기에서 로그아웃했어요.', 'info');
+    }
+
+    async function logoutAll() {
+        const result = await authApi.logoutAll();
+        await unregisterFromPushNotifications().catch(() => undefined);
+        clearAuthSession();
+        setCurrentUser(null);
+        setGroups([]);
+        setActiveGroupId(null);
+        const roomMessage = result.left_room_count
+            ? ` 참가 중이던 모집방 ${result.left_room_count}개에서도 나왔어요.`
+            : '';
+        showToast(`모든 기기에서 로그아웃했어요.${roomMessage}`, 'info');
+        return result;
     }
 
     const selectGroup = useCallback((groupId: string) => {
@@ -121,6 +201,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         toast,
         login,
         logout,
+        logoutAll,
         selectGroup,
         refreshGroups,
         createGroup,

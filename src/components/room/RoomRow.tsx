@@ -34,7 +34,7 @@ export function RoomRow({
     const isParticipant = participants.some((member) => member.id === currentUserId);
     const disabled = room.status !== 'RECRUITING' || isParticipant || !currentUserId;
     const filledSlots = Math.min(room.target_count, participants.length);
-    const coverUrl = gameCoverUrl ?? getCachedGameCover(room.game_name);
+    const coverUrl = gameCoverUrl ?? room.game_cover_url ?? getCachedGameCover(room.game_name);
 
     return (
         <article className={css('room-row')}>
@@ -54,8 +54,7 @@ export function RoomRow({
                         to={example ? '/login' : `/rooms/${room.id}?group=${room.group_id}`}
                         aria-label={`${room.game_name} 모집 ${example ? '시작하기' : '상세 보기'}`}
                     >
-                        {room.target_count}
-                        {room.unit_type} 모집
+                        {room.target_count}명 모집
                     </Link>
                     <div className={css('room-row__meta')}>
                         <Avatar name={hostName} size="sm" />
@@ -69,10 +68,7 @@ export function RoomRow({
             <div className={css('room-row__capacity')}>
                 <div className={css('capacity-copy')}>
                     <strong>{participants.length}</strong>
-                    <span>
-                        / {room.target_count}
-                        {room.unit_type}
-                    </span>
+                    <span>/ {room.target_count}명</span>
                 </div>
                 <div className={css('slot-rail')} aria-label={`${room.target_count}자리 중 ${filledSlots}자리 참여`}>
                     {Array.from({ length: Math.min(room.target_count, 8) }, (_, index) => (

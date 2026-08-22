@@ -1,6 +1,5 @@
 export type OAuthProvider = 'google' | 'discord';
 export type RoomStatus = 'RECRUITING' | 'COMPLETED' | 'CANCELLED';
-export type UnitType = '명' | '팀';
 
 export interface OAuthLoginRequest {
     code: string;
@@ -19,6 +18,12 @@ export interface TokenResponse {
     access_token: string;
     token_type: 'bearer' | string;
     user: UserResponse;
+}
+
+export interface LogoutAllResponse {
+    message: string;
+    left_room_count: number;
+    deleted_room_count: number;
 }
 
 export interface GameSearchResult {
@@ -59,13 +64,11 @@ export interface RoleResponse {
 export interface RoomCreate {
     game_name: string;
     target_count: number;
-    unit_type: UnitType;
 }
 
 export interface RoomUpdate {
     game_name?: string | null;
     target_count?: number | null;
-    unit_type?: UnitType | null;
     status?: RoomStatus | null;
 }
 
@@ -74,8 +77,8 @@ export interface RoomResponse {
     group_id: string;
     host_id: string;
     game_name: string;
+    game_cover_url?: string | null;
     target_count: number;
-    unit_type: UnitType;
     status: RoomStatus;
     created_at?: string | null;
     participants?: UserResponse[];

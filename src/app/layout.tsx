@@ -133,7 +133,7 @@ export function AppLayout() {
                                                     <Icon name="settings" />
                                                     설정
                                                 </Link>
-                                                <button onClick={logout}>로그아웃</button>
+                                                <button onClick={() => void logout()}>이 기기에서 로그아웃</button>
                                             </animated.div>
                                         ) : null,
                                     )}

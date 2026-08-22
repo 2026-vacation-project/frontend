@@ -113,9 +113,6 @@
     text-decoration: underline;
     text-underline-offset: 3px;
 }
-.form-section--split {
-    grid-template-columns: 1fr 1fr;
-}
 .form-actions {
     display: flex;
     justify-content: flex-end;

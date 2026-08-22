@@ -50,7 +50,7 @@ export default function RoomDetailPage() {
         try {
             if (joined) await roomsApi.leave(groupId, room.id, currentUser.id);
             else await roomsApi.join(groupId, room.id, currentUser.id);
-            showToast(joined ? '모집방에서 나왔어요.' : '팀에 참가했어요.', 'success');
+            showToast(joined ? '모집방에서 나왔어요.' : '모집에 참가했어요.', 'success');
             await loadRoom();
         } catch (actionError) {
             showToast(getErrorMessage(actionError), 'error');
@@ -117,7 +117,10 @@ export default function RoomDetailPage() {
                 <header className={css('room-detail__header')}>
                     <div>
                         <div className={css('detail-activity')}>
-                            <GameArtwork name={room.game_name} src={getCachedGameCover(room.game_name)} />
+                            <GameArtwork
+                                name={room.game_name}
+                                src={room.game_cover_url ?? getCachedGameCover(room.game_name)}
+                            />
                             <div>
                                 <strong>{room.game_name}</strong>
                                 <small>
@@ -125,10 +128,7 @@ export default function RoomDetailPage() {
                                 </small>
                             </div>
                         </div>
-                        <h1>
-                            {room.target_count}
-                            {room.unit_type} 모집
-                        </h1>
+                        <h1>{room.target_count}명 모집</h1>
                     </div>
                     <StatusLabel status={room.status} />
                 </header>
@@ -140,10 +140,7 @@ export default function RoomDetailPage() {
                                 <span>참가 현황</span>
                                 <strong>
                                     {participants.length}
-                                    <small>
-                                        / {room.target_count}
-                                        {room.unit_type}
-                                    </small>
+                                    <small>/ {room.target_count}명</small>
                                 </strong>
                             </div>
                             <div className={css('lineup-track')}>
@@ -163,10 +160,7 @@ export default function RoomDetailPage() {
                                 </div>
                                 <div>
                                     <dt>모을 인원</dt>
-                                    <dd>
-                                        {room.target_count}
-                                        {room.unit_type}
-                                    </dd>
+                                    <dd>{room.target_count}명</dd>
                                 </div>
                                 <div>
                                     <dt>방장</dt>
@@ -211,7 +205,7 @@ export default function RoomDetailPage() {
                         <span>남은 자리</span>
                         <strong>
                             {Math.max(0, room.target_count - participants.length)}
-                            <small>{room.unit_type}</small>
+                            <small>명</small>
                         </strong>
                         <p>
                             {room.status === 'RECRUITING' ? '참가하면 참가자 목록에 추가됩니다.' : '마감된 모집입니다.'}

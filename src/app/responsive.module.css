@@ -191,9 +191,6 @@
     .group-brief {
         margin-top: 0;
     }
-    .form-section--split {
-        grid-template-columns: 1fr;
-    }
     .form-actions .button {
         flex: 1;
     }

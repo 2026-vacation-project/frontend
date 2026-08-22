@@ -208,7 +208,7 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
                                 rooms.length
                                     ? '검색 결과가 없어요'
                                     : activeGroupJoined
-                                      ? '아직 모집 중인 팀이 없어요'
+                                      ? '아직 진행 중인 모집이 없어요'
                                       : '이 그룹에 먼저 참여해 주세요'
                             }
                             description={

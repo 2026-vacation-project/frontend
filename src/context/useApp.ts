@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import type { GroupResponse, OAuthProvider, UserResponse } from '../types/api';
+import type { GroupResponse, LogoutAllResponse, OAuthProvider, UserResponse } from '../types/api';
 
 export interface ToastState {
     id: number;
@@ -15,7 +15,8 @@ export interface AppContextValue {
     loadingGroups: boolean;
     toast: ToastState | null;
     login: (provider: OAuthProvider, code: string) => Promise<UserResponse>;
-    logout: () => void;
+    logout: () => Promise<void>;
+    logoutAll: () => Promise<LogoutAllResponse>;
     selectGroup: (groupId: string) => void;
     refreshGroups: () => Promise<void>;
     createGroup: (name: string, isPublic: boolean) => Promise<GroupResponse>;

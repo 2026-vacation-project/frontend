@@ -53,6 +53,7 @@ export default function GroupDetailPage() {
     const [saving, setSaving] = useState(false);
     const [joiningGroup, setJoiningGroup] = useState(false);
     const [savingVisibility, setSavingVisibility] = useState(false);
+    const [sharingGroup, setSharingGroup] = useState(false);
 
     const tab: GroupTab = location.pathname.endsWith('/members')
         ? 'members'
@@ -102,7 +103,7 @@ export default function GroupDetailPage() {
             else await rolesApi.create(id, { name: roleName.trim(), color: roleColor });
             setRoleName('');
             setEditingRole(null);
-            showToast(editingRole ? '역할을 수정했어요.' : '역할을 추가했어요.', 'success');
+            showToast(editingRole ? '태그를 수정했어요.' : '태그를 추가했어요.', 'success');
             await load();
         } catch (saveError) {
             showToast(getErrorMessage(saveError), 'error');
@@ -112,10 +113,10 @@ export default function GroupDetailPage() {
     }
 
     async function removeRole(role: RoleResponse) {
-        if (!window.confirm(`${role.name} 역할을 삭제할까요?`)) return;
+        if (!window.confirm(`${role.name} 태그를 삭제할까요?`)) return;
         try {
             await rolesApi.remove(id, role.id);
-            showToast('역할을 삭제했어요.', 'success');
+            showToast('태그를 삭제했어요.', 'success');
             await load();
         } catch (removeError) {
             showToast(getErrorMessage(removeError), 'error');
@@ -126,7 +127,7 @@ export default function GroupDetailPage() {
         if (!roleId) return;
         try {
             await rolesApi.assign(id, roleId, userId);
-            showToast('멤버의 역할을 정했어요.', 'success');
+            showToast('멤버에게 태그를 붙였어요.', 'success');
         } catch (assignError) {
             showToast(getErrorMessage(assignError), 'error');
         }
@@ -160,26 +161,32 @@ export default function GroupDetailPage() {
     }
 
     async function shareGroup() {
-        if (!group) return;
+        if (!group || sharingGroup) return;
         const url = `${window.location.origin}/groups/${id}`;
-        if (navigator.share) {
+        setSharingGroup(true);
+
+        try {
+            await copyText(url);
+            showToast('그룹 링크를 복사했어요.', 'success');
+            return;
+        } catch {
+            if (!navigator.share) {
+                showToast('링크를 복사하지 못했어요. 주소창의 링크를 직접 복사해 주세요.', 'error');
+                return;
+            }
+
             try {
                 await navigator.share({
                     title: `${group.name} 그룹`,
                     text: '팀모아에서 그룹에 참여해 보세요.',
                     url,
                 });
-                return;
             } catch (shareError) {
                 if (shareError instanceof DOMException && shareError.name === 'AbortError') return;
+                showToast('공유 창을 열지 못했어요. 주소창의 링크를 직접 복사해 주세요.', 'error');
             }
-        }
-
-        try {
-            await copyText(url);
-            showToast('그룹 링크를 복사했어요.', 'success');
-        } catch (copyError) {
-            showToast(getErrorMessage(copyError), 'error');
+        } finally {
+            setSharingGroup(false);
         }
     }
 
@@ -199,7 +206,7 @@ export default function GroupDetailPage() {
     }
 
     async function deleteGroup() {
-        if (!window.confirm('그룹을 삭제할까요? 그룹의 모집방과 역할도 함께 삭제됩니다.')) return;
+        if (!window.confirm('그룹을 삭제할까요? 그룹의 모집방과 태그도 함께 삭제됩니다.')) return;
         try {
             await groupsApi.remove(id);
             await refreshGroups();
@@ -248,7 +255,12 @@ export default function GroupDetailPage() {
                         </div>
                     </div>
                     <div className={css('group-detail__actions')}>
-                        <Button tone="secondary" onClick={() => void shareGroup()}>
+                        <Button
+                            tone="secondary"
+                            onClick={() => void shareGroup()}
+                            loading={sharingGroup}
+                            disabled={sharingGroup}
+                        >
                             링크 공유
                         </Button>
                         {joined ? (
@@ -267,7 +279,7 @@ export default function GroupDetailPage() {
                         [
                             ['rooms', '모집방', `/groups/${id}`],
                             ['members', '멤버', `/groups/${id}/members`],
-                            ['roles', '역할', `/groups/${id}/roles`],
+                            ['roles', '태그', `/groups/${id}/roles`],
                             ['settings', '설정', `/groups/${id}/settings`],
                         ] as const
                     )
@@ -333,7 +345,7 @@ export default function GroupDetailPage() {
                         <div className={css('section-heading')}>
                             <div>
                                 <h2>멤버</h2>
-                                <p>멤버의 역할을 정할 수 있습니다.</p>
+                                <p>멤버에게 태그를 붙여 모집 대상을 구분할 수 있습니다.</p>
                             </div>
                             <span className={css('count-label')}>{members.length}명</span>
                         </div>
@@ -341,7 +353,7 @@ export default function GroupDetailPage() {
                             <div className={css('member-table')}>
                                 <div className={css('member-table__head')}>
                                     <span>멤버</span>
-                                    <span>역할 정하기</span>
+                                    <span>태그 붙이기</span>
                                 </div>
                                 {members.map((member) => (
                                     <div className={css('member-table__row')} key={member.id}>
@@ -355,10 +367,10 @@ export default function GroupDetailPage() {
                                         <select
                                             defaultValue=""
                                             onChange={(event) => void assignRole(event.target.value, member.id)}
-                                            aria-label={`${member.name}의 역할 정하기`}
+                                            aria-label={`${member.name}에게 태그 붙이기`}
                                         >
                                             <option value="" disabled>
-                                                역할 선택
+                                                태그 선택
                                             </option>
                                             {roles.map((role) => (
                                                 <option value={role.id} key={role.id}>
@@ -372,7 +384,7 @@ export default function GroupDetailPage() {
                         ) : (
                             <EmptyState
                                 title="아직 멤버가 없어요"
-                                description="멤버가 참여하면 역할을 정할 수 있습니다."
+                                description="멤버가 참여하면 태그를 붙일 수 있습니다."
                             />
                         )}
                     </section>
@@ -383,8 +395,8 @@ export default function GroupDetailPage() {
                         <div>
                             <div className={css('section-heading')}>
                                 <div>
-                                    <h2>역할</h2>
-                                    <p>그룹에서 사용할 역할 이름과 색상을 관리합니다.</p>
+                                    <h2>태그</h2>
+                                    <p>모집할 대상을 구분하는 태그 이름과 색상을 관리합니다.</p>
                                 </div>
                             </div>
                             {roles.length ? (
@@ -415,14 +427,14 @@ export default function GroupDetailPage() {
                                 </div>
                             ) : (
                                 <EmptyState
-                                    title="아직 역할이 없어요"
-                                    description="역할을 만든 뒤 멤버에게 정해 줄 수 있습니다."
+                                    title="아직 태그가 없어요"
+                                    description="태그를 만든 뒤 멤버에게 붙일 수 있습니다."
                                 />
                             )}
                         </div>
                         <form className={css('role-editor')} onSubmit={saveRole}>
-                            <h2>{editingRole ? '역할 수정' : '역할 만들기'}</h2>
-                            <Field label="역할 이름">
+                            <h2>{editingRole ? '태그 수정' : '태그 만들기'}</h2>
+                            <Field label="태그 이름">
                                 <input
                                     value={roleName}
                                     onChange={(event) => setRoleName(event.target.value)}
@@ -431,7 +443,7 @@ export default function GroupDetailPage() {
                                     required
                                 />
                             </Field>
-                            <Field label="역할 색상">
+                            <Field label="태그 색상">
                                 <div className={css('color-field')}>
                                     <input
                                         type="color"
@@ -448,7 +460,7 @@ export default function GroupDetailPage() {
                             </Field>
                             <div className={css('role-preview')}>
                                 <span>미리보기</span>
-                                <RoleBadge name={roleName || '역할 이름'} color={roleColor} />
+                                <RoleBadge name={roleName || '태그 이름'} color={roleColor} />
                             </div>
                             <div className={css('form-actions')}>
                                 {editingRole && (
@@ -465,7 +477,7 @@ export default function GroupDetailPage() {
                                     </Button>
                                 )}
                                 <Button type="submit" loading={saving}>
-                                    {editingRole ? '저장' : '역할 추가'}
+                                    {editingRole ? '저장' : '태그 추가'}
                                 </Button>
                             </div>
                         </form>
@@ -509,7 +521,7 @@ export default function GroupDetailPage() {
                         <div className={css('danger-zone')}>
                             <div>
                                 <h2>그룹 삭제</h2>
-                                <p>그룹과 연결된 역할과 모집방이 함께 삭제됩니다.</p>
+                                <p>그룹과 연결된 태그와 모집방이 함께 삭제됩니다.</p>
                             </div>
                             <Button tone="danger" onClick={() => void deleteGroup()}>
                                 그룹 삭제

@@ -22,7 +22,6 @@ const exampleRooms: RoomResponse[] = [
         host_id: exampleHost.id,
         game_name: '오버워치 2',
         target_count: 5,
-        unit_type: '명',
         status: 'RECRUITING',
         created_at: new Date(Date.now() - 6 * 60_000).toISOString(),
         participants: [
@@ -37,7 +36,6 @@ const exampleRooms: RoomResponse[] = [
         host_id: exampleHost.id,
         game_name: '발로란트',
         target_count: 5,
-        unit_type: '명',
         status: 'RECRUITING',
         created_at: new Date(Date.now() - 18 * 60_000).toISOString(),
         participants: [
@@ -53,7 +51,6 @@ const exampleRooms: RoomResponse[] = [
         host_id: exampleHost.id,
         game_name: '리그 오브 레전드',
         target_count: 5,
-        unit_type: '명',
         status: 'COMPLETED',
         created_at: new Date(Date.now() - 42 * 60_000).toISOString(),
         participants: Array.from({ length: 5 }, (_, index) => ({
@@ -92,7 +89,7 @@ export default function HomePage() {
                         </a>
                     </div>
                 </div>
-                <div className={css('home-hero__board')} aria-label="팀 모집 현황">
+                <div className={css('home-hero__board')} aria-label="게임 모집 현황">
                     <div className={css('board-title')}>
                         <strong>모집 현황</strong>
                         <span>남은 자리</span>

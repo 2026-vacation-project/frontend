@@ -1,5 +1,17 @@
 # 팀모아 프론트엔드
 
+## 기술 스택 - Frontend
+
+| 분류 | 기술 |
+| --- | --- |
+| 언어 | TypeScript 6 |
+| UI | React 19, React DOM |
+| 빌드 | Vite 8, React Compiler |
+| 라우팅 | React Router 8 |
+| 애니메이션 | React Spring 10 |
+| 스타일 | CSS Modules, CSS Custom Properties |
+| 코드 품질 | ESLint 10, Prettier 3 |
+
 ## 로컬 실행
 
 ```bash
@@ -20,6 +32,17 @@ npm run dev
 4. 프론트엔드 `VITE_OAUTH_REDIRECT_BASE_URL`과 백엔드의 제공자별 `*_REDIRECT_URI`가 정확히 같은 주소를 가리키는지 확인합니다.
 
 Client Secret은 프론트엔드 환경 변수에 넣지 않습니다. 운영 환경에서는 `VITE_API_BASE_URL`을 실제 API 주소로 설정하거나 `/api`를 백엔드로 전달하는 리버스 프록시를 구성해야 합니다.
+
+## 웹 푸시 알림 설정
+
+1. Firebase Console에서 웹 앱을 등록합니다.
+2. Cloud Messaging의 Web Push 인증서에서 VAPID 키를 생성합니다.
+3. `.env.example`에 적힌 `VITE_FIREBASE_*` 값을 프론트엔드 `.env`에 설정합니다.
+4. `../backend/README.md`의 Firebase Admin 설정을 완료합니다.
+
+알림을 켜면 브라우저의 Firebase Installation ID가 백엔드에 저장됩니다. 앱을 보고 있을 때는
+팀모아 토스트로, 다른 탭을 보거나 브라우저가 백그라운드에 있을 때는 시스템 알림으로
+표시됩니다. 웹 푸시는 `localhost`를 제외한 운영 환경에서 HTTPS가 필요합니다.
 
 ## 색상
 

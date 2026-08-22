@@ -1,47 +1,60 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { usersApi } from '../../api/users';
 import { css } from '../../appStyles';
 import { Button } from '../../components/ui';
 import { useApp } from '../../context/useApp';
+import {
+    getNotificationPreference,
+    isFirebasePushConfigured,
+    registerForPushNotifications,
+    setNotificationPreference,
+    unregisterFromPushNotifications,
+} from '../../notifications/push';
 import { getErrorMessage } from '../../utils/format';
 import { AuthGate, PageHeader } from '../layout';
 
 const notificationKinds = [
-    ['관심 게임 모집', '관심 게임의 새 모집'],
     ['그룹 모집', '참여 중인 그룹의 새 모집'],
-    ['모집 완료', '참여한 모집의 마감'],
-    ['그룹과 역할', '그룹 정보나 역할 변경'],
+    ['모집 완료', '참여한 모집의 인원이 모두 모였을 때'],
 ] as const;
 
-const notificationPreferenceKey = 'teammoa-notifications';
-const notificationTokenBackupKey = 'teammoa-notification-token';
-
-function userStorageKey(key: string, userId?: string) {
-    return `${key}:${userId ?? 'signed-out'}`;
-}
-
 export default function SettingsPage() {
-    const { currentUser, refreshCurrentUser, showToast } = useApp();
+    const navigate = useNavigate();
+    const { currentUser, logoutAll, refreshCurrentUser, showToast } = useApp();
     const [permission, setPermission] = useState<NotificationPermission>(() =>
         'Notification' in window ? Notification.permission : 'denied',
     );
     const [notificationsEnabled, setNotificationsEnabled] = useState(() => {
-        const saved = localStorage.getItem(userStorageKey(notificationPreferenceKey, currentUser?.id));
-        return 'Notification' in window && Notification.permission === 'granted' && saved !== 'off';
+        if (!currentUser) return false;
+        return (
+            'Notification' in window &&
+            Notification.permission === 'granted' &&
+            getNotificationPreference(currentUser.id) !== 'off' &&
+            Boolean(currentUser.fcm_token)
+        );
     });
     const [requesting, setRequesting] = useState(false);
+    const [loggingOutAll, setLoggingOutAll] = useState(false);
 
     useEffect(() => {
         const syncPermission = () => {
             const next = 'Notification' in window ? Notification.permission : 'denied';
-            const saved = localStorage.getItem(userStorageKey(notificationPreferenceKey, currentUser?.id));
             setPermission(next);
-            setNotificationsEnabled(next === 'granted' && saved !== 'off');
+            setNotificationsEnabled(
+                Boolean(
+                    currentUser &&
+                    next === 'granted' &&
+                    getNotificationPreference(currentUser.id) !== 'off' &&
+                    currentUser.fcm_token,
+                ),
+            );
         };
 
+        syncPermission();
         window.addEventListener('focus', syncPermission);
         return () => window.removeEventListener('focus', syncPermission);
-    }, [currentUser?.id]);
+    }, [currentUser]);
 
     async function turnOnNotifications() {
         if (!('Notification' in window)) {
@@ -64,15 +77,11 @@ export default function SettingsPage() {
                 return;
             }
 
-            if (currentUser && !currentUser.fcm_token) {
-                const savedToken = localStorage.getItem(userStorageKey(notificationTokenBackupKey, currentUser.id));
-                if (savedToken) {
-                    await usersApi.updateFcmToken(currentUser.id, savedToken);
-                    await refreshCurrentUser();
-                }
-            }
-
-            localStorage.setItem(userStorageKey(notificationPreferenceKey, currentUser?.id), 'on');
+            if (!currentUser) return;
+            const installationId = await registerForPushNotifications();
+            await usersApi.updateFcmToken(currentUser.id, installationId);
+            setNotificationPreference(currentUser.id, true);
+            await refreshCurrentUser();
             setNotificationsEnabled(true);
             showToast('알림을 켰어요.', 'success');
         } catch (error) {
@@ -85,13 +94,17 @@ export default function SettingsPage() {
     async function turnOffNotifications() {
         setRequesting(true);
         try {
-            if (currentUser?.fcm_token) {
-                localStorage.setItem(userStorageKey(notificationTokenBackupKey, currentUser.id), currentUser.fcm_token);
+            if (currentUser) {
+                setNotificationPreference(currentUser.id, false);
+                try {
+                    await unregisterFromPushNotifications();
+                } catch {
+                    // 서버에서 수신 대상을 지우면 알림은 더 이상 전송되지 않는다.
+                }
                 await usersApi.updateFcmToken(currentUser.id, '');
                 await refreshCurrentUser();
             }
 
-            localStorage.setItem(userStorageKey(notificationPreferenceKey, currentUser?.id), 'off');
             setNotificationsEnabled(false);
             showToast('알림을 껐어요.', 'success');
         } catch (error) {
@@ -101,10 +114,25 @@ export default function SettingsPage() {
         }
     }
 
+    async function handleLogoutAll() {
+        const confirmed = window.confirm('모든 기기에서 로그아웃할까요?\n참가 중인 모든 모집방에서도 나가게 됩니다.');
+        if (!confirmed) return;
+
+        setLoggingOutAll(true);
+        try {
+            await logoutAll();
+            navigate('/');
+        } catch (error) {
+            showToast(getErrorMessage(error), 'error');
+        } finally {
+            setLoggingOutAll(false);
+        }
+    }
+
     return (
         <AuthGate>
             <div className={css('settings-page page-container')}>
-                <PageHeader title="설정" description="새 소식을 알림으로 받을지 정할 수 있어요." />
+                <PageHeader title="설정" description="알림을 정하고 로그인한 기기를 관리할 수 있어요." />
                 <section className={css('settings-section')}>
                     <div className={css('settings-section__heading')}>
                         <div>
@@ -126,9 +154,11 @@ export default function SettingsPage() {
                             <p>
                                 {permission === 'denied'
                                     ? '사용 중인 인터넷 앱의 설정에서 팀모아 알림을 켜 주세요.'
-                                    : notificationsEnabled
-                                      ? '새 모집과 그룹 소식을 알려드리고 있어요.'
-                                      : '원할 때 다시 켤 수 있어요.'}
+                                    : !isFirebasePushConfigured()
+                                      ? '알림을 보내기 위한 설정이 아직 준비되지 않았어요.'
+                                      : notificationsEnabled
+                                        ? '새 모집과 그룹 소식을 알려드리고 있어요.'
+                                        : '원할 때 다시 켤 수 있어요.'}
                             </p>
                         </div>
                         <Button
@@ -159,6 +189,18 @@ export default function SettingsPage() {
                             </span>
                         </div>
                     ))}
+                </section>
+                <section className={css('settings-section')}>
+                    <h2>계정</h2>
+                    <div className={css('settings-row')}>
+                        <div>
+                            <strong>모든 기기에서 로그아웃</strong>
+                            <p>다른 기기의 로그인도 끝나며, 참가 중인 모든 모집방에서 나가게 됩니다.</p>
+                        </div>
+                        <Button tone="danger" loading={loggingOutAll} onClick={() => void handleLogoutAll()}>
+                            모두 로그아웃
+                        </Button>
+                    </div>
                 </section>
             </div>
         </AuthGate>

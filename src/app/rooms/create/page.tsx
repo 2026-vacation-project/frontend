@@ -7,7 +7,7 @@ import { roomsApi } from '../../../api/rooms';
 import { GameArtwork } from '../../../components/game/GameArtwork';
 import { Button, EmptyState, Field, InlineNotice, LoadingRows } from '../../../components/ui';
 import { useApp } from '../../../context/useApp';
-import type { GameSearchResult, RoomCreate, UnitType } from '../../../types/api';
+import type { GameSearchResult, RoomCreate } from '../../../types/api';
 import { cacheGameCover, getCachedGameCover } from '../../../utils/gameCovers';
 import { getErrorMessage } from '../../../utils/format';
 import { AuthGate, PageHeader } from '../../layout';
@@ -19,7 +19,7 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
     const { currentUser, groups, activeGroupId, loadingGroups, selectGroup, showToast } = useApp();
     const requestedGroup = searchParams.get('group') || activeGroupId || groups[0]?.id || '';
     const [groupId, setGroupId] = useState(requestedGroup);
-    const [form, setForm] = useState<RoomCreate>({ game_name: '', target_count: 5, unit_type: '명' });
+    const [form, setForm] = useState<RoomCreate>({ game_name: '', target_count: 5 });
     const [loading, setLoading] = useState(edit);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -53,11 +53,10 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
             roomsApi
                 .get(effectiveGroupId, roomId)
                 .then((room) => {
-                    const coverUrl = getCachedGameCover(room.game_name);
+                    const coverUrl = room.game_cover_url ?? getCachedGameCover(room.game_name);
                     setForm({
                         game_name: room.game_name,
                         target_count: room.target_count,
-                        unit_type: room.unit_type,
                     });
                     setConfirmedGameName(room.game_name);
                     setSelectedGame({
@@ -280,8 +279,8 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
                                 </div>
                             )}
                         </div>
-                        <div className={css('form-section form-section--split')}>
-                            <Field label="몇 명을 모을까요?">
+                        <div className={css('form-section')}>
+                            <Field label="몇 명을 모을까요?" hint="방장을 포함한 전체 인원입니다.">
                                 <input
                                     type="number"
                                     min="2"
@@ -290,17 +289,6 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
                                     onChange={(event) => setForm({ ...form, target_count: Number(event.target.value) })}
                                     required
                                 />
-                            </Field>
-                            <Field label="인원 세는 방법">
-                                <select
-                                    value={form.unit_type}
-                                    onChange={(event) =>
-                                        setForm({ ...form, unit_type: event.target.value as UnitType })
-                                    }
-                                >
-                                    <option value="명">명</option>
-                                    <option value="팀">팀</option>
-                                </select>
                             </Field>
                         </div>
                         {error && (
