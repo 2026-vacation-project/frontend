@@ -8,7 +8,7 @@ import { EmptyState, InlineNotice, LoadingRows, SearchInput } from '../../compon
 import { Icon } from '../../components/ui/Icon';
 import { useApp } from '../../context/useApp';
 import type { RoomResponse } from '../../types/api';
-import { getErrorMessage, userDisplayName } from '../../utils/format';
+import { getErrorMessage, getRoomJoinErrorMessage, userDisplayName } from '../../utils/format';
 
 type Filter = 'all' | 'recruiting' | 'joined';
 
@@ -76,7 +76,7 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
             showToast(`${room.game_name} 모집에 참가했어요.`, 'success');
             await loadRooms();
         } catch (joinError) {
-            showToast(getErrorMessage(joinError), 'error');
+            showToast(getRoomJoinErrorMessage(joinError, room.tags ?? []), 'error');
         } finally {
             setJoiningId(null);
         }

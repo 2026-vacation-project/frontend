@@ -119,7 +119,7 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
                     if (!active || (searchError instanceof DOMException && searchError.name === 'AbortError')) return;
                     setGameResults([]);
                     setLastSearchedQuery(searchQuery);
-                    setGameSearchError('게임을 검색하지 못했어요. 잠시 후 다시 시도해 주세요.');
+                    setGameSearchError(getErrorMessage(searchError));
                 })
                 .finally(() => {
                     if (active) setSearchingGames(false);

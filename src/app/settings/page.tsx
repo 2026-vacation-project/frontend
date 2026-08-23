@@ -75,7 +75,12 @@ export default function SettingsPage() {
             setPermission(next);
 
             if (next !== 'granted') {
-                showToast('알림을 켜지 못했어요.', 'info');
+                showToast(
+                    next === 'denied'
+                        ? '알림 권한이 차단됐어요. 인터넷 앱 설정에서 팀모아 알림을 허용해 주세요.'
+                        : '알림 권한을 선택하지 않았어요. 알림 받기를 다시 눌러 허용해 주세요.',
+                    'info',
+                );
                 return;
             }
 

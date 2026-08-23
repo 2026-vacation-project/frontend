@@ -1,4 +1,5 @@
-import type { RoomResponse, UserResponse } from '../types/api';
+import { ApiError } from '../api/client';
+import type { RoomResponse, TagResponse, UserResponse } from '../types/api';
 
 export function userDisplayName(user: UserResponse) {
     return user.display_name?.trim() || user.name;
@@ -32,5 +33,23 @@ export function initials(name: string) {
 }
 
 export function getErrorMessage(error: unknown) {
-    return error instanceof Error ? error.message : '요청을 처리하지 못했어요.';
+    if (error instanceof Error && /[가-힣]/.test(error.message)) return error.message;
+    return '요청을 마치지 못했어요. 잠시 후 다시 시도해 주세요.';
+}
+
+export function getRoomJoinErrorMessage(error: unknown, tags: TagResponse[]) {
+    const detail =
+        error instanceof ApiError &&
+        typeof error.details === 'object' &&
+        error.details !== null &&
+        'detail' in error.details &&
+        typeof error.details.detail === 'string'
+            ? error.details.detail
+            : '';
+
+    if (tags.length && detail === '이 모집방에서 찾는 태그가 내게 없습니다.') {
+        return `${tags.map((tag) => tag.name).join(', ')} 태그가 없어요.`;
+    }
+
+    return getErrorMessage(error);
 }

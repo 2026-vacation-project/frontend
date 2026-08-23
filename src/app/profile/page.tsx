@@ -233,7 +233,7 @@ export default function ProfilePage() {
                                                 <div className={css('game-search__status')}>검색 중…</div>
                                             ) : gameSearchError ? (
                                                 <div className={css('game-search__status game-search__status--error')}>
-                                                    게임을 검색하지 못했어요. 잠시 후 다시 시도해 주세요.
+                                                    {gameSearchError}
                                                 </div>
                                             ) : !gameResults.length ? (
                                                 <div className={css('game-search__status')}>

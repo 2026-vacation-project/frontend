@@ -8,7 +8,13 @@ import { useConfirmDialog } from '../../../components/ui/useConfirmDialog';
 import { useApp } from '../../../context/useApp';
 import { AuthGate } from '../../layout';
 import type { RoomResponse } from '../../../types/api';
-import { getErrorMessage, relativeTime, userDisplayName, userDisplayNameDetail } from '../../../utils/format';
+import {
+    getErrorMessage,
+    getRoomJoinErrorMessage,
+    relativeTime,
+    userDisplayName,
+    userDisplayNameDetail,
+} from '../../../utils/format';
 import { getCachedGameCover } from '../../../utils/gameCovers';
 
 export default function RoomDetailPage() {
@@ -55,7 +61,10 @@ export default function RoomDetailPage() {
             showToast(joined ? '모집방에서 나왔어요.' : '모집에 참가했어요.', 'success');
             await loadRoom();
         } catch (actionError) {
-            showToast(getErrorMessage(actionError), 'error');
+            showToast(
+                joined ? getErrorMessage(actionError) : getRoomJoinErrorMessage(actionError, room.tags ?? []),
+                'error',
+            );
         } finally {
             setActing(false);
         }
