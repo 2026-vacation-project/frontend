@@ -203,6 +203,7 @@ export function AppLayout() {
             {currentUser &&
                 location.pathname !== '/rooms/create' &&
                 !location.pathname.startsWith('/profile') &&
+                !location.pathname.startsWith('/settings') &&
                 !(needsGroup && location.pathname.startsWith('/groups')) && (
                     <Link className={css('mobile-recruit')} to={recruitPath}>
                         <Icon name="plus" />

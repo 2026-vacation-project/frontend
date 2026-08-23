@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import { css } from '../../../../appStyles';
+import { authApi } from '../../../../api/auth';
 import { consumeOAuthAttempt, isOAuthProvider } from '../../../../auth/oauth';
 import { InlineNotice } from '../../../../components/ui';
 import { useApp } from '../../../../context/useApp';
@@ -17,7 +18,7 @@ export default function OAuthCallbackPage() {
     const { provider: providerParam } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
-    const { login } = useApp();
+    const { login, refreshCurrentUser, showToast } = useApp();
     const started = useRef(false);
     const [status, setStatus] = useState<CallbackStatus>('loading');
     const [error, setError] = useState<string | null>(null);
@@ -31,7 +32,7 @@ export default function OAuthCallbackPage() {
                 if (!isOAuthProvider(providerParam)) throw new Error('지원하지 않는 로그인 방법이에요.');
 
                 const searchParams = new URLSearchParams(location.search);
-                const returnTo = consumeOAuthAttempt(providerParam, searchParams.get('state'));
+                const attempt = consumeOAuthAttempt(providerParam, searchParams.get('state'));
                 const providerError = searchParams.get('error');
                 if (providerError) {
                     throw new Error(getProviderError(providerError));
@@ -40,8 +41,15 @@ export default function OAuthCallbackPage() {
                 const code = searchParams.get('code');
                 if (!code) throw new Error('로그인을 완료하지 못했어요. 다시 시도해 주세요.');
 
-                await login(providerParam, code);
-                navigate(returnTo, { replace: true });
+                if (attempt.purpose === 'link') {
+                    if (providerParam !== 'discord') throw new Error('지원하지 않는 계정 연결 방법이에요.');
+                    await authApi.linkDiscord(code);
+                    await refreshCurrentUser();
+                    showToast('Discord 계정을 연결했어요. 설정 메시지를 DM으로 보냈어요.', 'success');
+                } else {
+                    await login(providerParam, code);
+                }
+                navigate(attempt.returnTo, { replace: true });
             } catch (callbackError) {
                 setError(getErrorMessage(callbackError));
                 setStatus('error');
@@ -49,7 +57,7 @@ export default function OAuthCallbackPage() {
         }
 
         void completeLogin();
-    }, [location.search, login, navigate, providerParam]);
+    }, [location.search, login, navigate, providerParam, refreshCurrentUser, showToast]);
 
     return (
         <div className={css('oauth-callback page-container')}>

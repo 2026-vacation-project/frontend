@@ -10,11 +10,7 @@ import {
     updateAuthUser,
 } from '../auth/session';
 import type { GroupResponse, OAuthProvider, UserResponse } from '../types/api';
-import {
-    getNotificationPreference,
-    listenToPushNotifications,
-    unregisterFromPushNotifications,
-} from '../notifications/push';
+import { listenToPushNotifications, unregisterFromPushNotifications } from '../notifications/push';
 import { getErrorMessage, userDisplayName } from '../utils/format';
 import { AppContext, type AppContextValue, type ToastState } from './useApp';
 const groupKey = 'teammoa-active-group';
@@ -51,7 +47,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             !userId ||
             !('Notification' in window) ||
             Notification.permission !== 'granted' ||
-            getNotificationPreference(userId) === 'off'
+            !(currentUser.notifications_enabled ?? Boolean(currentUser.fcm_token))
         ) {
             return;
         }
@@ -101,7 +97,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             active = false;
             stopListening?.();
         };
-    }, [currentUser?.fcm_token, currentUser?.id, showToast]);
+    }, [currentUser?.fcm_token, currentUser?.id, currentUser?.notifications_enabled, showToast]);
 
     const refreshGroups = useCallback(async () => {
         if (!currentUser) {

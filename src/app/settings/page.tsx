@@ -1,17 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { usersApi } from '../../api/users';
+import { authApi } from '../../api/auth';
 import { css } from '../../appStyles';
+import { createOAuthAuthorizationUrl } from '../../auth/oauth';
 import { Button } from '../../components/ui';
 import { useConfirmDialog } from '../../components/ui/useConfirmDialog';
 import { useApp } from '../../context/useApp';
-import {
-    getNotificationPreference,
-    isFirebasePushConfigured,
-    registerForPushNotifications,
-    setNotificationPreference,
-    unregisterFromPushNotifications,
-} from '../../notifications/push';
+import { useNotificationSettings } from '../../notifications/useNotificationSettings';
 import { getErrorMessage, userDisplayName } from '../../utils/format';
 import { AuthGate, PageHeader } from '../layout';
 
@@ -23,101 +18,55 @@ const notificationKinds = [
 export default function SettingsPage() {
     const navigate = useNavigate();
     const { currentUser, logoutAll, refreshCurrentUser, showToast } = useApp();
-    const [permission, setPermission] = useState<NotificationPermission>(() =>
-        'Notification' in window ? Notification.permission : 'denied',
-    );
-    const [notificationsEnabled, setNotificationsEnabled] = useState(() => {
-        if (!currentUser) return false;
-        return (
-            'Notification' in window &&
-            Notification.permission === 'granted' &&
-            getNotificationPreference(currentUser.id) !== 'off' &&
-            Boolean(currentUser.fcm_token)
-        );
-    });
-    const [requesting, setRequesting] = useState(false);
+    const {
+        permission,
+        requesting,
+        notificationsEnabled,
+        webPushConfigured,
+        discordConnected,
+        enableWebPush,
+        enableNotifications,
+        disableNotifications,
+        disableWebPush,
+    } = useNotificationSettings();
+    const [linkingDiscord, setLinkingDiscord] = useState(false);
     const [loggingOutAll, setLoggingOutAll] = useState(false);
     const { confirm, dialog: confirmDialog } = useConfirmDialog();
 
     useEffect(() => {
-        const syncPermission = () => {
-            const next = 'Notification' in window ? Notification.permission : 'denied';
-            setPermission(next);
-            setNotificationsEnabled(
-                Boolean(
-                    currentUser &&
-                    next === 'granted' &&
-                    getNotificationPreference(currentUser.id) !== 'off' &&
-                    currentUser.fcm_token,
-                ),
-            );
-        };
+        const refresh = () => void refreshCurrentUser().catch(() => undefined);
+        window.addEventListener('focus', refresh);
+        return () => window.removeEventListener('focus', refresh);
+    }, [refreshCurrentUser]);
 
-        syncPermission();
-        window.addEventListener('focus', syncPermission);
-        return () => window.removeEventListener('focus', syncPermission);
-    }, [currentUser]);
-
-    async function turnOnNotifications() {
-        if (!('Notification' in window)) {
-            showToast('이 기기에서는 알림을 받을 수 없어요.', 'error');
-            return;
-        }
-
-        if (Notification.permission === 'denied') {
-            showToast('사용 중인 인터넷 앱 설정에서 팀모아 알림을 켜 주세요.', 'info');
-            return;
-        }
-
-        setRequesting(true);
+    function connectDiscord() {
+        setLinkingDiscord(true);
         try {
-            const next = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
-            setPermission(next);
-
-            if (next !== 'granted') {
-                showToast(
-                    next === 'denied'
-                        ? '알림 권한이 차단됐어요. 인터넷 앱 설정에서 팀모아 알림을 허용해 주세요.'
-                        : '알림 권한을 선택하지 않았어요. 알림 받기를 다시 눌러 허용해 주세요.',
-                    'info',
-                );
-                return;
-            }
-
-            if (!currentUser) return;
-            const installationId = await registerForPushNotifications();
-            await usersApi.updateFcmToken(currentUser.id, installationId);
-            setNotificationPreference(currentUser.id, true);
-            await refreshCurrentUser();
-            setNotificationsEnabled(true);
-            showToast('알림을 켰어요.', 'success');
+            window.location.assign(createOAuthAuthorizationUrl('discord', '/settings', 'link'));
         } catch (error) {
+            setLinkingDiscord(false);
             showToast(getErrorMessage(error), 'error');
-        } finally {
-            setRequesting(false);
         }
     }
 
-    async function turnOffNotifications() {
-        setRequesting(true);
-        try {
-            if (currentUser) {
-                setNotificationPreference(currentUser.id, false);
-                try {
-                    await unregisterFromPushNotifications();
-                } catch {
-                    // 서버에서 수신 대상을 지우면 알림은 더 이상 전송되지 않는다.
-                }
-                await usersApi.updateFcmToken(currentUser.id, '');
-                await refreshCurrentUser();
-            }
+    async function disconnectDiscord() {
+        const confirmed = await confirm({
+            title: 'Discord 연결을 해제할까요?',
+            description: 'Discord DM 알림이 꺼지고 공용 알림 설정도 꺼짐으로 바뀝니다.',
+            confirmLabel: '연결 해제',
+            tone: 'danger',
+        });
+        if (!confirmed) return;
 
-            setNotificationsEnabled(false);
-            showToast('알림을 껐어요.', 'success');
+        setLinkingDiscord(true);
+        try {
+            await authApi.unlinkDiscord();
+            await refreshCurrentUser();
+            showToast('Discord 연결을 해제했어요.', 'success');
         } catch (error) {
             showToast(getErrorMessage(error), 'error');
         } finally {
-            setRequesting(false);
+            setLinkingDiscord(false);
         }
     }
 
@@ -141,6 +90,8 @@ export default function SettingsPage() {
         }
     }
 
+    const activeDelivery = webPushConfigured ? '웹 푸시' : discordConnected ? 'Discord DM' : null;
+
     return (
         <AuthGate>
             <div className={css('settings-page page-container')}>
@@ -162,11 +113,16 @@ export default function SettingsPage() {
                         </div>
                     </section>
                 )}
+
                 <section className={css('settings-section')}>
                     <div className={css('settings-section__heading')}>
                         <div>
                             <h2>새 소식 알림</h2>
-                            <p>새 모집과 그룹 소식을 알려드려요.</p>
+                            <p>
+                                {notificationsEnabled && activeDelivery
+                                    ? `${activeDelivery}로 새 모집과 모집 완료 소식을 받고 있어요.`
+                                    : '새 모집과 모집 완료 소식을 받을 수 있어요.'}
+                            </p>
                         </div>
                         <span
                             className={css(
@@ -179,20 +135,12 @@ export default function SettingsPage() {
                     </div>
                     <div className={css('settings-row')}>
                         <div>
-                            <strong>알림 받기</strong>
-                            <p>
-                                {permission === 'denied'
-                                    ? '사용 중인 인터넷 앱의 설정에서 팀모아 알림을 켜 주세요.'
-                                    : !isFirebasePushConfigured()
-                                      ? '알림을 보내기 위한 설정이 아직 준비되지 않았어요.'
-                                      : notificationsEnabled
-                                        ? '새 모집과 그룹 소식을 알려드리고 있어요.'
-                                        : '원할 때 다시 켤 수 있어요.'}
-                            </p>
+                            <strong>전체 알림</strong>
+                            <p>웹과 Discord에서 같은 설정을 사용해요.</p>
                         </div>
                         <Button
                             tone={notificationsEnabled ? 'quiet' : 'secondary'}
-                            onClick={() => void (notificationsEnabled ? turnOffNotifications() : turnOnNotifications())}
+                            onClick={() => void (notificationsEnabled ? disableNotifications() : enableNotifications())}
                             loading={requesting}
                             aria-pressed={notificationsEnabled}
                         >
@@ -200,6 +148,67 @@ export default function SettingsPage() {
                         </Button>
                     </div>
                 </section>
+
+                <section className={css('settings-section')}>
+                    <h2>알림 받을 곳</h2>
+                    <div className={css('settings-row')}>
+                        <div>
+                            <strong>웹 푸시</strong>
+                            <p>
+                                {webPushConfigured
+                                    ? '이 브라우저가 FCM 알림 대상으로 설정되어 있어요.'
+                                    : permission === 'denied'
+                                      ? '인터넷 앱 설정에서 팀모아 알림 권한을 허용해 주세요.'
+                                      : '설정하면 Discord보다 웹 푸시로만 알림을 보내요.'}
+                            </p>
+                        </div>
+                        <div className={css('settings-row__actions')}>
+                            <span
+                                className={css(
+                                    'permission',
+                                    webPushConfigured ? 'permission--granted' : 'permission--default',
+                                )}
+                            >
+                                {webPushConfigured ? '설정됨' : '미설정'}
+                            </span>
+                            <Button
+                                tone={webPushConfigured ? 'quiet' : 'secondary'}
+                                onClick={() => void (webPushConfigured ? disableWebPush() : enableWebPush())}
+                                loading={requesting}
+                            >
+                                {webPushConfigured ? '웹 푸시 해제' : '웹 푸시 켜기'}
+                            </Button>
+                        </div>
+                    </div>
+                    <div className={css('settings-row')}>
+                        <div>
+                            <strong>Discord DM</strong>
+                            <p>
+                                {discordConnected
+                                    ? '웹 푸시가 설정되지 않았을 때 Bot이 Embed DM을 보내요.'
+                                    : '연결하면 Bot DM의 버튼으로도 알림을 켜고 끌 수 있어요.'}
+                            </p>
+                        </div>
+                        <div className={css('settings-row__actions')}>
+                            <span
+                                className={css(
+                                    'permission',
+                                    discordConnected ? 'permission--granted' : 'permission--default',
+                                )}
+                            >
+                                {discordConnected ? '연결됨' : '연결 안 됨'}
+                            </span>
+                            <Button
+                                tone={discordConnected ? 'quiet' : 'secondary'}
+                                onClick={() => void (discordConnected ? disconnectDiscord() : connectDiscord())}
+                                loading={linkingDiscord}
+                            >
+                                {discordConnected ? '연결 해제' : 'Discord 연결'}
+                            </Button>
+                        </div>
+                    </div>
+                </section>
+
                 <section className={css('settings-section')}>
                     <h2>받을 수 있는 알림</h2>
                     {notificationKinds.map(([label, description]) => (
@@ -219,6 +228,7 @@ export default function SettingsPage() {
                         </div>
                     ))}
                 </section>
+
                 <section className={css('settings-section')}>
                     <h2>로그인한 기기</h2>
                     <div className={css('settings-row')}>

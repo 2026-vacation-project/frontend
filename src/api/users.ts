@@ -14,6 +14,12 @@ export const usersApi = {
             body: JSON.stringify({ fcm_token: fcmToken }),
         });
     },
+    updateNotificationPreference(userId: string, enabled: boolean) {
+        return apiRequest<UserResponse>(`/api/v1/users/${encodeURIComponent(userId)}/notification-preference`, {
+            method: 'PATCH',
+            body: JSON.stringify({ enabled }),
+        });
+    },
     updatePreferences(userId: string, preferredGames: string[]) {
         return apiRequest<unknown>(`/api/v1/users/${encodeURIComponent(userId)}/preferences`, {
             method: 'PATCH',

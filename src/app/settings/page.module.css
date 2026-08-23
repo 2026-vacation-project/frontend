@@ -32,3 +32,15 @@
 .permission--default {
     color: var(--color-warning);
 }
+.settings-row__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+@media (max-width: 720px) {
+    .settings-row__actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

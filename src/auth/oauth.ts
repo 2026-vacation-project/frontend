@@ -7,6 +7,7 @@ interface OAuthAttempt {
     state: string;
     returnTo: string;
     startedAt: number;
+    purpose: 'login' | 'link';
 }
 
 const providerConfig: Record<
@@ -48,7 +49,11 @@ export function getOAuthRedirectUri(provider: OAuthProvider) {
     return `${callbackBase}/${provider}`;
 }
 
-export function createOAuthAuthorizationUrl(provider: OAuthProvider, returnTo?: string | null) {
+export function createOAuthAuthorizationUrl(
+    provider: OAuthProvider,
+    returnTo?: string | null,
+    purpose: OAuthAttempt['purpose'] = 'login',
+) {
     const config = providerConfig[provider];
     const clientId = config.clientId.trim();
     if (!clientId) {
@@ -60,6 +65,7 @@ export function createOAuthAuthorizationUrl(provider: OAuthProvider, returnTo?: 
         state,
         returnTo: sanitizeReturnTo(returnTo),
         startedAt: Date.now(),
+        purpose,
     };
     sessionStorage.setItem(getAttemptKey(provider), JSON.stringify(attempt));
 
@@ -90,7 +96,10 @@ export function consumeOAuthAttempt(provider: OAuthProvider, receivedState: stri
         if (typeof attempt.startedAt !== 'number' || Date.now() - attempt.startedAt > oauthAttemptLifetimeMs) {
             throw new Error('로그인 시간이 지났어요. 다시 시도해 주세요.');
         }
-        return sanitizeReturnTo(attempt.returnTo);
+        return {
+            returnTo: sanitizeReturnTo(attempt.returnTo),
+            purpose: attempt.purpose === 'link' ? ('link' as const) : ('login' as const),
+        };
     } catch (error) {
         if (error instanceof Error && error.message.startsWith('로그인')) throw error;
         throw new Error('로그인을 확인하지 못했어요. 다시 시도해 주세요.', { cause: error });
