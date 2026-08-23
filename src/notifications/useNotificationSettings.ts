@@ -3,6 +3,7 @@ import { usersApi } from '../api/users';
 import { useApp } from '../context/useApp';
 import { getErrorMessage } from '../utils/format';
 import {
+    getNotificationPreference,
     isFirebasePushConfigured,
     registerForPushNotifications,
     setNotificationPreference,
@@ -14,12 +15,10 @@ export function useNotificationSettings() {
     const [permission, setPermission] = useState<NotificationPermission>(() =>
         'Notification' in window ? Notification.permission : 'denied',
     );
-    const [requesting, setRequesting] = useState(false);
-    const notificationsEnabled = Boolean(
-        currentUser && (currentUser.notifications_enabled ?? Boolean(currentUser.fcm_token)),
+    const [webPushRequesting, setWebPushRequesting] = useState(false);
+    const webPushEnabled = Boolean(
+        currentUser?.fcm_token && permission === 'granted' && getNotificationPreference(currentUser.id) === 'on',
     );
-    const webPushConfigured = Boolean(currentUser?.fcm_token);
-    const discordConnected = Boolean(currentUser?.discord_connected);
 
     useEffect(() => {
         const syncPermission = () => {
@@ -28,13 +27,6 @@ export function useNotificationSettings() {
         window.addEventListener('focus', syncPermission);
         return () => window.removeEventListener('focus', syncPermission);
     }, []);
-
-    async function savePreference(enabled: boolean) {
-        if (!currentUser) return false;
-        await usersApi.updateNotificationPreference(currentUser.id, enabled);
-        await refreshCurrentUser();
-        return true;
-    }
 
     async function enableWebPush() {
         if (!currentUser) return false;
@@ -51,7 +43,7 @@ export function useNotificationSettings() {
             return false;
         }
 
-        setRequesting(true);
+        setWebPushRequesting(true);
         try {
             const next = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
             setPermission(next);
@@ -67,7 +59,6 @@ export function useNotificationSettings() {
 
             const installationId = await registerForPushNotifications();
             await usersApi.updateFcmToken(currentUser.id, installationId);
-            await usersApi.updateNotificationPreference(currentUser.id, true);
             setNotificationPreference(currentUser.id, true);
             await refreshCurrentUser();
             showToast('이 브라우저의 웹 푸시 알림을 켰어요.', 'success');
@@ -76,75 +67,31 @@ export function useNotificationSettings() {
             showToast(getErrorMessage(error), 'error');
             return false;
         } finally {
-            setRequesting(false);
-        }
-    }
-
-    async function enableNotifications() {
-        if (!currentUser) return;
-        if (webPushConfigured || discordConnected) {
-            setRequesting(true);
-            try {
-                await savePreference(true);
-                setNotificationPreference(currentUser.id, true);
-                showToast('알림을 켰어요.', 'success');
-            } catch (error) {
-                showToast(getErrorMessage(error), 'error');
-            } finally {
-                setRequesting(false);
-            }
-            return;
-        }
-        await enableWebPush();
-    }
-
-    async function disableNotifications() {
-        if (!currentUser) return;
-        setRequesting(true);
-        try {
-            await usersApi.updateNotificationPreference(currentUser.id, false);
-            setNotificationPreference(currentUser.id, false);
-            if (webPushConfigured) {
-                await unregisterFromPushNotifications().catch(() => undefined);
-                await usersApi.updateFcmToken(currentUser.id, '');
-            }
-            await refreshCurrentUser();
-            showToast('알림을 껐어요.', 'success');
-        } catch (error) {
-            showToast(getErrorMessage(error), 'error');
-        } finally {
-            setRequesting(false);
+            setWebPushRequesting(false);
         }
     }
 
     async function disableWebPush() {
-        if (!currentUser || !webPushConfigured) return;
-        setRequesting(true);
+        if (!currentUser || !webPushEnabled) return;
+        setWebPushRequesting(true);
         try {
             await unregisterFromPushNotifications().catch(() => undefined);
             await usersApi.updateFcmToken(currentUser.id, '');
-            if (!discordConnected) await usersApi.updateNotificationPreference(currentUser.id, false);
+            setNotificationPreference(currentUser.id, false);
             await refreshCurrentUser();
-            showToast(
-                discordConnected ? '웹 푸시를 해제했어요. 알림은 Discord DM으로 보내요.' : '웹 푸시를 해제했어요.',
-                'success',
-            );
+            showToast('이 브라우저의 웹 푸시 알림을 껐어요.', 'success');
         } catch (error) {
             showToast(getErrorMessage(error), 'error');
         } finally {
-            setRequesting(false);
+            setWebPushRequesting(false);
         }
     }
 
     return {
         permission,
-        requesting,
-        notificationsEnabled,
-        webPushConfigured,
-        discordConnected,
+        webPushRequesting,
+        webPushEnabled,
         enableWebPush,
-        enableNotifications,
-        disableNotifications,
         disableWebPush,
     };
 }

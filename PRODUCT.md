@@ -36,6 +36,7 @@ web
 - Swagger에 없는 API는 추측하거나 목 엔드포인트로 만들지 않는다. 전역 모집 검색·필터, 그룹 수정·초대, 태그 해제, 알림 목록은 현재 백엔드 미지원 기능으로 명시한다.
 - 인증은 Google/Discord Authorization Code 흐름을 사용한다. 프론트엔드는 OAuth 콜백의 `code`를 `POST /api/v1/auth/login/{provider}`로 전달하고, 응답의 JWT를 이후 API 요청에 Bearer Token으로 사용한다.
 - 현재 모집방은 그룹 하위에서만 조회할 수 있고 `game_name`, `target_count` 필드를 사용한다.
+- 모집방 목록과 상세 참가자 정보는 인증된 `/api/v1/ws/rooms` 변경 이벤트로 갱신하며 polling을 사용하지 않는다.
 - 마지막 참가자가 나가면 빈 모집방을 삭제한다. 모든 기기 로그아웃 시에는 모든 모집방에서 나가고 기존 토큰을 무효화한다.
 - 실제 OAuth 클라이언트 정보, Firebase 프로젝트 설정, 운영 환경 주소는 배포 환경별 환경 변수로 제공한다.
 

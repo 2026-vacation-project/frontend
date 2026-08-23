@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { ApiError } from '../../../api/client';
 import { css } from '../../../appStyles';
@@ -7,6 +7,7 @@ import { GameArtwork } from '../../../components/game/GameArtwork';
 import { Avatar, Button, EmptyState, LoadingRows, RoleBadge, StatusLabel } from '../../../components/ui';
 import { useConfirmDialog } from '../../../components/ui/useConfirmDialog';
 import { useApp } from '../../../context/useApp';
+import { subscribeToRoomChanges } from '../../../realtime/rooms';
 import { AuthGate } from '../../layout';
 import type { RoomResponse } from '../../../types/api';
 import {
@@ -29,47 +30,63 @@ export default function RoomDetailPage() {
     const [acting, setActing] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [accessRestricted, setAccessRestricted] = useState(false);
+    const loadRequestId = useRef(0);
     const { confirm, dialog: confirmDialog } = useConfirmDialog();
     const group = groups.find((item) => item.id === groupId);
     const isGroupMember = Boolean(group && (group.members ?? []).some((member) => member.id === currentUser?.id));
 
-    const loadRoom = useCallback(async () => {
-        if (!roomId || !groupId) {
-            setError('그룹을 찾지 못해 모집방을 열 수 없어요.');
-            setLoading(false);
-            return;
-        }
-        if (loadingGroups) return;
-        if (!isGroupMember) {
-            setRoom(null);
-            setError(null);
-            setAccessRestricted(true);
-            setLoading(false);
-            return;
-        }
-        setLoading(true);
-        setAccessRestricted(false);
-        try {
-            setRoom(await roomsApi.get(groupId, roomId));
-            setError(null);
-            setAccessRestricted(false);
-        } catch (loadError) {
-            if (loadError instanceof ApiError && loadError.status === 403) {
+    const loadRoom = useCallback(
+        async (showLoading = true) => {
+            const requestId = ++loadRequestId.current;
+            if (!roomId || !groupId) {
+                setError('그룹을 찾지 못해 모집방을 열 수 없어요.');
+                setLoading(false);
+                return;
+            }
+            if (loadingGroups) return;
+            if (!isGroupMember) {
                 setRoom(null);
                 setError(null);
                 setAccessRestricted(true);
-            } else {
-                setError(getErrorMessage(loadError));
+                setLoading(false);
+                return;
             }
-        } finally {
-            setLoading(false);
-        }
-    }, [groupId, isGroupMember, loadingGroups, roomId]);
+            if (showLoading) setLoading(true);
+            setAccessRestricted(false);
+            try {
+                const nextRoom = await roomsApi.get(groupId, roomId);
+                if (requestId !== loadRequestId.current) return;
+                setRoom(nextRoom);
+                setError(null);
+                setAccessRestricted(false);
+            } catch (loadError) {
+                if (requestId !== loadRequestId.current) return;
+                if (loadError instanceof ApiError && loadError.status === 403) {
+                    setRoom(null);
+                    setError(null);
+                    setAccessRestricted(true);
+                } else {
+                    if (loadError instanceof ApiError && loadError.status === 404) setRoom(null);
+                    setError(getErrorMessage(loadError));
+                }
+            } finally {
+                if (requestId === loadRequestId.current) setLoading(false);
+            }
+        },
+        [groupId, isGroupMember, loadingGroups, roomId],
+    );
 
     useEffect(() => {
-        const timer = window.setTimeout(() => void loadRoom(), 0);
+        const timer = window.setTimeout(() => void loadRoom(true), 0);
         return () => window.clearTimeout(timer);
     }, [loadRoom]);
+
+    useEffect(() => {
+        if (!groupId || !roomId || !isGroupMember) return;
+        return subscribeToRoomChanges(groupId, (event) => {
+            if (event.roomId === null || event.roomId === roomId) void loadRoom(false);
+        });
+    }, [groupId, isGroupMember, loadRoom, roomId]);
 
     async function toggleParticipation() {
         if (!room || !currentUser) return;
@@ -79,7 +96,7 @@ export default function RoomDetailPage() {
             if (joined) await roomsApi.leave(groupId, room.id, currentUser.id);
             else await roomsApi.join(groupId, room.id, currentUser.id);
             showToast(joined ? '모집방에서 나왔어요.' : '모집에 참가했어요.', 'success');
-            await loadRoom();
+            await loadRoom(false);
         } catch (actionError) {
             showToast(
                 joined ? getErrorMessage(actionError) : getRoomJoinErrorMessage(actionError, room.tags ?? []),
@@ -199,7 +216,7 @@ export default function RoomDetailPage() {
 
                 <div className={css('room-detail__grid')}>
                     <section className={css('detail-main')}>
-                        <div className={css('lineup-summary')}>
+                        <div className={css('lineup-summary')} aria-live="polite">
                             <div>
                                 <span>참가 현황</span>
                                 <strong>

@@ -1,4 +1,5 @@
 import type { TokenResponse, UserResponse } from '../types/api';
+import { clearWebPushPromptDismissal } from '../notifications/promptStorage';
 
 const authSessionKey = 'teammoa-auth-session';
 const legacyUserKey = 'teammoa-current-user';
@@ -50,6 +51,7 @@ export function saveAuthSession(response: TokenResponse) {
         tokenType: response.token_type,
         user: response.user,
     };
+    clearWebPushPromptDismissal();
     sessionStorage.setItem(authSessionKey, JSON.stringify(session));
     sessionStorage.removeItem(legacyUserKey);
     notifySessionChanged();

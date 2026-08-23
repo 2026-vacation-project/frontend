@@ -10,7 +10,13 @@ import {
     updateAuthUser,
 } from '../auth/session';
 import type { GroupResponse, OAuthProvider, UserResponse } from '../types/api';
-import { listenToPushNotifications, unregisterFromPushNotifications } from '../notifications/push';
+import {
+    getNotificationPreference,
+    listenToPushNotifications,
+    setNotificationPreference,
+    unregisterFromPushNotifications,
+} from '../notifications/push';
+import { startRoomRealtime, stopRoomRealtime } from '../realtime/rooms';
 import { getErrorMessage, userDisplayName } from '../utils/format';
 import { AppContext, type AppContextValue, type ToastState } from './useApp';
 const groupKey = 'teammoa-active-group';
@@ -42,12 +48,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     useEffect(() => {
+        const accessToken = readAuthSession()?.accessToken;
+        if (!currentUser?.id || !accessToken) {
+            stopRoomRealtime();
+            return;
+        }
+        return startRoomRealtime(accessToken);
+    }, [currentUser?.id]);
+
+    useEffect(() => {
         const userId = currentUser?.id;
         if (
             !userId ||
             !('Notification' in window) ||
             Notification.permission !== 'granted' ||
-            !(currentUser.notifications_enabled ?? Boolean(currentUser.fcm_token))
+            !currentUser.fcm_token ||
+            getNotificationPreference(userId) !== 'on'
         ) {
             return;
         }
@@ -75,6 +91,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             },
             onTargetUnregistered: (installationId) => {
                 if (!active || currentUser?.fcm_token !== installationId) return;
+                setNotificationPreference(userId, false);
                 void usersApi
                     .updateFcmToken(userId, '')
                     .then(() => {
@@ -97,7 +114,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             active = false;
             stopListening?.();
         };
-    }, [currentUser?.fcm_token, currentUser?.id, currentUser?.notifications_enabled, showToast]);
+    }, [currentUser?.fcm_token, currentUser?.id, showToast]);
 
     const refreshGroups = useCallback(async () => {
         if (!currentUser) {
@@ -145,6 +162,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     async function logout() {
         if (currentUser) {
             await Promise.allSettled([usersApi.updateFcmToken(currentUser.id, ''), unregisterFromPushNotifications()]);
+            setNotificationPreference(currentUser.id, false);
         }
         clearAuthSession();
         setCurrentUser(null);
@@ -156,6 +174,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     async function logoutAll() {
         const result = await authApi.logoutAll();
         await unregisterFromPushNotifications().catch(() => undefined);
+        if (currentUser) setNotificationPreference(currentUser.id, false);
         clearAuthSession();
         setCurrentUser(null);
         setGroups([]);

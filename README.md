@@ -2,15 +2,15 @@
 
 ## 기술 스택 - Frontend
 
-| 분류 | 기술 |
-| --- | --- |
-| 언어 | TypeScript 6 |
-| UI | React 19, React DOM |
-| 빌드 | Vite 8, React Compiler |
-| 라우팅 | React Router 8 |
-| 애니메이션 | React Spring 10 |
-| 스타일 | CSS Modules, CSS Custom Properties |
-| 코드 품질 | ESLint 10, Prettier 3 |
+| 분류       | 기술                               |
+| ---------- | ---------------------------------- |
+| 언어       | TypeScript 6                       |
+| UI         | React 19, React DOM                |
+| 빌드       | Vite 8, React Compiler             |
+| 라우팅     | React Router 8                     |
+| 애니메이션 | React Spring 10                    |
+| 스타일     | CSS Modules, CSS Custom Properties |
+| 코드 품질  | ESLint 10, Prettier 3              |
 
 ## 로컬 실행
 
@@ -43,6 +43,13 @@ Client Secret은 프론트엔드 환경 변수에 넣지 않습니다. 운영 �
 알림을 켜면 브라우저의 Firebase Installation ID가 백엔드에 저장됩니다. 앱을 보고 있을 때는
 팀모아 토스트로, 다른 탭을 보거나 브라우저가 백그라운드에 있을 때는 시스템 알림으로
 표시됩니다. 웹 푸시는 `localhost`를 제외한 운영 환경에서 HTTPS가 필요합니다.
+
+## 모집방 실시간 갱신
+
+로그인 세션 동안 `/api/v1/ws/rooms` WebSocket을 유지합니다. 모집방 목록이나 상세 화면은 현재
+그룹을 구독하고, 방 또는 참가자 변경 이벤트가 오면 표시 중인 데이터만 다시 요청합니다. 연결이
+끊기면 최대 30초 간격의 지수 백오프로 소켓을 재연결하며 polling은 사용하지 않습니다. 로컬 Vite
+프록시와 운영 Nginx 모두 WebSocket Upgrade를 전달해야 합니다.
 
 ## 색상
 

@@ -9,18 +9,6 @@ export const authApi = {
             body: JSON.stringify(body),
         });
     },
-    linkDiscord(code: string) {
-        const body: OAuthLoginRequest = { code };
-        return apiRequest<TokenResponse['user']>('/api/v1/auth/discord/link', {
-            method: 'POST',
-            body: JSON.stringify(body),
-        });
-    },
-    unlinkDiscord() {
-        return apiRequest<TokenResponse['user']>('/api/v1/auth/discord/link', {
-            method: 'DELETE',
-        });
-    },
     logoutAll() {
         return apiRequest<LogoutAllResponse>('/api/v1/auth/logout-all', {
             method: 'POST',

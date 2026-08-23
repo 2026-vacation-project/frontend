@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { css } from '../../appStyles';
 import { roomsApi } from '../../api/rooms';
@@ -7,6 +7,7 @@ import { RoomRow } from '../../components/room/RoomRow';
 import { EmptyState, InlineNotice, LoadingRows, SearchInput } from '../../components/ui';
 import { Icon } from '../../components/ui/Icon';
 import { useApp } from '../../context/useApp';
+import { subscribeToRoomChanges } from '../../realtime/rooms';
 import type { RoomResponse } from '../../types/api';
 import { getErrorMessage, getRoomJoinErrorMessage, userDisplayName } from '../../utils/format';
 
@@ -20,6 +21,7 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
     const [query, setQuery] = useState('');
     const [filter, setFilter] = useState<Filter>('all');
     const [joiningId, setJoiningId] = useState<string | null>(null);
+    const loadRequestId = useRef(0);
     const joinedGroups = groups.filter((group) =>
         (group.members ?? []).some((member) => member.id === currentUser?.id),
     );
@@ -29,26 +31,40 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
     const needsGroup = !loadingGroups && joinedGroups.length === 0;
     const createRoomPath = selectedJoinedGroup ? `/rooms/create?group=${selectedJoinedGroup.id}` : '/rooms/create';
 
-    const loadRooms = useCallback(async () => {
-        if (!activeGroupId) {
-            setRooms([]);
-            return;
-        }
-        setLoading(true);
-        try {
-            setRooms(await roomsApi.list(activeGroupId));
-            setError(null);
-        } catch (loadError) {
-            setError(getErrorMessage(loadError));
-        } finally {
-            setLoading(false);
-        }
-    }, [activeGroupId]);
+    const loadRooms = useCallback(
+        async (showLoading = true) => {
+            const requestId = ++loadRequestId.current;
+            if (!activeGroupId) {
+                setRooms([]);
+                setError(null);
+                setLoading(false);
+                return;
+            }
+            if (showLoading) setLoading(true);
+            try {
+                const nextRooms = await roomsApi.list(activeGroupId);
+                if (requestId !== loadRequestId.current) return;
+                setRooms(nextRooms);
+                setError(null);
+            } catch (loadError) {
+                if (requestId !== loadRequestId.current) return;
+                setError(getErrorMessage(loadError));
+            } finally {
+                if (requestId === loadRequestId.current) setLoading(false);
+            }
+        },
+        [activeGroupId],
+    );
 
     useEffect(() => {
-        const timer = window.setTimeout(() => void loadRooms(), 0);
+        const timer = window.setTimeout(() => void loadRooms(true), 0);
         return () => window.clearTimeout(timer);
     }, [loadRooms]);
+
+    useEffect(() => {
+        if (!activeGroupId) return;
+        return subscribeToRoomChanges(activeGroupId, () => void loadRooms(false));
+    }, [activeGroupId, loadRooms]);
 
     const visibleRooms = useMemo(
         () =>
@@ -80,7 +96,7 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
                 room.name ? `“${room.name}” 방에 참가했어요.` : `${room.game_name} 모집에 참가했어요.`,
                 'success',
             );
-            await loadRooms();
+            await loadRooms(false);
         } catch (joinError) {
             showToast(getRoomJoinErrorMessage(joinError, room.tags ?? []), 'error');
         } finally {

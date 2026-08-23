@@ -12,8 +12,6 @@ export interface UserResponse {
     display_name?: string | null;
     profile_image?: string | null;
     fcm_token?: string | null;
-    notifications_enabled?: boolean;
-    discord_connected?: boolean;
     preferred_games?: string[];
 }
 

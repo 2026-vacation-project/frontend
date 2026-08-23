@@ -9,7 +9,10 @@ export default defineConfig({
         port: 3000,
         strictPort: true,
         proxy: {
-            '/api': 'http://127.0.0.1:8000',
+            '/api': {
+                target: 'http://127.0.0.1:8000',
+                ws: true,
+            },
         },
         allowedHosts: ['pro203s.iptime.org'],
     },

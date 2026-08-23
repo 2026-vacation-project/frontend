@@ -7,7 +7,6 @@ interface OAuthAttempt {
     state: string;
     returnTo: string;
     startedAt: number;
-    purpose: 'login' | 'link';
 }
 
 const providerConfig: Record<
@@ -49,11 +48,7 @@ export function getOAuthRedirectUri(provider: OAuthProvider) {
     return `${callbackBase}/${provider}`;
 }
 
-export function createOAuthAuthorizationUrl(
-    provider: OAuthProvider,
-    returnTo?: string | null,
-    purpose: OAuthAttempt['purpose'] = 'login',
-) {
+export function createOAuthAuthorizationUrl(provider: OAuthProvider, returnTo?: string | null) {
     const config = providerConfig[provider];
     const clientId = config.clientId.trim();
     if (!clientId) {
@@ -65,7 +60,6 @@ export function createOAuthAuthorizationUrl(
         state,
         returnTo: sanitizeReturnTo(returnTo),
         startedAt: Date.now(),
-        purpose,
     };
     sessionStorage.setItem(getAttemptKey(provider), JSON.stringify(attempt));
 
@@ -98,7 +92,6 @@ export function consumeOAuthAttempt(provider: OAuthProvider, receivedState: stri
         }
         return {
             returnTo: sanitizeReturnTo(attempt.returnTo),
-            purpose: attempt.purpose === 'link' ? ('link' as const) : ('login' as const),
         };
     } catch (error) {
         if (error instanceof Error && error.message.startsWith('로그인')) throw error;
