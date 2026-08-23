@@ -40,6 +40,7 @@ export function RoomRow({
     const disabled = room.status !== 'RECRUITING' || isParticipant || !currentUserId;
     const filledSlots = Math.min(room.target_count, participants.length);
     const coverUrl = gameCoverUrl ?? room.game_cover_url ?? getCachedGameCover(room.game_name);
+    const roomTitle = room.name?.trim() || `${room.target_count}명 모집`;
 
     return (
         <article className={css('room-row')}>
@@ -58,16 +59,16 @@ export function RoomRow({
                         <Link
                             className={css('room-row__title')}
                             to={example ? '/login' : `/rooms/${room.id}?group=${room.group_id}`}
-                            aria-label={`${room.game_name} 모집 ${example ? '시작하기' : '상세 보기'}`}
+                            aria-label={`${room.game_name} ${roomTitle} ${example ? '시작하기' : '상세 보기'}`}
                         >
-                            {room.target_count}명 모집
+                            {roomTitle}
                         </Link>
                     ) : (
                         <span
                             className={css('room-row__title room-row__title--restricted')}
-                            aria-label={`${room.game_name} ${room.target_count}명 모집. 상세 정보는 그룹 참여 후 확인할 수 있어요.`}
+                            aria-label={`${room.game_name} ${roomTitle}. 상세 정보는 그룹 참여 후 확인할 수 있어요.`}
                         >
-                            {room.target_count}명 모집
+                            {roomTitle}
                         </span>
                     )}
                     {(room.tags ?? []).length > 0 && (

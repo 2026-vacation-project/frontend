@@ -176,7 +176,7 @@ export default function RoomDetailPage() {
                     )}
                     <Link to="/rooms">모집방</Link>
                     <span>/</span>
-                    <span>{room.game_name}</span>
+                    <span>{room.name?.trim() || room.game_name}</span>
                 </nav>
                 <header className={css('room-detail__header')}>
                     <div>
@@ -192,7 +192,7 @@ export default function RoomDetailPage() {
                                 </small>
                             </div>
                         </div>
-                        <h1>{room.target_count}명 모집</h1>
+                        <h1>{room.name?.trim() || `${room.target_count}명 모집`}</h1>
                     </div>
                     <StatusLabel status={room.status} />
                 </header>

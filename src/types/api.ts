@@ -67,12 +67,14 @@ export interface RoleResponse extends TagResponse {
 }
 
 export interface RoomCreate {
+    name?: string | null;
     game_name: string;
     target_count: number;
     tag_ids: string[];
 }
 
 export interface RoomUpdate {
+    name?: string | null;
     game_name?: string | null;
     target_count?: number | null;
     status?: RoomStatus | null;
@@ -83,6 +85,7 @@ export interface RoomResponse {
     id: string;
     group_id: string;
     host_id: string;
+    name?: string | null;
     game_name: string;
     game_cover_url?: string | null;
     target_count: number;

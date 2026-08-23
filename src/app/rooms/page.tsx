@@ -53,7 +53,10 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
     const visibleRooms = useMemo(
         () =>
             rooms.filter((room) => {
-                const matchesQuery = room.game_name.toLowerCase().includes(query.trim().toLowerCase());
+                const normalizedQuery = query.trim().toLowerCase();
+                const matchesQuery =
+                    room.game_name.toLowerCase().includes(normalizedQuery) ||
+                    (room.name ?? '').toLowerCase().includes(normalizedQuery);
                 const matchesFilter =
                     filter === 'all' ||
                     (filter === 'recruiting' && room.status === 'RECRUITING') ||
@@ -73,7 +76,10 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
         setJoiningId(room.id);
         try {
             await roomsApi.join(room.group_id, room.id, currentUser.id);
-            showToast(`${room.game_name} 모집에 참가했어요.`, 'success');
+            showToast(
+                room.name ? `“${room.name}” 방에 참가했어요.` : `${room.game_name} 모집에 참가했어요.`,
+                'success',
+            );
             await loadRooms();
         } catch (joinError) {
             showToast(getRoomJoinErrorMessage(joinError, room.tags ?? []), 'error');
@@ -142,7 +148,7 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
                         <SearchInput
                             value={query}
                             onChange={(event) => setQuery(event.target.value)}
-                            placeholder="게임 검색"
+                            placeholder="게임 또는 방 이름 검색"
                         />
                         <div className={css('filter-tabs')} role="tablist" aria-label="모집 필터">
                             {(

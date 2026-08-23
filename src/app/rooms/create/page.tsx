@@ -20,7 +20,7 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
     const { currentUser, groups, activeGroupId, loadingGroups, selectGroup, showToast } = useApp();
     const requestedGroup = searchParams.get('group') || activeGroupId || groups[0]?.id || '';
     const [groupId, setGroupId] = useState(requestedGroup);
-    const [form, setForm] = useState<RoomCreate>({ game_name: '', target_count: 5, tag_ids: [] });
+    const [form, setForm] = useState<RoomCreate>({ name: '', game_name: '', target_count: 5, tag_ids: [] });
     const [loading, setLoading] = useState(edit);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -58,6 +58,7 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
                 .then((room) => {
                     const coverUrl = room.game_cover_url ?? getCachedGameCover(room.game_name);
                     setForm({
+                        name: room.name ?? '',
                         game_name: room.game_name,
                         target_count: room.target_count,
                         tag_ids: (room.tags ?? []).map((tag) => tag.id),
@@ -304,6 +305,16 @@ export default function RoomFormPage({ edit = false }: { edit?: boolean }) {
                                     </button>
                                 </div>
                             )}
+                            <Field label="방 이름 (선택)" hint="비워 두면 게임명과 모집 인원으로 표시돼요.">
+                                <input
+                                    value={form.name ?? ''}
+                                    onChange={(event) =>
+                                        setForm((current) => ({ ...current, name: event.target.value }))
+                                    }
+                                    placeholder="예: 오늘 저녁 경쟁전 같이해요"
+                                    maxLength={60}
+                                />
+                            </Field>
                         </div>
                         <div className={css('form-section')}>
                             <h2>어떤 태그의 멤버를 찾나요?</h2>
