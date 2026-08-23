@@ -44,6 +44,7 @@
     --radius-sm: 0.2rem;
     --radius-md: 0.35rem;
     --radius-lg: 0.5rem;
+    --radius-slot: 1px;
     --shadow-overlay: 0 1rem 2.5rem rgba(24, 27, 32, 0.16);
     --shadow-floating: 0 0.4rem 1.2rem rgba(24, 27, 32, 0.1);
     --text-display: 3.25rem;

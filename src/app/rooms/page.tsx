@@ -168,7 +168,7 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
                         {activeGroup
                             ? activeGroupJoined
                                 ? `${activeGroup.name} 모집방만 보고 있어요.`
-                                : `${activeGroup.name} 그룹에 참여하기 전입니다.`
+                                : '목록만 볼 수 있어요. 상세 정보는 그룹 참여 후 확인할 수 있어요.'
                             : '그룹을 고르면 모집방을 볼 수 있어요.'}
                     </div>
 
@@ -240,6 +240,17 @@ export default function RoomsPage({ home = false }: { home?: boolean }) {
                                         currentUserId={currentUser?.id}
                                         onJoin={joinRoom}
                                         joining={joiningId === room.id}
+                                        detailsAvailable={activeGroupJoined}
+                                        restrictedAction={
+                                            !activeGroupJoined ? (
+                                                <Link
+                                                    className={css('button button--secondary')}
+                                                    to={`/groups/${activeGroup.id}`}
+                                                >
+                                                    그룹 참여하기
+                                                </Link>
+                                            ) : undefined
+                                        }
                                     />
                                 );
                             })}

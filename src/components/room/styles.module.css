@@ -21,7 +21,7 @@
     width: 3rem;
     height: 3rem;
     border-radius: var(--radius-md);
-    font-size: 1.1rem;
+    font-size: var(--text-h3);
 }
 .room-row__eyeline {
     display: flex;
@@ -34,20 +34,23 @@
     display: block;
     margin-top: 0.2rem;
     overflow: hidden;
-    font-size: 1rem;
+    font-size: var(--text-body-lg);
     font-weight: 720;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.room-row__title::after {
+.room-row__title[href]::after {
     content: '';
     position: absolute;
     inset: 0;
 }
-.room-row__title:hover {
+.room-row__title[href]:hover {
     color: var(--color-primary-text);
     text-decoration: underline;
     text-underline-offset: 4px;
+}
+.room-row__title--restricted {
+    color: var(--color-text-secondary);
 }
 .room-row__tags {
     display: flex;
@@ -82,7 +85,7 @@
     font-variant-numeric: tabular-nums;
 }
 .capacity-copy strong {
-    font-size: 1.2rem;
+    font-size: var(--text-h3);
 }
 .capacity-copy span {
     color: var(--color-text-muted);
@@ -95,7 +98,7 @@
 .slot-rail span {
     width: 0.65rem;
     height: 0.32rem;
-    border-radius: 1px;
+    border-radius: var(--radius-slot);
     background: var(--color-border);
 }
 .slot-rail span.is-filled {

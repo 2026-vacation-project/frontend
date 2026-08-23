@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
+import { ApiError } from '../../../api/client';
 import { css } from '../../../appStyles';
 import { roomsApi } from '../../../api/rooms';
 import { GameArtwork } from '../../../components/game/GameArtwork';
@@ -22,12 +23,15 @@ export default function RoomDetailPage() {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const groupId = searchParams.get('group') ?? '';
-    const { currentUser, groups, showToast } = useApp();
+    const { currentUser, groups, loadingGroups, showToast } = useApp();
     const [room, setRoom] = useState<RoomResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [acting, setActing] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [accessRestricted, setAccessRestricted] = useState(false);
     const { confirm, dialog: confirmDialog } = useConfirmDialog();
+    const group = groups.find((item) => item.id === groupId);
+    const isGroupMember = Boolean(group && (group.members ?? []).some((member) => member.id === currentUser?.id));
 
     const loadRoom = useCallback(async () => {
         if (!roomId || !groupId) {
@@ -35,16 +39,32 @@ export default function RoomDetailPage() {
             setLoading(false);
             return;
         }
+        if (loadingGroups) return;
+        if (!isGroupMember) {
+            setRoom(null);
+            setError(null);
+            setAccessRestricted(true);
+            setLoading(false);
+            return;
+        }
         setLoading(true);
+        setAccessRestricted(false);
         try {
             setRoom(await roomsApi.get(groupId, roomId));
             setError(null);
+            setAccessRestricted(false);
         } catch (loadError) {
-            setError(getErrorMessage(loadError));
+            if (loadError instanceof ApiError && loadError.status === 403) {
+                setRoom(null);
+                setError(null);
+                setAccessRestricted(true);
+            } else {
+                setError(getErrorMessage(loadError));
+            }
         } finally {
             setLoading(false);
         }
-    }, [groupId, roomId]);
+    }, [groupId, isGroupMember, loadingGroups, roomId]);
 
     useEffect(() => {
         const timer = window.setTimeout(() => void loadRoom(), 0);
@@ -91,10 +111,28 @@ export default function RoomDetailPage() {
         }
     }
 
-    if (loading)
+    if (loading || loadingGroups)
         return (
             <div className={css('page-container detail-loading')}>
                 <LoadingRows count={4} />
+            </div>
+        );
+    if (accessRestricted)
+        return (
+            <div className={css('page-container')}>
+                <EmptyState
+                    title="그룹 참여 후 확인할 수 있어요"
+                    description={
+                        group
+                            ? `${group.name} 모집방의 상세 정보는 그룹 멤버에게만 공개돼요.`
+                            : '모집방 상세 정보는 해당 그룹에 참여한 멤버만 확인할 수 있어요.'
+                    }
+                    action={
+                        <Link className={css('button button--primary')} to={`/groups/${groupId}`}>
+                            그룹 참여하기
+                        </Link>
+                    }
+                />
             </div>
         );
     if (error || !room)
@@ -112,7 +150,6 @@ export default function RoomDetailPage() {
             </div>
         );
 
-    const group = groups.find((item) => item.id === groupId);
     const participants = room.participants ?? [];
     const roomTags = room.tags ?? [];
     const visibleRoomTags = roomTags.slice(0, 3);

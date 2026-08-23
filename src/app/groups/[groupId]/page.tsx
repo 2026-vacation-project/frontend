@@ -331,7 +331,11 @@ export default function GroupDetailPage() {
                         <div className={css('section-heading')}>
                             <div>
                                 <h2>그룹 모집방</h2>
-                                <p>이 그룹에서 만든 모집방입니다.</p>
+                                <p>
+                                    {joined
+                                        ? '이 그룹에서 만든 모집방입니다.'
+                                        : '목록만 볼 수 있어요. 상세 정보는 그룹 참여 후 확인할 수 있어요.'}
+                                </p>
                             </div>
                         </div>
                         {rooms.length ? (
@@ -345,6 +349,14 @@ export default function GroupDetailPage() {
                                             hostName={host ? userDisplayName(host) : undefined}
                                             groupName={group.name}
                                             currentUserId={currentUser?.id}
+                                            detailsAvailable={joined}
+                                            restrictedAction={
+                                                !joined ? (
+                                                    <Button onClick={() => void joinGroup()} loading={joiningGroup}>
+                                                        그룹 참여하기
+                                                    </Button>
+                                                ) : undefined
+                                            }
                                         />
                                     );
                                 })}

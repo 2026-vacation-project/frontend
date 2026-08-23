@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Link } from 'react-router';
 import { css } from '../../appStyles';
 import type { RoomResponse } from '../../types/api';
@@ -13,6 +14,8 @@ interface RoomRowProps {
     currentUserId?: string;
     onJoin?: (room: RoomResponse) => void;
     joining?: boolean;
+    detailsAvailable?: boolean;
+    restrictedAction?: ReactNode;
     example?: boolean;
     gameCoverUrl?: string | null;
     gameArtworkFit?: 'cover' | 'contain';
@@ -25,6 +28,8 @@ export function RoomRow({
     currentUserId,
     onJoin,
     joining,
+    detailsAvailable = true,
+    restrictedAction,
     example,
     gameCoverUrl,
     gameArtworkFit = 'cover',
@@ -49,13 +54,22 @@ export function RoomRow({
                     <div className={css('room-row__eyeline')}>
                         <strong>{room.game_name}</strong>
                     </div>
-                    <Link
-                        className={css('room-row__title')}
-                        to={example ? '/login' : `/rooms/${room.id}?group=${room.group_id}`}
-                        aria-label={`${room.game_name} 모집 ${example ? '시작하기' : '상세 보기'}`}
-                    >
-                        {room.target_count}명 모집
-                    </Link>
+                    {detailsAvailable ? (
+                        <Link
+                            className={css('room-row__title')}
+                            to={example ? '/login' : `/rooms/${room.id}?group=${room.group_id}`}
+                            aria-label={`${room.game_name} 모집 ${example ? '시작하기' : '상세 보기'}`}
+                        >
+                            {room.target_count}명 모집
+                        </Link>
+                    ) : (
+                        <span
+                            className={css('room-row__title room-row__title--restricted')}
+                            aria-label={`${room.game_name} ${room.target_count}명 모집. 상세 정보는 그룹 참여 후 확인할 수 있어요.`}
+                        >
+                            {room.target_count}명 모집
+                        </span>
+                    )}
                     {(room.tags ?? []).length > 0 && (
                         <div className={css('room-row__tags')} aria-label="모집 태그">
                             {(room.tags ?? []).slice(0, 3).map((tag) => (
@@ -88,7 +102,9 @@ export function RoomRow({
 
             <div className={css('room-row__action')}>
                 <StatusLabel status={room.status} />
-                {onJoin ? (
+                {!detailsAvailable ? (
+                    (restrictedAction ?? <span className={css('text-link text-link--disabled')}>참여 후 보기</span>)
+                ) : onJoin ? (
                     <Button tone="secondary" disabled={disabled} loading={joining} onClick={() => onJoin(room)}>
                         {isParticipant ? '참여 중' : room.status === 'COMPLETED' ? '모집 완료' : '참가하기'}
                     </Button>
