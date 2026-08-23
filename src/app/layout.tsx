@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation, useOutlet } from 'react-router';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { css } from '../appStyles';
 import { useApp } from '../context/useApp';
+import { NotificationPrompt } from '../components/notification/NotificationPrompt';
 import { Avatar, Toast } from '../components/ui';
 import { Icon } from '../components/ui/Icon';
 import { RouteTransitionContext } from '../components/ui/routeTransition';
@@ -169,6 +170,8 @@ export function AppLayout() {
                     </div>
                 </div>
             </header>
+
+            <NotificationPrompt />
 
             <main className={css('main-content')} id="main-content">
                 {routeTransitions((styles, route) => (
